@@ -510,7 +510,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnAñadir)) {
-			añadirProducto();
+		añadirProducto();
 		} else if (e.getSource().equals(btnModificar)) {
 
 		} else if (e.getSource().equals(btnBorrar)) {
