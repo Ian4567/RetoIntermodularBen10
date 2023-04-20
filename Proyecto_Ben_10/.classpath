@@ -6,6 +6,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/Reto_Final_GIT/RetoIntermodularBen10/Proyecto_Ben_10/mysql-connector-java-8.0.15.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/Reto_Final_GIT/RetoIntermodularBen10/Proyecto_Ben_10/jcalendar-1.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/Reto_Final_GIT/RetoIntermodularBen10/Proyecto_Ben_10/jgoodies-common-1.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/Reto_Final_GIT/RetoIntermodularBen10/Proyecto_Ben_10/jgoodies-looks-2.4.1.jar"/>
