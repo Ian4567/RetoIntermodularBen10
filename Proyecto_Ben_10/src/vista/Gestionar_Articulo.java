@@ -19,7 +19,7 @@ import clases.Juguete;
 import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
 import clases.Producto;
-import controlador.ControladorBdImplementacion;
+import modelo.ControladorBdImplementacion;
 
 import javax.swing.border.EtchedBorder;
 import javax.swing.UIManager;
@@ -37,7 +37,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class Gestionar_Articulo extends JDialog implements ActionListener{
+public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textNumEstancias, textPrecio, textNombre, textDimensiones, textPeso, textColor, textFabricante,
@@ -47,6 +47,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 	private JLabel lblLinea;
 	private JLabel lblJuguete;
 	private JLabel lblSeriePeli;
+	private JComboBox comboTipo_1;
 
 	/**
 	 * Launch the application.
@@ -422,6 +423,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 		textGenero.setBounds(1573, 614, 174, 18);
 		contentPanel.add(textGenero);
 
+		comboTipo_1 = new JComboBox();
+		comboTipo_1.setSelectedIndex(-1);
+		comboTipo_1.setForeground(Color.WHITE);
+		comboTipo_1.setFont(new Font("Jokerman", Font.BOLD, 14));
+		comboTipo_1.setBackground(Color.DARK_GRAY);
+		comboTipo_1.setBounds(1386, 202, 209, 46);
+		contentPanel.add(comboTipo_1);
+
 	}
 
 	protected void tipoElegido() {
@@ -487,11 +496,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 	}
 
 	public void limpiarCampos() {
-		textNumEstancias.setText("");
-		textPrecio.setText("");
-		textNombre.setText("");
-		textDimensiones.setText("");
-		textPeso.setText("");
+
 		textColor.setText("");
 		textFabricante.setText("");
 		textIdioma.setText("");
@@ -527,8 +532,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 			JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 
 		} else {
-			if (comboTipo.getSelectedItem().equals("LINEA DE ROPA")) {
+			bd = new ControladorBdImplementacion();
+			if (comboTipo.getSelectedItem().toString().equals("LINEA DE ROPA")) {
 				prod = new Linea_De_Ropa();
+				prod.setCodigoProducto("L001");
 				prod.setNombre(textNombre.getText());
 				prod.setPrecio(Float.parseFloat(textPrecio.getText()));
 				prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
@@ -538,9 +545,11 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 				((Linea_De_Ropa) prod).setTejido(textTejido.getText());
 				((Linea_De_Ropa) prod).setColor(textColor.getText());
 				((Linea_De_Ropa) prod).setFabricante(textFabricante.getText());
+				bd.insertarProducto(prod);
 
-			} else if (comboTipo.getSelectedItem().equals("JUGUETE")) {
+			} else if (comboTipo.getSelectedItem().toString().equals("JUGUETE")) {
 				prod = new Juguete();
+				prod.setCodigoProducto("J001");
 				prod.setNombre(textNombre.getText());
 				prod.setPrecio(Float.parseFloat(textPrecio.getText()));
 				prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
@@ -553,10 +562,11 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 					((Juguete) prod).setArticulable(false);
 				}
 
-				((Juguete) prod).setPegi(Integer.parseInt(comboPegi.getSelectedItem().toString()));
-
-			} else if (comboTipo.getSelectedItem().equals("PELICULA/PELICULA")) {
+				((Juguete) prod).setEdadMinima(Integer.parseInt(comboPegi.getSelectedItem().toString()));
+				bd.insertarProducto(prod);
+			} else if (comboTipo.getSelectedItem().toString().equals("PELICULA/SERIE")) {
 				prod = new Pelicula_Serie();
+				prod.setCodigoProducto("P001");
 				prod.setNombre(textNombre.getText());
 				prod.setPrecio(Float.parseFloat(textPrecio.getText()));
 				prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
@@ -571,9 +581,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 					((Pelicula_Serie) prod).setSubtitulado(false);
 				}
 				((Pelicula_Serie) prod).setDuracion(textDuracion.getText());
+				bd.insertarProducto(prod);
 			}
+			JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
 		}
 
 	}
-
 }
