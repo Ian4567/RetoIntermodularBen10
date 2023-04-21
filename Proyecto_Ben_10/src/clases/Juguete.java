@@ -23,10 +23,7 @@ public class Juguete extends Producto {
 		this.material = material;
 	}
 
-	public String isArticulable() {
-		return articulable;
-	}
-
+	
 	public void setArticulable(String string) {
 		this.articulable = string;
 	}
@@ -39,7 +36,12 @@ public class Juguete extends Producto {
 		this.edadMinima = edadMinima;
 	}
 
-	public String isPilas() {
+
+	public String getArticulable() {
+		return articulable;
+	}
+
+	public String getPilas() {
 		return pilas;
 	}
 

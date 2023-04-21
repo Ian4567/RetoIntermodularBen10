@@ -28,6 +28,11 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String ALTA_JUGUETE = "INSERT INTO JUGUETE (codigo_producto, material, articulable, edad_minima, pilas) VALUES (?,?,?,?,?)";
 	private final String ALTA_PELIS_SERIES = "INSERT INTO PELICULA_SERIE (codigo_producto, genero, fecha_de_lanzamiento, idioma, subtitulado, duracion) VALUES (?,?,?,?,?,?)";
 	private final String SELECT_PRODUCTOS = "SELECT * FROM PRODUCTO";
+	private final String DELETE_PRODUCTO = "DELETE FROM PRODUCTO WHERE CODIGO_PRODUCTO = ?";
+	private final String SELECT_PRODUCTO_COD = "SELECT * FROM PRODUCTO WHERE codigo_producto=?";
+	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
+	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
+	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -95,13 +100,13 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 					stmt.setString(1, prod.getCodigoProducto());
 					stmt.setString(2, ((Juguete) prod).getMaterial());
-					stmt.setString(3, ((Juguete) prod).isArticulable());
+					stmt.setString(3, ((Juguete) prod).getArticulable());
 					stmt.setInt(4, ((Juguete) prod).getEdadMinima());
-					stmt.setString(5, ((Juguete) prod).isPilas());
+					stmt.setString(5, ((Juguete) prod).getPilas());
 					stmt.executeUpdate();
 				} else if (prod instanceof Pelicula_Serie) {
-
 					stmt = con.prepareStatement(ALTA_PELIS_SERIES);
+
 					stmt.setString(1, prod.getCodigoProducto());
 					stmt.setString(2, ((Pelicula_Serie) prod).getGenero());
 					stmt.setDate(3, Date.valueOf(((Pelicula_Serie) prod).getFechaLanzamiento()));
@@ -196,6 +201,155 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			e.printStackTrace();
 		}
 		return codProd;
+
+	}
+
+	public Producto recogerProductoId(String codigo_producto) {
+		this.openConnection();
+		Producto prod = null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_PRODUCTO_COD);
+			stmt.setString(1, codigo_producto);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Producto();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prod;
+
+	}
+
+	public Producto recogerLineaRopaId(String codigo_producto) {
+		this.openConnection();
+		Producto prod = null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_LINEA_ROPA);
+			stmt.setString(1, codigo_producto);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Linea_De_Ropa();
+				((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
+				((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
+				((Linea_De_Ropa) prod).setColor(rs.getString("color"));
+				((Linea_De_Ropa) prod).setFabricante(rs.getString("fabricante"));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prod;
+
+	}
+
+	public Producto recogerJugueteId(String codigo_producto) {
+		this.openConnection();
+		Producto prod = null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_JUGUETE);
+			stmt.setString(1, codigo_producto);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Juguete();
+				((Juguete) prod).setMaterial(rs.getString("material"));
+				((Juguete) prod).setArticulable(rs.getString("articulable"));
+				((Juguete) prod).setEdadMinima(rs.getInt("edad_minima"));
+				((Juguete) prod).setPilas(rs.getString("pilas"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prod;
+
+	}
+
+	public Producto recogerPeliculaId(String codigo_producto) {
+		this.openConnection();
+		Producto prod = null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_PELICULA);
+			stmt.setString(1, codigo_producto);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Pelicula_Serie();
+				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prod;
+
+	}
+
+	public void eliminarProducto(Producto prod) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_PRODUCTO);
+			stmt.setString(1, prod.getCodigoProducto());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
 
 	}
 
