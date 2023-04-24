@@ -579,7 +579,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				comboPegi.setSelectedItem(((Juguete) prod).getEdadMinima());
 				comboPilas.setSelectedItem(((Juguete) prod).getPilas());
 			}else  {
-				prod =bd.recogerPeliculasId(comboCodigos.getSelectedItem().toString());
+				//prod =bd.recogerPeliculasId(comboCodigos.getSelectedItem().toString());
 			}
 		} else {
 			JOptionPane.showMessageDialog(btnModificar, "NO HAS ELEGIDO NINGUN CODIGO DE ARTICULO!");
