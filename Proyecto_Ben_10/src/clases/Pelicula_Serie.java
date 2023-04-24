@@ -7,7 +7,7 @@ public class Pelicula_Serie extends Producto {
 	private String genero;
 	private LocalDate fechaLanzamiento;
 	private String idioma;
-	private boolean subtitulado;
+	private String subtitulado;
 	private String duracion;
 
 	// constructor
@@ -41,11 +41,11 @@ public class Pelicula_Serie extends Producto {
 		this.idioma = idioma;
 	}
 
-	public boolean isSubtitulado() {
+	public String getSubtitulado() {
 		return subtitulado;
 	}
 
-	public void setSubtitulado(boolean subtitulado) {
+	public void setSubtitulado(String subtitulado) {
 		this.subtitulado = subtitulado;
 	}
 

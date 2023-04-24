@@ -21,4 +21,8 @@ public interface DBImplementacion {
 	public Producto recogerLineaRopaId(String codigo_producto);
 	
 	public Producto recogerJugueteId(String codigo_producto);
+	
+	public Producto recogerPeliculaId(String codigo_producto);
+
+	public void modificarProducto(Producto prod);
 }

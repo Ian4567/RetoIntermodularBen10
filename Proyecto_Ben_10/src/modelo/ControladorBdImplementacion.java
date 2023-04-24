@@ -22,7 +22,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private PreparedStatement stmt;
 
 	// sentencia SQL
-
+	private final String ACTUALIZAR_LINEA_ROPA = "UPDATE LINEA_DE_ROPA SET talla=?, tejido=?, color=?, fabricante=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_JUGUETE = "UPDATE JUGUETE SET material=?, articulable=?, edad_minima=?, pilas=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_PELICULA = "UPDATE PELICULA SET genero=?, fecha_de_lanzamiento=?, idioma=?, subtitulado=?, duracion=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_PRODUCTO = "UPDATE PRODUCTO SET nombre=?, precio=?, peso=?, num_existencias=?, dimensiones=? WHERE codigo_producto=?";
 	private final String ALTA_PRODUCTO = "INSERT INTO PRODUCTO (codigo_producto, nombre, precio, peso, num_existencias, dimensiones) VALUES (?,?,?,?,?,?)";
 	private final String ALTA_LINEA_ROPA = "INSERT INTO LINEA_DE_ROPA (codigo_producto, talla, tejido, color, fabricante) VALUES (?,?,?,?,?)";
 	private final String ALTA_JUGUETE = "INSERT INTO JUGUETE (codigo_producto, material, articulable, edad_minima, pilas) VALUES (?,?,?,?,?)";
@@ -111,7 +114,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 					stmt.setString(2, ((Pelicula_Serie) prod).getGenero());
 					stmt.setDate(3, Date.valueOf(((Pelicula_Serie) prod).getFechaLanzamiento()));
 					stmt.setString(4, ((Pelicula_Serie) prod).getIdioma());
-					stmt.setBoolean(5, ((Pelicula_Serie) prod).isSubtitulado());
+					stmt.setString(5, ((Pelicula_Serie) prod).getSubtitulado());
 					stmt.setString(6, ((Pelicula_Serie) prod).getDuracion());
 					stmt.executeUpdate();
 				}
@@ -311,6 +314,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			while (rs.next()) {
 				prod = new Pelicula_Serie();
 				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
+				((Pelicula_Serie) prod).setFechaLanzamiento(rs.getDate("fecha_de_nacimiento").toLocalDate());
+				((Pelicula_Serie) prod).setIdioma(rs.getString("idioma"));
+				((Pelicula_Serie) prod).setSubtitulado(rs.getString("subtitulado"));
+				((Pelicula_Serie) prod).setDuracion(rs.getString("duracion"));
 
 			}
 		} catch (SQLException e) {
@@ -351,6 +358,68 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 		}
 
+	}
+
+	public void modificarProducto(Producto prod) {
+
+		ResultSet rs = null;
+
+		// Abrimos la conexion con la base de datos
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(ACTUALIZAR_PRODUCTO);
+			
+			stmt.setString(1, prod.getNombre());
+			stmt.setFloat(2, prod.getPrecio());
+			stmt.setFloat(3, prod.getPeso());
+			stmt.setInt(4, prod.getNumExistencias());
+			stmt.setString(5, prod.getDimensiones());
+
+			if (stmt.executeUpdate() == 1) {
+				if (prod instanceof Linea_De_Ropa) {
+					stmt = con.prepareStatement(ACTUALIZAR_LINEA_ROPA);
+
+					stmt.setString(1, ((Linea_De_Ropa) prod).getTalla());
+					stmt.setString(2, ((Linea_De_Ropa) prod).getTejido());
+					stmt.setString(3, ((Linea_De_Ropa) prod).getColor());
+					stmt.setString(4, ((Linea_De_Ropa) prod).getFabricante());
+
+					stmt.executeUpdate();
+				} else if (prod instanceof Juguete) {
+					stmt = con.prepareStatement(ACTUALIZAR_JUGUETE);
+
+					stmt.setString(1, ((Juguete) prod).getMaterial());
+					stmt.setString(2, ((Juguete) prod).getArticulable());
+					stmt.setInt(3, ((Juguete) prod).getEdadMinima());
+					stmt.setString(4, ((Juguete) prod).getPilas());
+
+					stmt.executeUpdate();
+				} else if (prod instanceof Pelicula_Serie) {
+					stmt = con.prepareStatement(ACTUALIZAR_PELICULA);
+					stmt.setString(1, ((Pelicula_Serie) prod).getGenero());
+					stmt.setDate(2, Date.valueOf(((Pelicula_Serie) prod).getFechaLanzamiento()));
+					stmt.setString(3, ((Pelicula_Serie) prod).getGenero());
+					stmt.setString(4, ((Pelicula_Serie) prod).getGenero());
+					stmt.setString(5, ((Pelicula_Serie) prod).getGenero());
+
+					stmt.executeUpdate();
+				}
+
+			}
+		} catch (SQLException e1) {
+			System.out.println("Error en la modificación SQL");
+			e1.printStackTrace();
+
+		} finally {
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
