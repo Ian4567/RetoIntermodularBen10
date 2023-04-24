@@ -3,9 +3,10 @@ package clases;
 public class Persona {
 	// atributos
 	private String codigoPersona;
-	private String nombre;
+	private String nombreUsuario;
 	private String email;
 	private int numTelefono;
+	private String contrasea;
 
 	// constructor
 	public Persona() {
@@ -22,11 +23,11 @@ public class Persona {
 	}
 
 	public String getNombre() {
-		return nombre;
+		return nombreUsuario;
 	}
 
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		this.nombreUsuario = nombre;
 	}
 
 	public String getEmail() {
@@ -43,6 +44,14 @@ public class Persona {
 
 	public void setNumTelefono(int numTelefono) {
 		this.numTelefono = numTelefono;
+	}
+	
+	public String getContrasea() {
+		return contrasea;
+	}
+
+	public void setContrasea(String contrasea) {
+		this.contrasea = contrasea;
 	}
 
 }

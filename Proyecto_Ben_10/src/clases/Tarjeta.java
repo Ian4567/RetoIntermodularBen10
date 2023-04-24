@@ -5,6 +5,7 @@ public class Tarjeta {
 	private String numeroTarjeta;
 	private String CVV;
 	private String saldo;
+	private String codigoUsuario;
 
 	// cosntructor
 	public Tarjeta() {
