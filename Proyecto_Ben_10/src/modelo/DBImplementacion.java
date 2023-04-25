@@ -1,6 +1,7 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import clases.Producto;
 
@@ -21,4 +22,6 @@ public interface DBImplementacion {
 	public Producto recogerLineaRopaId(String codigo_producto);
 	
 	public Producto recogerJugueteId(String codigo_producto);
+
+	public Map<String, Producto> listarProducto();
 }
