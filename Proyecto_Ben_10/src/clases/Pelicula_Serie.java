@@ -1,11 +1,12 @@
 package clases;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Pelicula_Serie extends Producto {
 	// atributos
 	private String genero;
-	private LocalDate fechaLanzamiento;
+	private String fechaLanzamiento;
 	private String idioma;
 	private String subtitulado;
 	private String duracion;
@@ -25,11 +26,11 @@ public class Pelicula_Serie extends Producto {
 		this.genero = genero;
 	}
 
-	public LocalDate getFechaLanzamiento() {
+	public String getFechaLanzamiento() {
 		return fechaLanzamiento;
 	}
 
-	public void setFechaLanzamiento(LocalDate fechaLanzamiento) {
+	public void setFechaLanzamiento(String fechaLanzamiento) {
 		this.fechaLanzamiento = fechaLanzamiento;
 	}
 

@@ -35,25 +35,27 @@ import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.components.JLocaleChooser;
 
 public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textNumEstancias, textPrecio, textNombre, textDimensiones, textPeso, textColor, textFabricante,
-			textIdioma, textDuracion, textMaterial, textTejido, textGenero;
+			textDuracion, textMaterial, textTejido, textGenero;
 	private JComboBox comboArticulable, comboPilas, comboSubtitulado, comboTalla, comboTipo, comboPegi;
 	private JButton btnAñadir, btnModificar, btnBorrar;
-	private JLabel lblLinea;
-	private JLabel lblJuguete;
-	private JLabel lblSeriePeli;
+	private JLabel lblLinea, lblJuguete, lblSeriePeli, lblCodigoParaBorrar;
 	private JComboBox comboCodigos;
-	private JLabel lblCodigoParaBorrar;
 	private JButton btnLimpiar;
+	private JLocaleChooser textIdioma;
+	private JDateChooser fechaSelector;
 
 	/**
 	 * Launch the application.
@@ -349,17 +351,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		lblGenero_4.setBounds(1344, 887, 163, 68);
 		contentPanel.add(lblGenero_4);
 
-		textIdioma = new JTextField();
-		textIdioma.setEnabled(false);
-		textIdioma.setOpaque(false);
-		textIdioma.setForeground(Color.WHITE);
-		textIdioma.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textIdioma.setColumns(10);
-		textIdioma.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textIdioma.setBackground(new Color(102, 255, 102));
-		textIdioma.setBounds(1585, 769, 174, 18);
-		contentPanel.add(textIdioma);
-
 		comboSubtitulado = new JComboBox();
 		comboSubtitulado.setModel(new DefaultComboBoxModel(new String[] { "SI ", "NO" }));
 		comboSubtitulado.setEnabled(false);
@@ -432,6 +423,11 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		contentPanel.add(textGenero);
 
 		comboCodigos = new JComboBox();
+		comboCodigos.setForeground(Color.WHITE);
+		comboCodigos.setFont(new Font("Jokerman", Font.BOLD, 14));
+		comboCodigos.setBackground(Color.DARK_GRAY);
+		comboCodigos.setBounds(1386, 202, 209, 46);
+		cargarComboCodigo();
 		comboCodigos.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -439,12 +435,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				}
 			}
 		});
-		comboCodigos.setForeground(Color.WHITE);
-		comboCodigos.setFont(new Font("Jokerman", Font.BOLD, 14));
-		comboCodigos.setBackground(Color.DARK_GRAY);
-		comboCodigos.setBounds(1386, 202, 209, 46);
-		cargarComboCodigo();
-		comboCodigos.setSelectedIndex(-1);
 		contentPanel.add(comboCodigos);
 
 		lblCodigoParaBorrar = new JLabel("Codigo de productos");
@@ -459,6 +449,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		btnLimpiar.setBounds(1648, 198, 163, 50);
 		btnLimpiar.addActionListener(this);
 		contentPanel.add(btnLimpiar);
+
+		fechaSelector = new JDateChooser();
+		fechaSelector.setBounds(1576, 687, 171, 20);
+		contentPanel.add(fechaSelector);
+
+		textIdioma = new JLocaleChooser();
+		textIdioma.setBounds(1576, 768, 171, 20);
+		contentPanel.add(textIdioma);
 
 	}
 
@@ -527,7 +525,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	public void limpiarCampos() {
 		textColor.setText("");
 		textFabricante.setText("");
-		textIdioma.setText("");
+		textIdioma.setSelectedIndex(-1);
 		textDuracion.setText("");
 		textMaterial.setText("");
 		textTejido.setText("");
@@ -537,6 +535,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		comboPilas.setSelectedIndex(-1);
 		comboSubtitulado.setSelectedIndex(-1);
 		comboTalla.setSelectedIndex(-1);
+		comboTipo.setEnabled(true);
 	}
 
 	public void limpiarTodosLosCampos() {
@@ -568,86 +567,157 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private void modificarProducto() {
 		Producto prod = null;
 		DBImplementacion bd = new ControladorBdImplementacion();
-		if (comboTipo.getSelectedIndex() > -1) {
-			if (comboTipo.getSelectedItem().toString().equals("LINEA DE ROPA")) {
-				if (comboTalla.getSelectedIndex() == -1 || textTejido.getText().equals("")
-						|| textColor.getText().equals("") || textFabricante.getText().equals("")) {
-					JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
-				} else {
-
-					prod = new Linea_De_Ropa();
-					prod.setNombre(textNombre.getText());
-					prod.setPrecio(Float.parseFloat(textPrecio.getText()));
-					prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
-					prod.setDimensiones(textDimensiones.getText());
-					prod.setPeso(Float.parseFloat(textPeso.getText()));
-					((Linea_De_Ropa) prod).setTalla(comboTalla.getSelectedItem().toString());
-					((Linea_De_Ropa) prod).setTejido(textTejido.getText());
-					((Linea_De_Ropa) prod).setColor(textColor.getText());
-					((Linea_De_Ropa) prod).setFabricante(textFabricante.getText());
-					bd.modificarProducto(prod);
-					JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
-				}
-			}
-
-			if (textMaterial.getText().equals("") || comboArticulable.getSelectedIndex() == -1
-					|| comboPegi.getSelectedIndex() == -1 || comboPilas.getSelectedIndex() == -1) {
+		boolean pre = bd.validarFloat(textPrecio.getText()), peso = bd.validarFloat(textPeso.getText());
+		boolean exis = bd.validarFloat(textNumEstancias.getText());
+		int pregunt;
+		if (comboCodigos.getSelectedIndex() > -1) {
+			if (textNumEstancias.getText().equals("") || textPrecio.getText().equals("")
+					|| textNombre.getText().equals("") || textDimensiones.getText().equals("")
+					|| textPeso.getText().equals("")) {
 				JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
-			} else {
-				prod = new Juguete();
-				prod.setNombre(textNombre.getText());
-				prod.setPrecio(Float.parseFloat(textPrecio.getText()));
-				prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
-				prod.setDimensiones(textDimensiones.getText());
-				prod.setPeso(Float.parseFloat(textPeso.getText()));
-				((Juguete) prod).setMaterial(textMaterial.getText());
-				((Juguete) prod).setArticulable(comboArticulable.getSelectedItem().toString());
 
-				((Juguete) prod).setEdadMinima(Integer.parseInt(comboPegi.getSelectedItem().toString()));
-				((Juguete) prod).setPilas(comboPilas.getSelectedItem().toString());
-				bd.modificarProducto(prod);
-				limpiarTodosLosCampos();
-				JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
-			}
-			if (textGenero.getText().equals("") || textIdioma.getText().equals("") || textIdioma.getText().equals("")
-					|| comboSubtitulado.getSelectedIndex() == -1 || textDuracion.getText().equals("")) {
-				JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 			} else {
-				prod = new Pelicula_Serie();
-				prod.setNombre(textNombre.getText());
-				prod.setPrecio(Float.parseFloat(textPrecio.getText()));
-				prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
-				prod.setDimensiones(textDimensiones.getText());
-				prod.setPeso(Float.parseFloat(textPeso.getText()));
-				((Pelicula_Serie) prod).setGenero(textGenero.getText());
-				((Pelicula_Serie) prod).setFechaLanzamiento(null);
-				((Pelicula_Serie) prod).setIdioma(textIdioma.getText());
-				if (comboSubtitulado.getSelectedItem().equals("SI")) {
-					((Pelicula_Serie) prod).setSubtitulado("SI");
+				if (pre != false) {
+					if (exis != false) {
+						if (peso != false) {
+							if (comboTipo.getSelectedItem().toString().equals("LINEA DE ROPA")) {
+								if (comboTalla.getSelectedIndex() == -1 || textTejido.getText().equals("")
+										|| textColor.getText().equals("") || textFabricante.getText().equals("")) {
+									JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
+								} else {
+									prod = new Linea_De_Ropa();
+									prod.setCodigoProducto(comboCodigos.getSelectedItem().toString());
+									prod.setNombre(textNombre.getText());
+									prod.setPrecio(Float.parseFloat(textPrecio.getText()));
+									prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
+									prod.setDimensiones(textDimensiones.getText());
+									prod.setPeso(Float.parseFloat(textPeso.getText()));
+									((Linea_De_Ropa) prod).setTalla(comboTalla.getSelectedItem().toString());
+									((Linea_De_Ropa) prod).setTejido(textTejido.getText());
+									((Linea_De_Ropa) prod).setColor(textColor.getText());
+									((Linea_De_Ropa) prod).setFabricante(textFabricante.getText());
+									bd.modificarProducto(prod);
+									JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
+									pregunt = JOptionPane.showOptionDialog(null,
+											"¿ESTAS SEGURO QUE DESEAS MODIFICAR EL PRODUCTO?  ", // ventana
+											"Pregunta", // titulo de la ventana
+											JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+											JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+											null, // null para icono por defecto.
+											new Object[] { "SI", "NO" }, // objeto para las opciones
+											// null para YES, NO y CANCEL
+											"SI");
+									if (pregunt == 0) {
+										bd.modificarProducto(prod);
+										limpiarTodosLosCampos();
+										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
+									}
+								}
+							} else if (comboTipo.getSelectedItem().toString().equals("JUGUETE")) {
+								if (textMaterial.getText().equals("") || comboArticulable.getSelectedIndex() == -1
+										|| comboPegi.getSelectedIndex() == -1 || comboPilas.getSelectedIndex() == -1) {
+									JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
+								} else {
+									prod = new Juguete();
+									prod.setCodigoProducto(comboCodigos.getSelectedItem().toString());
+									prod.setNombre(textNombre.getText());
+									prod.setPrecio(Float.parseFloat(textPrecio.getText()));
+									prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
+									prod.setDimensiones(textDimensiones.getText());
+									prod.setPeso(Float.parseFloat(textPeso.getText()));
+									((Juguete) prod).setMaterial(textMaterial.getText());
+									((Juguete) prod).setArticulable(comboArticulable.getSelectedItem().toString());
+
+									((Juguete) prod)
+											.setEdadMinima(Integer.parseInt(comboPegi.getSelectedItem().toString()));
+									((Juguete) prod).setPilas(comboPilas.getSelectedItem().toString());
+
+									pregunt = JOptionPane.showOptionDialog(null,
+											"¿ESTAS SEGURO QUE DESEAS MODIFICAR EL PRODUCTO?  ", // ventana
+											"Pregunta", // titulo de la ventana
+											JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+											JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+											null, // null para icono por defecto.
+											new Object[] { "SI", "NO" }, // objeto para las opciones
+											// null para YES, NO y CANCEL
+											"SI");
+									if (pregunt == 0) {
+										bd.modificarProducto(prod);
+										limpiarTodosLosCampos();
+										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
+									}
+
+								}
+							} else {
+								if (textGenero.getText().equals("") || fechaSelector.getDate() == null
+										|| textIdioma.getSelectedIndex() == -1
+										|| comboSubtitulado.getSelectedIndex() == -1
+										|| textDuracion.getText().equals("")) {
+									JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
+								} else {
+									prod = new Pelicula_Serie();
+									prod.setCodigoProducto(comboCodigos.getSelectedItem().toString());
+									prod.setNombre(textNombre.getText());
+									prod.setPrecio(Float.parseFloat(textPrecio.getText()));
+									prod.setNumExistencias(Integer.parseInt(textNumEstancias.getText()));
+									prod.setDimensiones(textDimensiones.getText());
+									prod.setPeso(Float.parseFloat(textPeso.getText()));
+									((Pelicula_Serie) prod).setGenero(textGenero.getText());
+									((Pelicula_Serie) prod)
+											.setFechaLanzamiento(fechaSelector.getDate().toLocaleString());
+									((Pelicula_Serie) prod).setIdioma(textIdioma.getSelectedItem().toString());
+									if (comboSubtitulado.getSelectedItem().equals("SI")) {
+										((Pelicula_Serie) prod).setSubtitulado("SI");
+									} else {
+										((Pelicula_Serie) prod).setSubtitulado("NO");
+									}
+									pregunt = JOptionPane.showOptionDialog(null,
+											"¿ESTAS SEGURO QUE DESEAS MODIFICAR EL PRODUCTO?  ", // ventana
+											"Pregunta", // titulo de la ventana
+											JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+											JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+											null, // null para icono por defecto.
+											new Object[] { "SI", "NO" }, // objeto para las opciones
+											// null para YES, NO y CANCEL
+											"SI");
+									if (pregunt == 0) {
+										bd.modificarProducto(prod);
+										limpiarTodosLosCampos();
+										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
+									}
+								}
+							}
+
+						} else {
+							JOptionPane.showMessageDialog(this, "EL PESO DEBE SER UN NUMERO!");
+						}
+					} else {
+						JOptionPane.showMessageDialog(this, "EL NUMERO DE EXISTENCIAS DEBE DE SER UN NUMERO!");
+					}
 				} else {
-					((Pelicula_Serie) prod).setSubtitulado("NO");
+					JOptionPane.showMessageDialog(this, "EL PRECIO DEBE SER UN NUMERO!");
 				}
 			}
 		} else {
-			JOptionPane.showMessageDialog(btnModificar, "NO HAS ELEGIDO NINGUN TIPO!");
+			JOptionPane.showMessageDialog(this, "TODAVIA NO HAS ELEGIDO NINGUN CODIGO!");
 		}
+
 	}
 
 	private Producto recogerProducto() {
 		DBImplementacion bd = new ControladorBdImplementacion();
 		Producto prod = null;
-		boolean h = false;
-		System.out.println(comboCodigos.getSelectedIndex());
-		if (comboCodigos.getSelectedIndex() > -1) {
 
+		if (comboCodigos.getSelectedIndex() > -1) {
 			prod = bd.recogerProductoId(comboCodigos.getSelectedItem().toString());
 			textNombre.setText(prod.getNombre());
 			textPrecio.setText(Float.toString(prod.getPrecio()));
 			textNumEstancias.setText(Integer.toString(prod.getNumExistencias()));
 			textPeso.setText(Float.toString(prod.getPeso()));
 			textDimensiones.setText(prod.getDimensiones());
-
 			if (prod.getCodigoProducto().charAt(0) == 'L') {
+				comboTipo.setSelectedItem("LINEA DE ROPA");
+				comboTipo.setEnabled(false);
 				prod = bd.recogerLineaRopaId(comboCodigos.getSelectedItem().toString());
 				comboTalla.setSelectedItem(((Linea_De_Ropa) prod).getTalla());
 				textTejido.setText(((Linea_De_Ropa) prod).getTejido());
@@ -655,23 +725,27 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				textFabricante.setText(((Linea_De_Ropa) prod).getFabricante());
 
 			} else if (prod.getCodigoProducto().charAt(0) == 'J') {
-
+				comboTipo.setSelectedItem("JUGUETE");
+				comboTipo.setEnabled(false);
 				prod = bd.recogerJugueteId(comboCodigos.getSelectedItem().toString());
 				textMaterial.setText(((Juguete) prod).getMaterial());
 				comboArticulable.setSelectedItem(((Juguete) prod).getArticulable());
-				comboPegi.setSelectedItem(((Juguete) prod).getEdadMinima());
+				comboPegi.setSelectedItem(Integer.toString(((Juguete) prod).getEdadMinima()));
 				comboPilas.setSelectedItem(((Juguete) prod).getPilas());
 
-			} else {
+			} else if (prod.getCodigoProducto().charAt(0) == 'P') {
+				comboTipo.setSelectedItem("PELICULA/SERIE");
+				comboTipo.setEnabled(false);
 				prod = bd.recogerPeliculaId(comboCodigos.getSelectedItem().toString());
 				textGenero.setText(((Pelicula_Serie) prod).getGenero());
-				textIdioma.setText(((Pelicula_Serie) prod).getIdioma());
+				textIdioma.setSelectedItem(((Pelicula_Serie) prod).getIdioma());
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
 			}
 
 		}
+
 		return prod;
 
 	}
@@ -765,8 +839,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
 								}
 							} else if (comboTipo.getSelectedItem().toString().equals("PELICULA/SERIE")) {
-								if (textGenero.getText().equals("") || textIdioma.getText().equals("")
-										|| textIdioma.getText().equals("") || comboSubtitulado.getSelectedIndex() == -1
+								if (textGenero.getText().equals("") || textIdioma.getSelectedIndex() == -1
+										|| fechaSelector.getDate().equals("")
+										|| comboSubtitulado.getSelectedIndex() == -1
 										|| textDuracion.getText().equals("")) {
 									JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 								} else {
@@ -778,8 +853,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									prod.setDimensiones(textDimensiones.getText());
 									prod.setPeso(Float.parseFloat(textPeso.getText()));
 									((Pelicula_Serie) prod).setGenero(textGenero.getText());
-									((Pelicula_Serie) prod).setFechaLanzamiento(null);
-									((Pelicula_Serie) prod).setIdioma(textIdioma.getText());
+									((Pelicula_Serie) prod)
+											.setFechaLanzamiento(fechaSelector.getDate().toLocaleString());
+									((Pelicula_Serie) prod).setIdioma(textIdioma.getSelectedItem().toString());
 									if (comboSubtitulado.getSelectedItem().equals("SI")) {
 										((Pelicula_Serie) prod).setSubtitulado("SI");
 									} else {
