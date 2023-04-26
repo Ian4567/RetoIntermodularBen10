@@ -7,11 +7,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -28,13 +32,22 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.JComboBox;
 import javax.swing.border.MatteBorder;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
@@ -56,6 +69,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private JButton btnLimpiar;
 	private JLocaleChooser textIdioma;
 	private JDateChooser fechaSelector;
+	private JTable tablaProducto;
+	private JTextField textField;
 
 	/**
 	 * Launch the application.
@@ -82,6 +97,51 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBackground(new Color(128, 255, 128));
+		menuBar.setBounds(0, 0, 255, 64);
+		contentPanel.add(menuBar);
+
+		JButton btnNewButton_1 = new JButton("");
+		btnNewButton_1.setBackground(new Color(128, 255, 128));
+		btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
+		menuBar.add(btnNewButton_1);
+
+		JMenu mnNewMenu = new JMenu("");
+		mnNewMenu.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\Ben_10_Omnitrix-removebg-preview.png"));
+		menuBar.add(mnNewMenu);
+
+		JMenuItem iniciar = new JMenuItem("Iniciar sesion");
+		iniciar.setForeground(Color.BLACK);
+		iniciar.setBackground(new Color(128, 255, 128));
+		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		mnNewMenu.add(iniciar);
+
+		JMenuItem mntmNewMenuItem = new JMenuItem("Registrarse");
+		mntmNewMenuItem.setBackground(new Color(128, 255, 128));
+		mntmNewMenuItem.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		mnNewMenu.add(mntmNewMenuItem);
+
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Borrar Cuenta");
+		mntmNewMenuItem_1.setBackground(new Color(128, 255, 128));
+		mntmNewMenuItem_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		mnNewMenu.add(mntmNewMenuItem_1);
+
+		JMenu mnNewMenu_1 = new JMenu("");
+		mnNewMenu_1.setBackground(new Color(128, 255, 128));
+		mnNewMenu_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\carrito-removebg-preview (1).png"));
+		menuBar.add(mnNewMenu_1);
+
+		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
+		texto.setBounds(610, 46, 661, 81);
+		contentPanel.add(texto);
+		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
+		texto.setForeground(new Color(128, 255, 128));
+		texto.setHorizontalAlignment(SwingConstants.CENTER);
+
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
+		mnNewMenu_1.add(mntmNewMenuItem_2);
+		
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
@@ -460,6 +520,26 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 	}
 
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
+
 	protected void tipoElegido() {
 		if (comboTipo.getSelectedIndex() > -1) {
 			lineaRopa();
@@ -741,6 +821,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				textIdioma.setSelectedItem(((Pelicula_Serie) prod).getIdioma());
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
+
+			} else {
+				// prod =bd.recogerPeliculasId(comboCodigos.getSelectedItem().toString());
 
 			}
 
