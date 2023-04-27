@@ -29,8 +29,10 @@ import clases.Producto;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class Finalizar_Compra extends JDialog {
+public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTable tablaProducto;
@@ -43,6 +45,7 @@ public class Finalizar_Compra extends JDialog {
 	private DBImplementacion db = new ControladorBdImplementacion();
 	private Cesta_Compra compra;
 	private JPanel main;
+	private JButton btnFinalizarCompra;
 
 	/**
 	 * Launch the application.
@@ -216,7 +219,8 @@ public class Finalizar_Compra extends JDialog {
 		lblDatosDeLa.setBounds(778, 467, 527, 58);
 		main.add(lblDatosDeLa);
 
-		JButton btnFinalizarCompra = new JButton("FINALIZAR COMPRA");
+		btnFinalizarCompra = new JButton("FINALIZAR COMPRA");
+
 		btnFinalizarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnFinalizarCompra.setBackground(new Color(102, 255, 153));
 		btnFinalizarCompra.setBounds(525, 897, 313, 50);
@@ -240,6 +244,7 @@ public class Finalizar_Compra extends JDialog {
 		main.add(scroll);
 
 		tablaProducto = this.cargarTabla(compra, db);
+		tablaProducto.setGridColor(Color.green);
 		scroll.setViewportView(tablaProducto);
 
 	}
@@ -266,6 +271,18 @@ public class Finalizar_Compra extends JDialog {
 
 		return new JTable(modelo);
 
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(btnFinalizarCompra)) {
+			comprar();
+		}
+
+	}
+
+	private void comprar() {
+		
 	}
 
 }

@@ -28,7 +28,13 @@ public interface DBImplementacion {
 
 	public void modificarProducto(Producto prod);
 
-	public Map<String, Producto> listarProducto();
 
 	public Map<String, Cesta_Compra> listarCompra();
+	
+	public Map<String, Producto> listarProdRopa();
+	
+	public Map<String, Producto> listarProdJuguete();
+	
+	public Map<String, Producto> listarProdPeli();
 }
+

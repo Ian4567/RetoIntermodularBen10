@@ -70,7 +70,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private JLocaleChooser textIdioma;
 	private JDateChooser fechaSelector;
 	private JTable tablaProducto;
-	private JTextField textField;
+	private JButton btnCasa;
+	private JMenuItem iniciar, registro, borrado;
 
 	/**
 	 * Launch the application.
@@ -102,34 +103,39 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		menuBar.setBounds(0, 0, 255, 64);
 		contentPanel.add(menuBar);
 
-		JButton btnNewButton_1 = new JButton("");
-		btnNewButton_1.setBackground(new Color(128, 255, 128));
-		btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
-		menuBar.add(btnNewButton_1);
+		btnCasa = new JButton("");
+		btnCasa.addActionListener(this);
+
+		btnCasa.setBackground(new Color(128, 255, 128));
+		btnCasa.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		menuBar.add(btnCasa);
 
 		JMenu mnNewMenu = new JMenu("");
-		mnNewMenu.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\Ben_10_Omnitrix-removebg-preview.png"));
+		mnNewMenu.setIcon(new ImageIcon("././imagenes/Ben_10_Omnitrix-removebg-preview.png"));
 		menuBar.add(mnNewMenu);
 
-		JMenuItem iniciar = new JMenuItem("Iniciar sesion");
+		iniciar = new JMenuItem("Iniciar sesion");
 		iniciar.setForeground(Color.BLACK);
 		iniciar.setBackground(new Color(128, 255, 128));
 		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar.addActionListener(this);
 		mnNewMenu.add(iniciar);
 
-		JMenuItem mntmNewMenuItem = new JMenuItem("Registrarse");
-		mntmNewMenuItem.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem);
+		registro = new JMenuItem("Registrarse");
+		registro.setBackground(new Color(128, 255, 128));
+		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro.addActionListener(this);
+		mnNewMenu.add(registro);
 
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Borrar Cuenta");
-		mntmNewMenuItem_1.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem_1);
+		borrado = new JMenuItem("Borrar Cuenta");
+		borrado.setBackground(new Color(128, 255, 128));
+		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		borrado.addActionListener(this);
+		mnNewMenu.add(borrado);
 
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
-		mnNewMenu_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\carrito-removebg-preview (1).png"));
+		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
 
 		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
@@ -141,7 +147,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
 		mnNewMenu_1.add(mntmNewMenuItem_2);
-		
+
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
@@ -321,12 +327,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		lblArticulable.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblArticulable.setBounds(707, 676, 201, 68);
 		contentPanel.add(lblArticulable);
-
-		JLabel lblPegi = new JLabel("Pegi");
-		lblPegi.setForeground(Color.WHITE);
-		lblPegi.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblPegi.setBounds(705, 755, 163, 68);
-		contentPanel.add(lblPegi);
 
 		JLabel lblPilas = new JLabel("Pilas");
 		lblPilas.setForeground(Color.WHITE);
@@ -517,6 +517,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		textIdioma = new JLocaleChooser();
 		textIdioma.setBounds(1576, 768, 171, 20);
 		contentPanel.add(textIdioma);
+		
+		JLabel lblPegi = new JLabel("Pegi");
+		lblPegi.setForeground(Color.WHITE);
+		lblPegi.setFont(new Font("Jokerman", Font.PLAIN, 25));
+		lblPegi.setBounds(707, 768, 201, 68);
+		contentPanel.add(lblPegi);
 
 	}
 
@@ -631,6 +637,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnAñadir)) {
 			añadirProducto();
+			
 		} else if (e.getSource().equals(btnModificar)) {
 			modificarProducto();
 		} else if (e.getSource().equals(btnBorrar)) {
@@ -641,6 +648,24 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			comboCodigos.setSelectedIndex(-1);
 			limpiarCampos();
 			limpiarTodosLosCampos();
+		} else if (e.getSource().equals(btnCasa)) {
+			this.dispose();
+			Ventana_Principal prin = new Ventana_Principal(null, null);
+			prin.setVisible(true);
+		} else if (e.getSource().equals(iniciar)) {
+			this.dispose();
+			Inicio_Sesion inicio = new Inicio_Sesion();
+			inicio.setVisible(true);
+
+		} else if (e.getSource().equals(registro)) {
+			this.dispose();
+			Registro reg = new Registro();
+			reg.setVisible(true);
+		} else if (e.getSource().equals(borrado)) {
+			this.dispose();
+			Inicio_Sesion inicio = new Inicio_Sesion();
+			inicio.setVisible(true);
+
 		}
 	}
 
@@ -822,10 +847,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
-			} else {
-				// prod =bd.recogerPeliculasId(comboCodigos.getSelectedItem().toString());
-
-			}
+			} 
 
 		}
 
@@ -987,7 +1009,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	public void cargarComboCodigo() {
-
 		DBImplementacion db = new ControladorBdImplementacion();
 		ArrayList<Producto> codProd = db.recogerProductos();
 		comboCodigos.removeAllItems();
