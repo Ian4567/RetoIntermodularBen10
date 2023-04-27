@@ -30,6 +30,7 @@ import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.awt.event.ActionEvent;
 
 public class Finalizar_Compra extends JDialog implements ActionListener {
@@ -282,7 +283,9 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	}
 
 	private void comprar() {
-		
+		Cesta_Compra compra;
+		compra = new Cesta_Compra();
+		compra.setFecha_fin(LocalDate.now());
 	}
 
 }
