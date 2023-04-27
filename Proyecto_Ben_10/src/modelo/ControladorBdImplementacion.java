@@ -25,7 +25,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private PreparedStatement stmt;
 
 	// sentencia SQL
-	
+
 	private final String INSERT_PERSONA = "INSERT INTO persona (codigo_persona, nombre, email, num_telefono, contraseña ) VALUES ( ?, ?, ?, ?,?)";
 	private final String INSERT_USUARIO = "INSERT INTO usuario (codigo_persona, numero_tarjeta, nombre, apellido, fecha_nacimiento, direccion) VALUES ( ?, ?, ?, ?, ?,?)";
 	private final String INSERT_TARJETA = "INSERT INTO tarjeta (numero_tarjeta, cvv, saldo) VALUES ( ?, ?, ?)";
@@ -358,62 +358,91 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 
 	}
+
 	public void insertarPersona(Persona pers) {
 		this.openConnection();
-		
+
 		try {
 			stmt = con.prepareStatement(INSERT_PERSONA);
-		
-			
+
 			stmt.setString(1, pers.getCodigoPersona());
 			stmt.setString(2, pers.getNombre());
 			stmt.setString(3, pers.getEmail());
 			stmt.setInt(4, pers.getNumTelefono());
 			stmt.setString(5, pers.getContrasea());
-			
-			
-			
+
 			stmt.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			try {
-				this.closeConnection();
-			} catch (SQLException e) {
-				// TODO Auto- generated catch block
-				e.printStackTrace();
-			}
-		
-		
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			// TODO Auto- generated catch block
+			e.printStackTrace();
+		}
+
 	}
+
 	public void registro(Usuario us, Tarjeta tar) {
 		if (insertarUsuario(us)) {
 			insertarTarjeta(us, tar);
 		}
-		
+
 	}
-	private boolean insertarUsuario(Usuario us) {
+
+	private void insertarTarjeta(Usuario us, Tarjeta tar) {
 		this.openConnection();
-		boolean correcto = false;
-		
+
 		try {
-			stmt = con.prepareStatement(INSERT_USUARIO);
-			
-			stmt.setString(1, us.getCodigoPersona());
-			stmt.setString(2, us.getNumeroT);
-			if(stmt.executeUpdate()!=0) {
-				correcto = true;	
-			}else {
-				
-			}
-				
+			stmt = con.prepareStatement(INSERT_TARJETA);
+
+			stmt.setString(1, tar.getNumeroTarjeta());
+			stmt.setInt(2, tar.getCVV());
+			stmt.setFloat(3, tar.getSaldo());
+
+			stmt.executeUpdate();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			// TODO Auto- generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private boolean insertarUsuario(Usuario us) {
+		this.openConnection();
+		boolean correcto = false;
+
+		try {
+			stmt = con.prepareStatement(INSERT_USUARIO);
+
+			stmt.setString(1, us.getCodigoPersona());
+			stmt.setString(2, us.getNumeroTarjeta());
+			stmt.setString(3, us.getNombrePersonal());
+			stmt.setString(4, us.getApellido());
+			stmt.setDate(5, Date.valueOf(us.getFecha_nacimiento()));
+			stmt.setString(6, us.getDireccion());
+
+			if (stmt.executeUpdate() != 0) {
+				correcto = true;
+			} else {
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return correcto;
 	}
 

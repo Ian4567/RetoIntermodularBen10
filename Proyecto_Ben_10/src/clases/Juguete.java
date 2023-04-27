@@ -3,9 +3,9 @@ package clases;
 public class Juguete extends Producto {
 	// atributos
 	private String material;
-	private boolean articulable;
+	private String articulable;
 	private int edadMinima;
-	private boolean pilas;
+	private String pilas;
 	private int pegi;
 
 	// constructor
@@ -22,12 +22,12 @@ public class Juguete extends Producto {
 	public void setMaterial(String material) {
 		this.material = material;
 	}
-
-	public boolean isArticulable() {
+	
+	public String getArticulable() {
 		return articulable;
 	}
 
-	public void setArticulable(boolean articulable) {
+	public void setArticulable(String articulable) {
 		this.articulable = articulable;
 	}
 
@@ -38,12 +38,12 @@ public class Juguete extends Producto {
 	public void setEdadMinima(int edadMinima) {
 		this.edadMinima = edadMinima;
 	}
-
-	public boolean isPilas() {
+	
+	public String getPilas() {
 		return pilas;
 	}
 
-	public void setPilas(boolean pilas) {
+	public void setPilas(String pilas) {
 		this.pilas = pilas;
 	}
 

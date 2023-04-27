@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class Usuario extends Persona {
 	// atributos
 	private String nombrePersonal;
+	private String numeroTarjeta;
 	private String apellido;
 	private LocalDate fecha_nacimiento;
 	private String direccion;
@@ -22,6 +23,14 @@ public class Usuario extends Persona {
 
 	public void setNombrePersonal(String nombrePersonal) {
 		this.nombrePersonal = nombrePersonal;
+	}
+
+	public String getNumeroTarjeta() {
+		return numeroTarjeta;
+	}
+
+	public void setNumeroTarjeta(String numeroTarjeta) {
+		this.numeroTarjeta = numeroTarjeta;
 	}
 
 	public String getApellido() {

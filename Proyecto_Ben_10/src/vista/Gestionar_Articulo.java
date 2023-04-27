@@ -19,7 +19,7 @@ import clases.Juguete;
 import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
 import clases.Producto;
-import controlador.ControladorBdImplementacion;
+import modelo.ControladorBdImplementacion;
 
 import javax.swing.border.EtchedBorder;
 import javax.swing.UIManager;
@@ -43,7 +43,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 	private JTextField textNumEstancias, textPrecio, textNombre, textDimensiones, textPeso, textColor, textFabricante,
 			textIdioma, textDuracion, textMaterial, textTejido, textGenero;
 	private JComboBox comboArticulable, comboPilas, comboSubtitulado, comboTalla, comboTipo, comboPegi;
-	private JButton btnAñadir, btnModificar, btnBorrar;
+	private JButton btnA�adir, btnModificar, btnBorrar;
 	private JLabel lblLinea;
 	private JLabel lblJuguete;
 	private JLabel lblSeriePeli;
@@ -391,13 +391,13 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 		textTejido.setBounds(279, 711, 174, 18);
 		contentPanel.add(textTejido);
 
-		btnAñadir = new JButton("AÑADIR ");
-		btnAñadir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btnAñadir.setBackground(new Color(102, 255, 153));
-		btnAñadir.setFont(new Font("Jokerman", Font.BOLD, 20));
-		btnAñadir.setBounds(163, 225, 200, 50);
-		btnAñadir.addActionListener(this);
-		contentPanel.add(btnAñadir);
+		btnA�adir = new JButton("AÑADIR ");
+		btnA�adir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnA�adir.setBackground(new Color(102, 255, 153));
+		btnA�adir.setFont(new Font("Jokerman", Font.BOLD, 20));
+		btnA�adir.setBounds(163, 225, 200, 50);
+		btnA�adir.addActionListener(this);
+		contentPanel.add(btnA�adir);
 
 		btnModificar = new JButton("MODIFICAR");
 		btnModificar.setFont(new Font("Jokerman", Font.BOLD, 20));
@@ -509,8 +509,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(btnAñadir)) {
-		añadirProducto();
+		if (e.getSource().equals(btnA�adir)) {
+		a�adirProducto();
 		} else if (e.getSource().equals(btnModificar)) {
 
 		} else if (e.getSource().equals(btnBorrar)) {
@@ -518,7 +518,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 		}
 	}
 
-	private void añadirProducto() {
+	private void a�adirProducto() {
 		Producto prod;
 		ControladorBdImplementacion bd = new ControladorBdImplementacion();
 
@@ -548,9 +548,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener{
 				prod.setPeso(Float.parseFloat(textPeso.getText()));
 				((Juguete) prod).setMaterial(textMaterial.getText());
 				if (comboArticulable.getSelectedItem().equals("SI")) {
-					((Juguete) prod).setArticulable(true);
+			//		((Juguete) prod).setArticulable(true);
 				} else {
-					((Juguete) prod).setArticulable(false);
+			//		((Juguete) prod).setArticulable(false);
 				}
 
 				((Juguete) prod).setPegi(Integer.parseInt(comboPegi.getSelectedItem().toString()));

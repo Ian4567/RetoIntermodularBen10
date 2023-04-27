@@ -3,6 +3,8 @@ package modelo;
 import java.util.ArrayList;
 
 import clases.Producto;
+import clases.Tarjeta;
+import clases.Usuario;
 
 public interface DBImplementacion {
 
@@ -21,4 +23,6 @@ public interface DBImplementacion {
 	public Producto recogerLineaRopaId(String codigo_producto);
 	
 	public Producto recogerJugueteId(String codigo_producto);
+	
+	public void registro(Usuario us, Tarjeta tar);
 }
