@@ -35,6 +35,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
+	private final String SELECT_PRODUCTO_LINEA = "SELECT P.*,L.* FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.CODIGO_PRODUCTO = L.CODIGO_PRODUCTO";
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -126,10 +127,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	}
 
 	public boolean validarFloat(String cadena) {
-		Float num;
 		try {
-			// SI ES UN INT
-			num = Float.parseFloat(cadena);
+			Float.parseFloat(cadena);
 			return true;
 
 		} catch (Exception e) {
@@ -139,10 +138,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	}
 
 	public boolean validarInt(String cadena) {
-		int num;
 		try {
-			// SI ES UN INT
-			num = Integer.parseInt(cadena);
+			Integer.parseInt(cadena);
 			return true;
 
 		} catch (Exception e) {
@@ -363,9 +360,9 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		this.openConnection();
 
 		try {
-			stmt = con.prepareStatement(SELECT_PRODUCTOS);
-
-			while (stmt.executeUpdate() == 1) {
+			stmt = con.prepareStatement(SELECT_PRODUCTO_LINEA);
+			rs = stmt.executeQuery();
+			while (rs.next()) {
 				prod = new Producto();
 				prod.setCodigoProducto(rs.getString("codigo_producto"));
 				prod.setNombre(rs.getString("nombre"));
@@ -373,32 +370,14 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setPeso(rs.getFloat("peso"));
 				prod.setPrecio(rs.getFloat("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
-
 				if (prod instanceof Linea_De_Ropa) {
-					stmt = con.prepareStatement(SELECT_LINEA_ROPA);
-
 					prod = new Linea_De_Ropa();
 					((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
 					((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
 					((Linea_De_Ropa) prod).setColor(rs.getString("color"));
 					((Linea_De_Ropa) prod).setFabricante(rs.getString("fabricante"));
-					stmt.executeUpdate();
-				} else if (prod instanceof Juguete) {
-					stmt = con.prepareStatement(SELECT_JUGUETE);
-
-					prod = new Juguete();
-					((Juguete) prod).setMaterial(rs.getString("material"));
-					((Juguete) prod).setArticulable(rs.getString("articulable"));
-					((Juguete) prod).setEdadMinima(rs.getInt("edad_minima"));
-					((Juguete) prod).setPilas(rs.getString("pilas"));
-					stmt.executeUpdate();
-				} else {
-					stmt = con.prepareStatement(SELECT_PELICULA);
-
-					prod = new Pelicula_Serie();
-					((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
-					stmt.executeUpdate();
 				}
+
 				listaProductos.put(prod.getCodigoProducto(), prod);
 			}
 

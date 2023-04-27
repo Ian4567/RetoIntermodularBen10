@@ -138,7 +138,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setBounds(368, 344, 1037, 149);
 		main.add(linea);
 		linea.setViewportView(tablaProducto);
-
+		
 		JPanel usuario = new JPanel();
 		usuario.setForeground(new Color(128, 255, 128));
 		usuario.setBackground(Color.DARK_GRAY);
@@ -238,7 +238,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		usuario.add(lblComprasRealizadas);
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
-
+		
 		this.presentarTablaRopa(producto, info);
 
 	}
@@ -281,15 +281,20 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	private JTable cargarTablaRopa(Producto producto, DBImplementacion info) {
 		info = new ControladorBdImplementacion();
-		String[] columnas = { "Codigo_Producto", "NOMBRE", "Precio", "Stock", "Dimensiones", "talla", "Tejido", "Color",
-				"Fabricante" };
-		String[] registros = new String[9];
 
-		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
-		modelo.setRowCount(0);
+		DefaultTableModel modelo = new DefaultTableModel();
+		modelo.addColumn("Codigo_Producto");
+		modelo.addColumn("Nombre");
+		modelo.addColumn("Precio");
+		modelo.addColumn("Stock");
+		modelo.addColumn("Dimensiones");
+		modelo.addColumn("Talla");
+		modelo.addColumn("Tejido");
+		modelo.addColumn("Color");
+		modelo.addColumn("Fabricante");
 
 		productos = info.listarProducto();
-
+		String[] registros = new String[9];
 		for (Producto prod : productos.values()) {
 			if (prod instanceof Linea_De_Ropa) {
 				registros[0] = prod.getCodigoProducto();
