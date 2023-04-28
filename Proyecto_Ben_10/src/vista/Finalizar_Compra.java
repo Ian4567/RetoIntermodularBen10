@@ -47,6 +47,12 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	private Cesta_Compra compra;
 	private JPanel main;
 	private JButton btnFinalizarCompra;
+	private JButton btnCancelarCompra;
+	private JButton btnCasa;
+	private JMenuItem iniciar;
+	private JMenuItem registro;
+	private JMenuItem borrarCuenta;
+	private JMenuItem btnCesta;
 
 	/**
 	 * Launch the application.
@@ -100,38 +106,41 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		menuBar.setBounds(0, 0, 255, 64);
 		main.add(menuBar);
 
-		JButton btnNewButton_1 = new JButton("");
-		btnNewButton_1.setBackground(new Color(128, 255, 128));
-		btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
-		menuBar.add(btnNewButton_1);
+		btnCasa = new JButton("");
+		btnCasa.setBackground(new Color(128, 255, 128));
+		btnCasa.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
+		menuBar.add(btnCasa);
 
 		JMenu mnNewMenu = new JMenu("");
 		mnNewMenu.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\Ben_10_Omnitrix-removebg-preview.png"));
 		menuBar.add(mnNewMenu);
 
-		JMenuItem iniciar = new JMenuItem("Iniciar sesion");
+		iniciar = new JMenuItem("Iniciar sesion");
 		iniciar.setForeground(Color.BLACK);
 		iniciar.setBackground(new Color(128, 255, 128));
 		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar.addActionListener(this);
 		mnNewMenu.add(iniciar);
 
-		JMenuItem mntmNewMenuItem = new JMenuItem("Registrarse");
-		mntmNewMenuItem.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem);
+		registro = new JMenuItem("Registrarse");
+		registro.setBackground(new Color(128, 255, 128));
+		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro.addActionListener(this);
+		mnNewMenu.add(registro);
 
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Borrar Cuenta");
-		mntmNewMenuItem_1.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem_1);
+		borrarCuenta = new JMenuItem("Borrar Cuenta");
+		borrarCuenta.setBackground(new Color(128, 255, 128));
+		borrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		borrarCuenta.addActionListener(this);
+		mnNewMenu.add(borrarCuenta);
 
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
 		mnNewMenu_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
 
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
-		mnNewMenu_1.add(mntmNewMenuItem_2);
+		btnCesta = new JMenuItem("New menu item");
+		mnNewMenu_1.add(btnCesta);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		textEmail = new JTextField();
@@ -225,12 +234,14 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		btnFinalizarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnFinalizarCompra.setBackground(new Color(102, 255, 153));
 		btnFinalizarCompra.setBounds(525, 897, 313, 50);
+		btnFinalizarCompra.addActionListener(this);
 		main.add(btnFinalizarCompra);
 
-		JButton btnCancelarCompra = new JButton("CANCELAR COMPRA");
+		btnCancelarCompra = new JButton("CANCELAR COMPRA");
 		btnCancelarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnCancelarCompra.setBackground(new Color(102, 255, 153));
 		btnCancelarCompra.setBounds(1109, 897, 339, 50);
+		btnCancelarCompra.addActionListener(this);
 		main.add(btnCancelarCompra);
 
 		this.presentarTabla(compra, db, main);
@@ -278,6 +289,29 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnFinalizarCompra)) {
 			comprar();
+		} else if (e.getSource().equals(btnCancelarCompra)) {
+
+		} else if (e.getSource().equals(btnCasa)) {
+			this.dispose();
+			Ventana_Principal prin = new Ventana_Principal(null, null);
+			prin.setVisible(true);
+		} else if (e.getSource().equals(iniciar)) {
+			this.dispose();
+			Inicio_Sesion inicio = new Inicio_Sesion();
+			inicio.setVisible(true);
+
+		} else if (e.getSource().equals(registro)) {
+			this.dispose();
+			Registro reg = new Registro();
+			reg.setVisible(true);
+		} else if (e.getSource().equals(borrarCuenta)) {
+			this.dispose();
+			Ventana_Principal ven = new Ventana_Principal(null, null);
+
+		} else if (e.getSource().equals(btnCesta)) {
+			this.dispose();
+			Finalizar_Compra venCesta = new Finalizar_Compra();
+			venCesta.setVisible(true);
 		}
 
 	}

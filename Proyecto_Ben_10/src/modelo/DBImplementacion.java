@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import clases.Cesta_Compra;
+import clases.Persona;
 import clases.Producto;
+import clases.Tarjeta;
 
 public interface DBImplementacion {
 
@@ -36,5 +38,11 @@ public interface DBImplementacion {
 	public Map<String, Producto> listarProdJuguete();
 	
 	public Map<String, Producto> listarProdPeli();
+	
+	public void insertarTarjeta(Tarjeta tar);
+	
+	public int numeroPersona(Persona pers);
+	
+	public void insertarPersona(Persona pers);
 }
 

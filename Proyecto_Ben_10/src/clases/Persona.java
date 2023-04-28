@@ -6,6 +6,7 @@ public class Persona {
 	private String nombre;
 	private String email;
 	private int numTelefono;
+	private String contrasena;
 
 	// constructor
 	public Persona() {
@@ -44,5 +45,15 @@ public class Persona {
 	public void setNumTelefono(int numTelefono) {
 		this.numTelefono = numTelefono;
 	}
+
+	public String getContrasena() {
+		return contrasena;
+	}
+
+	public void setContrasena(String contrasena) {
+		this.contrasena = contrasena;
+	}
+	
+	
 
 }

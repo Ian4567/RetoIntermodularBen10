@@ -17,7 +17,10 @@ import clases.Cesta_Compra;
 import clases.Juguete;
 import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
+import clases.Persona;
 import clases.Producto;
+import clases.Tarjeta;
+import clases.Usuario;
 
 public class ControladorBdImplementacion implements DBImplementacion {
 
@@ -43,7 +46,11 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
 	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
 	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
-	private final String SUMA_PRECIO ="select sum(peso) from realiza r join usuario u on r.CODIGO_PERSONA=u.CODIGO_PERSONA JOIN producto P ON R.CODIGO_PRODUCTO=P.CODIGO_PRODUCTO WHERE U.CODIGO_PERSONA = P001";
+	private final String SUMA_PRECIO = "select sum(peso) from realiza r join usuario u on r.CODIGO_PERSONA=u.CODIGO_PERSONA JOIN producto P ON R.CODIGO_PRODUCTO=P.CODIGO_PRODUCTO WHERE U.CODIGO_PERSONA = P001";
+	private final String INSERT_PERSONA = "INSERT INTO persona (codigo_persona, nombre, email, num_telefono, contraseña ) VALUES ( ?, ?, ?, ?,?)";
+	private final String INSERT_USUARIO = "INSERT INTO usuario (codigo_persona_usuario, numero_tarjeta, nombre, apellido, fecha_nacimiento, direccion) VALUES ( ?, ?, ?, ?, ?,?)";
+	private final String INSERT_TARJETA = "INSERT INTO tarjeta (numero_tarjeta, cvv) VALUES ( ?, ?)";
+	private final String SELECT_EN_CESTA = "SELECT  P.CODIGO_PRODUCTO, CC.NUMREFERENCIA, PRECIO_TOTAL, PESO_TOTAL, FECHA_INICIO, CANTIDAD FROM REALIZA R JOIN PRODUCTO P ON P.CODIGO_PRODUCTO=R.CODIGO_PRODUCTO JOIN USUARIO U ON R.CODIGO_PERSONA= U.CODIGO_PERSONA_USUARIO JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA WHERE U.CODIGO_PERSONA_USUARIO=U001 AND CC.FECHA_FIN IS NULL";
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -477,6 +484,40 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 		return listaCompra;
 	}
+	
+	public Producto recogerCesta(String codigo_producto) {
+		this.openConnection();
+		Producto prod = null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_EN_CESTA);
+			stmt.setString(1, codigo_producto);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Producto();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prod;
+
+	}
+
 
 	public Map<String, Producto> listarProdRopa() {
 		ResultSet rs = null;
@@ -627,6 +668,91 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			}
 		}
 		return listaProd;
+	}
+
+	public void insertarPersona(Persona pers) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_PERSONA);
+
+			stmt.setString(1, pers.getCodigoPersona());
+			stmt.setString(2, pers.getNombre());
+			stmt.setString(3, pers.getEmail());
+			stmt.setInt(4, pers.getNumTelefono());
+			stmt.setString(5, pers.getContrasena());
+			if (stmt.executeUpdate() == 1) {
+				if (pers instanceof Usuario) {
+					stmt = con.prepareStatement(INSERT_USUARIO);
+
+					stmt.setString(1, pers.getCodigoPersona());
+					stmt.setString(2, ((Usuario) pers).getNumeroTarjeta());
+					stmt.setString(3, ((Usuario) pers).getNombrePersonal());
+					stmt.setString(4, ((Usuario) pers).getApellido());
+					stmt.setString(5, (((Usuario) pers).getFecha_nacimiento()));
+					stmt.setString(6, ((Usuario) pers).getDireccion());
+
+					stmt.executeUpdate();
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			// TODO Auto- generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void insertarTarjeta(Tarjeta tar) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_TARJETA);
+
+			stmt.setString(1, tar.getNumeroTarjeta());
+			stmt.setInt(2, tar.getCVV());
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			// TODO Auto- generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public int numeroPersona(Persona pers) {
+		ResultSet rs = null;
+		String numPersona = "SELECT COUNT(codigo_persona)FROM persona";
+		int n = 0;
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(numPersona);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				// Si hay resultados obtengo el valor.
+				n = rs.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return n;
+
 	}
 
 }
