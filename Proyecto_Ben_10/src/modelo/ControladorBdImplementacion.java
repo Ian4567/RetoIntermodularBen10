@@ -50,7 +50,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String INSERT_PERSONA = "INSERT INTO persona (codigo_persona, nombre, email, num_telefono, contraseña ) VALUES ( ?, ?, ?, ?,?)";
 	private final String INSERT_USUARIO = "INSERT INTO usuario (codigo_persona_usuario, numero_tarjeta, nombre, apellido, fecha_nacimiento, direccion) VALUES ( ?, ?, ?, ?, ?,?)";
 	private final String INSERT_TARJETA = "INSERT INTO tarjeta (numero_tarjeta, cvv) VALUES ( ?, ?)";
-	private final String SELECT_EN_CESTA = "SELECT  P.CODIGO_PRODUCTO, CC.NUMREFERENCIA, PRECIO_TOTAL, PESO_TOTAL, FECHA_INICIO, CANTIDAD FROM REALIZA R JOIN PRODUCTO P ON P.CODIGO_PRODUCTO=R.CODIGO_PRODUCTO JOIN USUARIO U ON R.CODIGO_PERSONA= U.CODIGO_PERSONA_USUARIO JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA WHERE U.CODIGO_PERSONA_USUARIO=U001 AND CC.FECHA_FIN IS NULL";
+	private final String SELECT_EN_CESTA = "SELECT P.CODIGO_PRODUCTO,P.NOMBRE,PESO, PRECIO, CC.NUMREFERENCIA,  FECHA_INICIO, CANTIDAD FROM REALIZA R JOIN PRODUCTO P ON P.CODIGO_PRODUCTO=R.CODIGO_PRODUCTO JOIN USUARIO U ON R.CODIGO_PERSONA= U.CODIGO_PERSONA_USUARIO JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA WHERE U.CODIGO_PERSONA_USUARIO=? AND CC.FECHA_FIN IS NULL AND R.NUMREFERENCIA=?";
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -484,25 +484,23 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 		return listaCompra;
 	}
-	
-	public Producto recogerCesta(String codigo_producto) {
+
+	public Producto recogerCesta(String codigo_persona, String numreferencia) {
 		this.openConnection();
-		Producto prod = null;
+		Persona per = null;
+		Producto prod =null;
+		Cesta_Compra cesta = null;
 		ResultSet rs;
 
 		try {
 			stmt = con.prepareStatement(SELECT_EN_CESTA);
-			stmt.setString(1, codigo_producto);
+			stmt.setString(1, codigo_persona);
+			stmt.setString(2, numreferencia);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
 				prod = new Producto();
 				prod.setCodigoProducto(rs.getString("codigo_producto"));
-				prod.setNombre(rs.getString("nombre"));
-				prod.setPrecio(rs.getFloat("precio"));
-				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
-				prod.setDimensiones(rs.getString("dimensiones"));
 
 			}
 		} catch (SQLException e) {
@@ -517,7 +515,6 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		return prod;
 
 	}
-
 
 	public Map<String, Producto> listarProdRopa() {
 		ResultSet rs = null;
