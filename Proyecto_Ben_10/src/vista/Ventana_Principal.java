@@ -51,7 +51,7 @@ import javax.swing.JComboBox;
 public class Ventana_Principal extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-
+///jmdk,reo,e
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField, textField_1, textField_2, textField_3, textField_4;
 	private JTable tablaProducto;
