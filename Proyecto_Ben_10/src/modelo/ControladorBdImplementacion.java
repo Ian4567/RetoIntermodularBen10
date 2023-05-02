@@ -13,10 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import clases.Cesta_Compra;
 import clases.Juguete;
 import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
+import clases.Persona;
 import clases.Producto;
+import clases.Usuario;
 
 public class ControladorBdImplementacion implements DBImplementacion {
 
@@ -24,7 +27,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private PreparedStatement stmt;
 
 	// sentencia SQL
-
+	private final String ACTUALIZAR_LINEA_ROPA = "UPDATE linea_de_ropa SET talla=?, tejido=?, color=?, fabricante=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_JUGUETE = "UPDATE juguete SET material=?, articulable=?, edad_minima=?, pilas=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_PELICULA = "UPDATE pelicula_serie SET genero=?, fecha_de_lanzamiento=?, idioma=?, subtitulado=?, duracion=? WHERE codigo_producto=?";
+	private final String ACTUALIZAR_PRODUCTO = "UPDATE producto SET nombre=?, precio=?, peso=?, num_existencias=?, dimensiones=? WHERE codigo_producto=?";
 	private final String ALTA_PRODUCTO = "INSERT INTO PRODUCTO (codigo_producto, nombre, precio, peso, num_existencias, dimensiones) VALUES (?,?,?,?,?,?)";
 	private final String ALTA_LINEA_ROPA = "INSERT INTO LINEA_DE_ROPA (codigo_producto, talla, tejido, color, fabricante) VALUES (?,?,?,?,?)";
 	private final String ALTA_JUGUETE = "INSERT INTO JUGUETE (codigo_producto, material, articulable, edad_minima, pilas) VALUES (?,?,?,?,?)";
@@ -35,7 +41,13 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
-	private final String SELECT_PRODUCTO_LINEA = "SELECT P.*,L.* FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.CODIGO_PRODUCTO = L.CODIGO_PRODUCTO";
+	private final String SELECT_COMPRA = "SELECT * FROM CESTA_COMPRA where fecha_fin is not null";
+	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
+	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
+	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
+	private final String SUMA_PRECIO = "select sum(peso) from realiza r join usuario u on r.CODIGO_PERSONA=u.CODIGO_PERSONA JOIN producto P ON R.CODIGO_PRODUCTO=P.CODIGO_PRODUCTO WHERE U.CODIGO_PERSONA = P001";
+	private final String SELECT_USUARIO_PERSONA = "select u.nombre, p.nombre,apellido, direccion,num_telefono from usuario u join persona p on u.codigo_persona = p.codigo_persona";
+	
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -112,9 +124,9 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 					stmt.setString(1, prod.getCodigoProducto());
 					stmt.setString(2, ((Pelicula_Serie) prod).getGenero());
-					stmt.setDate(3, Date.valueOf(((Pelicula_Serie) prod).getFechaLanzamiento()));
+					stmt.setString(3, ((Pelicula_Serie) prod).getFechaLanzamiento());
 					stmt.setString(4, ((Pelicula_Serie) prod).getIdioma());
-					stmt.setBoolean(5, ((Pelicula_Serie) prod).isSubtitulado());
+					stmt.setString(5, ((Pelicula_Serie) prod).getSubtitulado());
 					stmt.setString(6, ((Pelicula_Serie) prod).getDuracion());
 					stmt.executeUpdate();
 				}
@@ -127,8 +139,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	}
 
 	public boolean validarFloat(String cadena) {
+		Float num;
 		try {
-			Float.parseFloat(cadena);
+			// SI ES UN INT
+			num = Float.parseFloat(cadena);
 			return true;
 
 		} catch (Exception e) {
@@ -138,8 +152,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	}
 
 	public boolean validarInt(String cadena) {
+		int num;
 		try {
-			Integer.parseInt(cadena);
+			// SI ES UN INT
+			num = Integer.parseInt(cadena);
 			return true;
 
 		} catch (Exception e) {
@@ -310,6 +326,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			while (rs.next()) {
 				prod = new Pelicula_Serie();
 				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
+				((Pelicula_Serie) prod).setFechaLanzamiento(rs.getString("fecha_de_lanzamiento"));
+				((Pelicula_Serie) prod).setIdioma(rs.getString("idioma"));
+				((Pelicula_Serie) prod).setSubtitulado(rs.getString("subtitulado"));
+				((Pelicula_Serie) prod).setDuracion(rs.getString("duracion"));
 
 			}
 		} catch (SQLException e) {
@@ -352,38 +372,99 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 	}
 
-	public Map<String, Producto> listarProducto() {
+	public void modificarProducto(Producto prod) {
+
 		ResultSet rs = null;
-		Producto prod;
-		Map<String, Producto> listaProductos = new HashMap<>();
+
+		// Abrimos la conexion con la base de datos
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(ACTUALIZAR_PRODUCTO);
+
+			stmt.setString(1, prod.getNombre());
+			stmt.setFloat(2, prod.getPrecio());
+			stmt.setFloat(4, prod.getPeso());
+			stmt.setInt(3, prod.getNumExistencias());
+			stmt.setFloat(5, Float.parseFloat(prod.getDimensiones()));
+
+			stmt.setString(6, prod.getCodigoProducto());
+
+			if (stmt.executeUpdate() == 1) {
+				if (prod instanceof Linea_De_Ropa) {
+
+					stmt = con.prepareStatement(ACTUALIZAR_LINEA_ROPA);
+					stmt.setString(1, prod.getCodigoProducto());
+					stmt.setString(2, ((Linea_De_Ropa) prod).getTalla());
+					stmt.setString(3, ((Linea_De_Ropa) prod).getTejido());
+					stmt.setString(4, ((Linea_De_Ropa) prod).getColor());
+					stmt.setString(5, ((Linea_De_Ropa) prod).getFabricante());
+
+					stmt.executeUpdate();
+				} else if (prod instanceof Juguete) {
+					stmt = con.prepareStatement(ACTUALIZAR_JUGUETE);
+					stmt.setString(1, prod.getCodigoProducto());
+					stmt.setString(2, ((Juguete) prod).getMaterial());
+					stmt.setString(3, ((Juguete) prod).getArticulable());
+					stmt.setInt(4, ((Juguete) prod).getEdadMinima());
+					stmt.setString(5, ((Juguete) prod).getPilas());
+
+					stmt.executeUpdate();
+				} else if (prod instanceof Pelicula_Serie) {
+					stmt = con.prepareStatement(ACTUALIZAR_PELICULA);
+					stmt.setString(1, prod.getCodigoProducto());
+					stmt.setString(2, ((Pelicula_Serie) prod).getGenero());
+					stmt.setString(3, ((Pelicula_Serie) prod).getFechaLanzamiento());
+					stmt.setString(4, ((Pelicula_Serie) prod).getIdioma());
+					stmt.setString(5, ((Pelicula_Serie) prod).getSubtitulado());
+					stmt.setString(6, ((Pelicula_Serie) prod).getDuracion());
+
+					stmt.executeUpdate();
+				}
+
+			}
+		} catch (SQLException e1) {
+			System.out.println("Error en la modificación SQL");
+			e1.printStackTrace();
+
+		} finally {
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public Map<String, Cesta_Compra> listarCompra() {
+		ResultSet rs = null;
+		Cesta_Compra compra;
+		Map<String, Cesta_Compra> listaCompra = new HashMap<>();
 
 		this.openConnection();
 
 		try {
-			stmt = con.prepareStatement(SELECT_PRODUCTO_LINEA);
-			rs = stmt.executeQuery();
-			while (rs.next()) {
-				prod = new Producto();
-				prod.setCodigoProducto(rs.getString("codigo_producto"));
-				prod.setNombre(rs.getString("nombre"));
-				prod.setPrecio(rs.getFloat("precio"));
-				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
-				prod.setDimensiones(rs.getString("dimensiones"));
-				if (prod instanceof Linea_De_Ropa) {
-					prod = new Linea_De_Ropa();
-					((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
-					((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
-					((Linea_De_Ropa) prod).setColor(rs.getString("color"));
-					((Linea_De_Ropa) prod).setFabricante(rs.getString("fabricante"));
-				}
+		
+			stmt = con.prepareStatement(SELECT_COMPRA);
 
-				listaProductos.put(prod.getCodigoProducto(), prod);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				compra = new Cesta_Compra();
+				compra.setNumReferencia(rs.getString("numreferencia"));
+				compra.setFecha_Inicio(Date.valueOf(rs.getString("fecha_inicio")).toLocalDate());
+				compra.setFecha_fin(Date.valueOf(rs.getString("fecha_fin")).toLocalDate());
+				compra.setPeso_total(rs.getFloat("peso_total"));
+				compra.setPrecio_total(rs.getFloat("precio_total"));
+				listaCompra.put(compra.getNumReferencia(), compra);
+
 			}
 
 		} catch (SQLException e) {
 			System.out.println("Error de SQL");
-
+			e.printStackTrace();
 		} finally {
 			// Cerramos ResultSet
 			if (rs != null) {
@@ -400,7 +481,189 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				e.printStackTrace();
 			}
 		}
-		return listaProductos;
+		return listaCompra;
 	}
+
+	public Map<String, Producto> listarProdRopa() {
+		ResultSet rs = null;
+		Producto prod;
+		Map<String, Producto> listaProd = new HashMap<>();
+
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(SELECT_PROD_LINEA);
+
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Linea_De_Ropa();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+				((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
+				((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
+				((Linea_De_Ropa) prod).setColor(rs.getString("color"));
+				((Linea_De_Ropa) prod).setFabricante(rs.getString("fabricante"));
+				listaProd.put(prod.getCodigoProducto(), prod);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+					System.out.println("Error en cierre del ResultSet");
+				}
+			}
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+		}
+		return listaProd;
+	}
+
+	public Map<String, Producto> listarProdJuguete() {
+		ResultSet rs = null;
+		Producto prod;
+		Map<String, Producto> listaProd = new HashMap<>();
+
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(SELECT_PROD_JUGUETE);
+
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Juguete();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+				((Juguete) prod).setMaterial(rs.getString("material"));
+				((Juguete) prod).setArticulable(rs.getString("articulable"));
+				((Juguete) prod).setEdadMinima(rs.getInt("edad_minima"));
+				((Juguete) prod).setPilas(rs.getString("pilas"));
+				listaProd.put(prod.getCodigoProducto(), prod);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+					System.out.println("Error en cierre del ResultSet");
+				}
+			}
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+		}
+		return listaProd;
+	}
+
+	public Map<String, Producto> listarProdPeli() {
+		ResultSet rs = null;
+		Producto prod;
+		Map<String, Producto> listaProd = new HashMap<>();
+
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(SELECT_PROD_PELI);
+
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Pelicula_Serie();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
+				((Pelicula_Serie) prod).setFechaLanzamiento(rs.getString("fecha_de_lanzamiento"));
+				((Pelicula_Serie) prod).setIdioma(rs.getString("idioma"));
+				((Pelicula_Serie) prod).setSubtitulado(rs.getString("subtitulado"));
+				((Pelicula_Serie) prod).setDuracion(rs.getString("duracion"));
+				listaProd.put(prod.getCodigoProducto(), prod);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+					System.out.println("Error en cierre del ResultSet");
+				}
+			}
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+		}
+		return listaProd;
+	}
+	public Persona recogerPersona() {
+		this.openConnection();
+		Persona per= null;
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_USUARIO_PERSONA);
+			
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				per = new Persona();
+				per.setNombre(rs.getString("nombre"));
+				per.setNumTelefono(Integer.parseInt(rs.getString("num_telefono")));
+				per = new Usuario();
+				((Usuario)per).setNombre(rs.getString("nombre"));
+				((Usuario)per).setApellido(rs.getString("apellido"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return per;
+
+	}
+
 
 }
