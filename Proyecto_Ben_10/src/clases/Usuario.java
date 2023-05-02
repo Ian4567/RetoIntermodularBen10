@@ -4,9 +4,10 @@ import java.time.LocalDate;
 
 public class Usuario extends Persona {
 	// atributos
+	private String numeroTarjeta;
 	private String nombrePersonal;
 	private String apellido;
-	private LocalDate fecha_nacimiento;
+	private String fecha_nacimiento;
 	private String direccion;
 
 	// constructor
@@ -32,11 +33,11 @@ public class Usuario extends Persona {
 		this.apellido = apellido;
 	}
 
-	public LocalDate getFecha_nacimiento() {
+	public String getFecha_nacimiento() {
 		return fecha_nacimiento;
 	}
 
-	public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
+	public void setFecha_nacimiento(String fecha_nacimiento) {
 		this.fecha_nacimiento = fecha_nacimiento;
 	}
 
@@ -46,6 +47,14 @@ public class Usuario extends Persona {
 
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
+	}
+
+	public String getNumeroTarjeta() {
+		return numeroTarjeta;
+	}
+
+	public void setNumeroTarjeta(String numeroTarjeta) {
+		this.numeroTarjeta = numeroTarjeta;
 	}
 
 }

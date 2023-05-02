@@ -3,8 +3,7 @@ package clases;
 public class Tarjeta {
 	// atributos
 	private String numeroTarjeta;
-	private String CVV;
-	private String saldo;
+	private int CVV;
 
 	// cosntructor
 	public Tarjeta() {
@@ -21,20 +20,12 @@ public class Tarjeta {
 		this.numeroTarjeta = numeroTarjeta;
 	}
 
-	public String getCVV() {
+	public int getCVV() {
 		return CVV;
 	}
 
-	public void setCVV(String cVV) {
+	public void setCVV(int cVV) {
 		CVV = cVV;
-	}
-
-	public String getSaldo() {
-		return saldo;
-	}
-
-	public void setSaldo(String saldo) {
-		this.saldo = saldo;
 	}
 
 }

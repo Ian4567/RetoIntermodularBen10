@@ -28,11 +28,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.toedter.calendar.JDayChooser;
 
+import clases.Cesta_Compra;
+import clases.Juguete;
 import clases.Linea_De_Ropa;
+import clases.Pelicula_Serie;
 import clases.Producto;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
@@ -41,22 +46,23 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
+import javax.swing.JComboBox;
 
 public class Ventana_Principal extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private final JPanel contentPanel = new JPanel();
-
-	JButton btnNewButton;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JTextField textField, textField_1, textField_2, textField_3, textField_4;
 	private JTable tablaProducto;
-	private DBImplementacion info;
+	private DBImplementacion db = new ControladorBdImplementacion();
 	private Map<String, Producto> productos;
+	private JButton btnPeli;
+	private JButton btnJuguete;
+	private JButton btnRopa;
+	private JComboBox comboCodigoRopa;
+	private JComboBox comboCodigoJuguete;
+	private JComboBox comboCodigoPeli;
 
 	public Ventana_Principal(Producto producto, DBImplementacion info) {
 		setBounds(100, 100, 1920, 1080);
@@ -82,19 +88,12 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		tabbedPane.setForegroundAt(0, new Color(128, 255, 128));
 		main.setLayout(null);
 
-		JLabel texto = new JLabel("BIenvenido  Alienigena a la tienda de");
+		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
 		texto.setBounds(610, 46, 661, 81);
 		main.add(texto);
 		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
 		texto.setForeground(new Color(128, 255, 128));
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-
-		btnNewButton = new JButton("Agregar Articulo");
-		btnNewButton.setFont(new Font("Jokerman", Font.PLAIN, 13));
-		btnNewButton.setForeground(Color.GREEN);
-		btnNewButton.setBackground(Color.DARK_GRAY);
-		btnNewButton.setBounds(1314, 212, 151, 64);
-		main.add(btnNewButton);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(128, 255, 128));
@@ -103,11 +102,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 		JButton btnNewButton_1 = new JButton("");
 		btnNewButton_1.setBackground(new Color(128, 255, 128));
-		btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
+		btnNewButton_1.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
 		menuBar.add(btnNewButton_1);
 
 		JMenu mnNewMenu = new JMenu("");
-		mnNewMenu.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\Ben_10_Omnitrix-removebg-preview.png"));
+		mnNewMenu.setIcon(new ImageIcon("././imagenes/Ben_10_Omnitrix-removebg-preview.png"));
 		menuBar.add(mnNewMenu);
 
 		JMenuItem iniciar = new JMenuItem("Iniciar sesion");
@@ -128,16 +127,12 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
-		mnNewMenu_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\carrito-removebg-preview (1).png"));
+		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
 
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
 		mnNewMenu_1.add(mntmNewMenuItem_2);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-		JScrollPane linea = new JScrollPane();
-		linea.setBounds(368, 344, 1037, 149);
-		main.add(linea);
-		linea.setViewportView(tablaProducto);
 
 		JPanel usuario = new JPanel();
 		usuario.setForeground(new Color(128, 255, 128));
@@ -239,14 +234,115 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
 
-		this.presentarTablaRopa(producto, info);
+		this.presentarTablaRopa(producto, db, main);
+		this.presentarTablaJuguete(producto, db, main);
+		this.presentarTablaPeli(producto, db, main);
+
+		btnJuguete = new JButton("Agregar Articulo");
+		btnJuguete.setForeground(Color.GREEN);
+		btnJuguete.setFont(new Font("Jokerman", Font.PLAIN, 13));
+		btnJuguete.setBackground(Color.DARK_GRAY);
+		btnJuguete.setBounds(1521, 532, 151, 64);
+		main.add(btnJuguete);
+
+		btnPeli = new JButton("Agregar Articulo");
+		btnPeli.setForeground(Color.GREEN);
+		btnPeli.setFont(new Font("Jokerman", Font.PLAIN, 13));
+		btnPeli.setBackground(Color.DARK_GRAY);
+		btnPeli.setBounds(1521, 794, 151, 64);
+		main.add(btnPeli);
+
+		btnRopa = new JButton("Agregar Articulo");
+		btnRopa.setForeground(Color.GREEN);
+		btnRopa.setFont(new Font("Jokerman", Font.PLAIN, 13));
+		btnRopa.setBackground(Color.DARK_GRAY);
+		btnRopa.setBounds(1521, 233, 151, 64);
+		main.add(btnRopa);
+
+		comboCodigoRopa = new JComboBox();
+		comboCodigoRopa.setSelectedIndex(-1);
+		comboCodigoRopa.setForeground(Color.WHITE);
+		comboCodigoRopa.setFont(new Font("Jokerman", Font.BOLD, 14));
+		comboCodigoRopa.setBackground(Color.DARK_GRAY);
+		comboCodigoRopa.setBounds(1521, 113, 151, 46);
+		cargarComboCodigoRopa();
+		main.add(comboCodigoRopa);
+
+		comboCodigoJuguete = new JComboBox();
+		comboCodigoJuguete.setSelectedIndex(-1);
+		comboCodigoJuguete.setForeground(Color.WHITE);
+		comboCodigoJuguete.setFont(new Font("Jokerman", Font.BOLD, 14));
+		comboCodigoJuguete.setBackground(Color.DARK_GRAY);
+		comboCodigoJuguete.setBounds(1521, 397, 151, 46);
+		cargarComboCodigoJuguete();
+		main.add(comboCodigoJuguete);
+
+		comboCodigoPeli = new JComboBox();
+		comboCodigoPeli.setSelectedIndex(-1);
+		comboCodigoPeli.setForeground(Color.WHITE);
+		comboCodigoPeli.setFont(new Font("Jokerman", Font.BOLD, 14));
+		comboCodigoPeli.setBackground(Color.DARK_GRAY);
+		comboCodigoPeli.setBounds(1521, 679, 151, 46);
+		cargarComboCodigoPeli();
+		main.add(comboCodigoPeli);
+
+		JLabel lblJuguetes = new JLabel("JUGUETES");
+		lblJuguetes.setForeground(Color.WHITE);
+		lblJuguetes.setFont(new Font("Jokerman", Font.BOLD, 32));
+		lblJuguetes.setBounds(825, 399, 312, 58);
+		main.add(lblJuguetes);
+
+		JLabel lblP = new JLabel("PELIS Y SERIES");
+		lblP.setForeground(Color.WHITE);
+		lblP.setFont(new Font("Jokerman", Font.BOLD, 32));
+		lblP.setBounds(777, 679, 312, 58);
+		main.add(lblP);
+
+		JLabel lblLineaDeRopa = new JLabel("LINEA DE ROPA");
+		lblLineaDeRopa.setForeground(Color.WHITE);
+		lblLineaDeRopa.setFont(new Font("Jokerman", Font.BOLD, 32));
+		lblLineaDeRopa.setBounds(792, 123, 312, 58);
+		main.add(lblLineaDeRopa);
 
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if (e.getSource().equals(btnRopa)) {
+			insertarCesta();
+		} else if (e.getSource().equals(btnJuguete)) {
+			insertarCesta();
+		} else if (e.getSource().equals(btnPeli)) {
+			insertarCesta();
+		}
 
+	}
+
+	private void insertarCesta() {
+		DBImplementacion db = new ControladorBdImplementacion();
+		Cesta_Compra cesta;
+
+		cesta = new Cesta_Compra();
+		if (comboCodigoRopa.getSelectedIndex() > -1) {
+			cesta.setNumReferencia(comboCodigoRopa.getSelectedItem().toString());
+		} else if (comboCodigoJuguete.getSelectedIndex() > -1) {
+			cesta.setNumReferencia(comboCodigoJuguete.getSelectedItem().toString());
+		} else if (comboCodigoPeli.getSelectedIndex() > -1) {
+			cesta.setNumReferencia(comboCodigoPeli.getSelectedItem().toString());
+		}
+		cesta.setFecha_Inicio(LocalDate.now());
+		cesta.setFecha_fin(null);
+		
+		
+		
+	}
+	
+	private float sumarPrecio() {
+		DBImplementacion db = new ControladorBdImplementacion();
+		ArrayList<Producto> productoss = db.recogerProductos();
+		return 0;
+
+		
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
@@ -269,42 +365,160 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		});
 	}
 
-	private void presentarTablaRopa(Producto producto, DBImplementacion info) {
-		JScrollPane linea = new JScrollPane();
-		tablaProducto = this.cargarTablaRopa(producto, info);
-		linea.setViewportView(tablaProducto);
+	private void presentarTablaRopa(Producto producto, DBImplementacion db, JPanel main) {
 
-		contentPanel.add(linea);
-		linea.setBounds(368, 344, 1037, 149);
+		JScrollPane linea = new JScrollPane();
+		linea.setBounds(428, 192, 1037, 149);
+		main.add(linea);
+		tablaProducto = this.cargarTablaRopa(producto, db);
+		linea.setViewportView(tablaProducto);
 
 	}
 
-	private JTable cargarTablaRopa(Producto producto, DBImplementacion info) {
-		info = new ControladorBdImplementacion();
-		String[] columnas = { "Codigo_Producto", "NOMBRE", "Precio", "Stock", "Dimensiones", "talla", "Tejido", "Color",
-				"Fabricante" };
-		String[] registros = new String[9];
+	private JTable cargarTablaRopa(Producto producto, DBImplementacion db) {
+
+		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Talla", "Tejido",
+				"Color", "Fabricante" };
+		String[] registros = new String[10];
 
 		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
 		modelo.setRowCount(0);
 
-		productos = info.listarProducto();
+		productos = db.listarProdRopa();
 
 		for (Producto prod : productos.values()) {
-			if (prod instanceof Linea_De_Ropa) {
-				registros[0] = prod.getCodigoProducto();
-				registros[1] = prod.getNombre();
-				registros[2] = Float.toString(prod.getPrecio());
-				registros[3] = Integer.toString(prod.getNumExistencias());
-				registros[4] = prod.getDimensiones();
-				registros[5] = ((Linea_De_Ropa) prod).getTalla();
-				registros[6] = ((Linea_De_Ropa) prod).getTejido();
-				registros[7] = ((Linea_De_Ropa) prod).getColor();
-				registros[8] = ((Linea_De_Ropa) prod).getFabricante();
+			registros[0] = prod.getCodigoProducto();
+			registros[1] = prod.getNombre();
+			registros[2] = Float.toString(prod.getPrecio());
+			registros[3] = Float.toString(prod.getPeso());
+			registros[4] = Integer.toString(prod.getNumExistencias());
+			registros[5] = prod.getDimensiones();
+			registros[6] = ((Linea_De_Ropa) prod).getTalla();
+			registros[7] = ((Linea_De_Ropa) prod).getTejido();
+			registros[8] = ((Linea_De_Ropa) prod).getColor();
+			registros[9] = ((Linea_De_Ropa) prod).getFabricante();
+			modelo.addRow(registros);
 
-				modelo.addRow(registros);
-			}
 		}
 		return new JTable(modelo);
+	}
+
+	private void presentarTablaJuguete(Producto producto, DBImplementacion db, JPanel main) {
+
+		JScrollPane linea = new JScrollPane();
+		linea.setBounds(428, 468, 1037, 149);
+		main.add(linea);
+		tablaProducto = this.cargarTablaJuguete(producto, db);
+		linea.setViewportView(tablaProducto);
+
+	}
+
+	private JTable cargarTablaJuguete(Producto producto, DBImplementacion db) {
+
+		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Material",
+				"Articulable", "Edad_Minima", "Pilas" };
+		String[] registros = new String[10];
+
+		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+		modelo.setRowCount(0);
+
+		productos = db.listarProdJuguete();
+
+		for (Producto prod : productos.values()) {
+			registros[0] = prod.getCodigoProducto();
+			registros[1] = prod.getNombre();
+			registros[2] = Float.toString(prod.getPrecio());
+			registros[3] = Float.toString(prod.getPeso());
+			registros[4] = Integer.toString(prod.getNumExistencias());
+			registros[5] = prod.getDimensiones();
+			registros[6] = ((Juguete) prod).getMaterial();
+			registros[7] = ((Juguete) prod).getArticulable();
+			registros[8] = Integer.toString(((Juguete) prod).getEdadMinima());
+			registros[9] = ((Juguete) prod).getPilas();
+			modelo.addRow(registros);
+
+		}
+		return new JTable(modelo);
+	}
+
+	private void presentarTablaPeli(Producto producto, DBImplementacion db, JPanel main) {
+
+		JScrollPane linea = new JScrollPane();
+		linea.setBounds(428, 759, 1037, 149);
+		main.add(linea);
+		tablaProducto = this.cargarTablaPeli(producto, db);
+		linea.setViewportView(tablaProducto);
+
+	}
+
+	private JTable cargarTablaPeli(Producto producto, DBImplementacion db) {
+
+		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Genero",
+				"Fecha de Lanzamineto", "Idioma", "Subtitulado", "Duracion" };
+		String[] registros = new String[11];
+
+		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+		modelo.setRowCount(0);
+
+		productos = db.listarProdPeli();
+
+		for (Producto prod : productos.values()) {
+			registros[0] = prod.getCodigoProducto();
+			registros[1] = prod.getNombre();
+			registros[2] = Float.toString(prod.getPrecio());
+			registros[3] = Float.toString(prod.getPeso());
+			registros[4] = Integer.toString(prod.getNumExistencias());
+			registros[5] = prod.getDimensiones();
+			registros[6] = ((Pelicula_Serie) prod).getGenero();
+			registros[7] = ((Pelicula_Serie) prod).getFechaLanzamiento();
+			registros[8] = ((Pelicula_Serie) prod).getIdioma();
+			registros[9] = ((Pelicula_Serie) prod).getSubtitulado();
+			registros[10] = ((Pelicula_Serie) prod).getDuracion();
+			modelo.addRow(registros);
+
+		}
+		return new JTable(modelo);
+	}
+
+	public void cargarComboCodigoRopa() {
+
+		DBImplementacion db = new ControladorBdImplementacion();
+		ArrayList<Producto> codProd = db.recogerProductos();
+		comboCodigoRopa.removeAllItems();
+		for (Producto prod : codProd) {
+			if (prod.getCodigoProducto().charAt(0) == 'L') {
+				comboCodigoRopa.addItem(prod.getCodigoProducto());
+			}
+		}
+
+		comboCodigoRopa.setSelectedIndex(-1);
+	}
+
+	public void cargarComboCodigoJuguete() {
+
+		DBImplementacion db = new ControladorBdImplementacion();
+		ArrayList<Producto> codProd = db.recogerProductos();
+		comboCodigoJuguete.removeAllItems();
+		for (Producto prod : codProd) {
+			if (prod.getCodigoProducto().charAt(0) == 'J') {
+				comboCodigoJuguete.addItem(prod.getCodigoProducto());
+			}
+		}
+
+		comboCodigoJuguete.setSelectedIndex(-1);
+	}
+
+	public void cargarComboCodigoPeli() {
+
+		DBImplementacion db = new ControladorBdImplementacion();
+		ArrayList<Producto> codProd = db.recogerProductos();
+		comboCodigoPeli.removeAllItems();
+		for (Producto prod : codProd) {
+			if (prod.getCodigoProducto().charAt(0) == 'P') {
+				comboCodigoPeli.addItem(prod.getCodigoProducto());
+			}
+		}
+
+		comboCodigoPeli.setSelectedIndex(-1);
 	}
 }
