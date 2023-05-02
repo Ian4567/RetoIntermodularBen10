@@ -44,5 +44,13 @@ public interface DBImplementacion {
 	public int numeroPersona(Persona pers);
 	
 	public void insertarPersona(Persona pers);
+	
+	public boolean esEmail(String email);
+	
+	public int existePersona(String persona);
+	
+	public int existeNumeroTarjeta(long numeroTarjeta);
+	
+	public Persona login(Persona pers);
 }
 

@@ -71,7 +71,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private JDateChooser fechaSelector;
 	private JTable tablaProducto;
 	private JButton btnCasa;
-	private JMenuItem iniciar, registro, borrado;
+	private JMenuItem iniciar, registro, borrado, btnCesta;
+	private JMenuBar menuBar;
 
 	/**
 	 * Launch the application.
@@ -98,7 +99,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JMenuBar menuBar = new JMenuBar();
+		JLabel texto = new JLabel("FINALIZAR COMPRA");
+		texto.setBounds(610, 46, 661, 81);
+		contentPanel.add(texto);
+		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
+		texto.setForeground(new Color(128, 255, 128));
+		texto.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(128, 255, 128));
 		menuBar.setBounds(0, 0, 255, 64);
 		contentPanel.add(menuBar);
@@ -132,22 +140,18 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		borrado.addActionListener(this);
 		mnNewMenu.add(borrado);
-
+		
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
 		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
-
-		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
-		texto.setBounds(610, 46, 661, 81);
-		contentPanel.add(texto);
-		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
-		texto.setForeground(new Color(128, 255, 128));
+		
+		
+		btnCesta = new JMenuItem("COMPRAR");
+		mnNewMenu_1.add(btnCesta);
+		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
-		mnNewMenu_1.add(mntmNewMenuItem_2);
-
+		
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
@@ -470,6 +474,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		btnBorrar.setBounds(163, 418, 200, 50);
 		btnBorrar.addActionListener(this);
 		contentPanel.add(btnBorrar);
+		
+		
 
 		textGenero = new JTextField();
 		textGenero.setOpaque(false);
@@ -666,6 +672,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			Inicio_Sesion inicio = new Inicio_Sesion();
 			inicio.setVisible(true);
 
+		}else if (e.getSource().equals(btnCesta)) {
+			this.dispose();
+			Finalizar_Compra fin = new Finalizar_Compra();
+			fin.setVisible(true);
 		}
 	}
 

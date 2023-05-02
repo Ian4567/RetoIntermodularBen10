@@ -37,22 +37,20 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTable tablaProducto;
-	private JTextField textEmail;
-	private JTextField textTelefono;
-	private JTextField textNombre;
-	private JTextField texCvv;
-	private JTextField textCVV;
+	private JTextField textEmail, textTelefono, textNombre, texCvv, textCVV;
 	private Map<String, Cesta_Compra> listaCompra;
 	private DBImplementacion db = new ControladorBdImplementacion();
 	private Cesta_Compra compra;
 	private JPanel main;
-	private JButton btnFinalizarCompra;
-	private JButton btnCancelarCompra;
-	private JButton btnCasa;
-	private JMenuItem iniciar;
-	private JMenuItem registro;
-	private JMenuItem borrarCuenta;
-	private JMenuItem btnCesta;
+	private JButton btnFinalizarCompra, btnCancelarCompra, btnCasa;
+	private JMenuItem iniciar, registro, borrarCuenta, btnCesta;
+	private JLabel lblNombre;
+	private JLabel lblEmail;
+	private JLabel lblTelefono;
+	private JLabel lblCvv;
+	private JLabel lblDatosDeLa;
+	private JLabel lblNumeroDeTarjeta;
+	private JLabel texto;
 
 	/**
 	 * Launch the application.
@@ -94,7 +92,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		tabbedPane.setForegroundAt(0, new Color(128, 255, 128));
 		main.setLayout(null);
 
-		JLabel texto = new JLabel("FINALIZAR COMPRA");
+		texto = new JLabel("FINALIZAR COMPRA");
 		texto.setBounds(610, 46, 661, 81);
 		main.add(texto);
 		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
@@ -108,11 +106,11 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		btnCasa = new JButton("");
 		btnCasa.setBackground(new Color(128, 255, 128));
-		btnCasa.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\casa-removebg-preview.png"));
+		btnCasa.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
 		menuBar.add(btnCasa);
 
 		JMenu mnNewMenu = new JMenu("");
-		mnNewMenu.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\Ben_10_Omnitrix-removebg-preview.png"));
+		mnNewMenu.setIcon(new ImageIcon("././imagenes/Ben_10_Omnitrix-removebg-preview.png"));
 		menuBar.add(mnNewMenu);
 
 		iniciar = new JMenuItem("Iniciar sesion");
@@ -136,11 +134,12 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
-		mnNewMenu_1.setIcon(new ImageIcon("C:\\Users\\1dam\\Downloads\\carrito-removebg-preview (1).png"));
+		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
 
-		btnCesta = new JMenuItem("New menu item");
+		btnCesta = new JMenuItem("COMPRAR");
 		mnNewMenu_1.add(btnCesta);
+		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		textEmail = new JTextField();
@@ -193,37 +192,37 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		textCVV.setBounds(1259, 290, 174, 18);
 		main.add(textCVV);
 
-		JLabel lblNombre = new JLabel("Nombre");
+		lblNombre = new JLabel("Nombre");
 		lblNombre.setForeground(Color.WHITE);
 		lblNombre.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblNombre.setBounds(469, 142, 163, 68);
 		main.add(lblNombre);
 
-		JLabel lblEmail = new JLabel("Email");
+		lblEmail = new JLabel("Email");
 		lblEmail.setForeground(Color.WHITE);
 		lblEmail.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblEmail.setBounds(469, 272, 163, 68);
 		main.add(lblEmail);
 
-		JLabel lblTelefono = new JLabel("Telefono");
+		lblTelefono = new JLabel("Telefono");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblTelefono.setBounds(469, 388, 163, 68);
 		main.add(lblTelefono);
 
-		JLabel lblCvv = new JLabel("CVV");
+		lblCvv = new JLabel("CVV");
 		lblCvv.setForeground(Color.WHITE);
 		lblCvv.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblCvv.setBounds(1122, 272, 163, 68);
 		main.add(lblCvv);
 
-		JLabel lblNumeroDeTarjeta = new JLabel("Numero de tarjeta");
+		lblNumeroDeTarjeta = new JLabel("Numero de tarjeta");
 		lblNumeroDeTarjeta.setForeground(Color.WHITE);
 		lblNumeroDeTarjeta.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblNumeroDeTarjeta.setBounds(1007, 138, 229, 68);
 		main.add(lblNumeroDeTarjeta);
 
-		JLabel lblDatosDeLa = new JLabel("DATOS DE LA COMPRA");
+		lblDatosDeLa = new JLabel("DATOS DE LA COMPRA");
 		lblDatosDeLa.setForeground(Color.WHITE);
 		lblDatosDeLa.setFont(new Font("Jokerman", Font.BOLD, 32));
 		lblDatosDeLa.setBounds(778, 467, 527, 58);
@@ -312,14 +311,12 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 			this.dispose();
 			Finalizar_Compra venCesta = new Finalizar_Compra();
 			venCesta.setVisible(true);
-		}
+		} 
 
 	}
 
 	private void comprar() {
-		Cesta_Compra compra;
-		compra = new Cesta_Compra();
-		compra.setFecha_fin(LocalDate.now());
+
 	}
 
 }

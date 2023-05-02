@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import clases.Cesta_Compra;
 import clases.Juguete;
@@ -28,6 +30,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private PreparedStatement stmt;
 
 	// sentencia SQL
+	private final String LOGEO = "SELECT * FROM persona WHERE email=? and contraseña=?";
 	private final String ACTUALIZAR_LINEA_ROPA = "UPDATE linea_de_ropa SET talla=?, tejido=?, color=?, fabricante=? WHERE codigo_producto=?";
 	private final String ACTUALIZAR_JUGUETE = "UPDATE juguete SET material=?, articulable=?, edad_minima=?, pilas=? WHERE codigo_producto=?";
 	private final String ACTUALIZAR_PELICULA = "UPDATE pelicula_serie SET genero=?, fecha_de_lanzamiento=?, idioma=?, subtitulado=?, duracion=? WHERE codigo_producto=?";
@@ -85,6 +88,35 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 		if (con != null)
 			con.close();
+	}
+
+	public Persona login(Persona pers) {
+
+		ResultSet rs = null;
+
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(LOGEO);
+			stmt.setString(1, pers.getEmail());
+			stmt.setString(2, pers.getContrasena());
+
+			rs = stmt.executeQuery();
+
+			pers = new Persona();
+			if (rs.next()) {
+				// RECOGEMOS LOS DATOS DE PERSONA
+				pers.setCodigoPersona(rs.getString(1));
+				pers.setNombre(rs.getString(2));
+				pers.setEmail(rs.getString(3));
+				pers.setNumTelefono(rs.getInt(4));
+				pers.setContrasena(rs.getString(5));
+
+			}
+		} catch (SQLException e) {
+
+		}
+		return pers;
 	}
 
 	public void insertarProducto(Producto prod) {
@@ -488,7 +520,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	public Producto recogerCesta(String codigo_persona, String numreferencia) {
 		this.openConnection();
 		Persona per = null;
-		Producto prod =null;
+		Producto prod = null;
 		Cesta_Compra cesta = null;
 		ResultSet rs;
 
@@ -683,7 +715,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 					stmt = con.prepareStatement(INSERT_USUARIO);
 
 					stmt.setString(1, pers.getCodigoPersona());
-					stmt.setString(2, ((Usuario) pers).getNumeroTarjeta());
+					stmt.setLong(2, ((Usuario) pers).getNumeroTarjeta());
 					stmt.setString(3, ((Usuario) pers).getNombrePersonal());
 					stmt.setString(4, ((Usuario) pers).getApellido());
 					stmt.setString(5, (((Usuario) pers).getFecha_nacimiento()));
@@ -750,6 +782,68 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 		return n;
 
+	}
+
+	public int existePersona(String persona) {
+
+		ResultSet rs = null;
+		String registrar = "SELECT COUNT(codigo_persona)FROM PERSONA WHERE NOMBRE=?";
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(registrar);
+			stmt.setString(1, persona);
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			return 1;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
+	}
+
+	public int existeNumeroTarjeta(long numeroTarjeta) {
+
+		ResultSet rs = null;
+		String registrar = "SELECT COUNT(numero_tarjeta)FROM TARJETA WHERE numero_tarjeta=?";
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(registrar);
+			stmt.setLong(1, numeroTarjeta);
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			return 1;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
+	}
+
+	public boolean esEmail(String email) {
+		// Patr�n para validar el email
+		Pattern pattern = Pattern.compile(
+				"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+		// El email a validar
+
+		Matcher mather = pattern.matcher(email);
+
+		return mather.find();
 	}
 
 }
