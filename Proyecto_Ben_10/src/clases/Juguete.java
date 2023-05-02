@@ -22,13 +22,10 @@ public class Juguete extends Producto {
 	public void setMaterial(String material) {
 		this.material = material;
 	}
-	
-	public String getArticulable() {
-		return articulable;
-	}
 
-	public void setArticulable(String articulable) {
-		this.articulable = articulable;
+	
+	public void setArticulable(String string) {
+		this.articulable = string;
 	}
 
 	public int getEdadMinima() {
@@ -38,13 +35,18 @@ public class Juguete extends Producto {
 	public void setEdadMinima(int edadMinima) {
 		this.edadMinima = edadMinima;
 	}
-	
+
+
+	public String getArticulable() {
+		return articulable;
+	}
+
 	public String getPilas() {
 		return pilas;
 	}
 
-	public void setPilas(String pilas) {
-		this.pilas = pilas;
+	public void setPilas(String string) {
+		this.pilas = string;
 	}
 
 	public int getPegi() {

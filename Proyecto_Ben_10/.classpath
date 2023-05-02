@@ -6,9 +6,15 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/GitIntermodularBen10/RetoIntermodularBen10/Proyecto_Ben_10/jcalendar-1.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/GitIntermodularBen10/RetoIntermodularBen10/Proyecto_Ben_10/jgoodies-common-1.2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/GitIntermodularBen10/RetoIntermodularBen10/Proyecto_Ben_10/jgoodies-looks-2.4.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/1dam/Desktop/GitIntermodularBen10/RetoIntermodularBen10/Proyecto_Ben_10/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/1dam/Documents/Proyecto_Ben_10/mysql-connector-java-8.0.15.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/1dam/Documents/Proyecto_Ben_10/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/1dam/Documents/Proyecto_Ben_10/jgoodies-common-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/1dam/Documents/Proyecto_Ben_10/jgoodies-looks-2.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/1dam/Documents/Proyecto_Ben_10/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="jcalendar-1.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,10 +19,15 @@ import java.awt.Cursor;
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 
+import clases.Juguete;
+import clases.Linea_De_Ropa;
+import clases.Persona;
+import clases.Producto;
 import clases.Tarjeta;
 import clases.Usuario;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
+import com.toedter.calendar.JDateChooser;
 
 public class Registro extends JDialog implements ActionListener {
 
@@ -31,18 +36,13 @@ public class Registro extends JDialog implements ActionListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textFNombre;
-	private JTextField textFEmail;
-	private JTextField textFTelefono;
-	private JTextField textFContrasena;
-	private JTextField textFNumeroTar;
-	private JTextField textFcvv;
-	private JTextField textNombreUsuario;
-	private JButton btnRegistrarse,btnLimpiar;
-	private JLabel lblNewLabel, lblNombre, lblEmail,lblTelefono,lblContrasea,lblNumeroTarjeta,lblCvv, lblNombredeUsuario,lblApellido,lblFechaNac,lblDireccion;
-	private JTextField textFapellido;
-	private JTextField textFDireccion;
-	private JTextField textFfechanac;
+	private JTextField textFNombre, textFEmail, textFTelefono, textFContrasena, textFNumeroTar, textFcvv,
+			textNombreUsuario, textFDireccion, textFapellido;
+	private JButton btnRegistrarse, btnLimpiar;
+	private JLabel lblNewLabel, lblNombre, lblEmail, lblTelefono, lblContrasea, lblNumeroTarjeta, lblCvv,
+			lblNombredeUsuario, lblApellido, lblFechaNac, lblDireccion;
+	private Persona pers;
+	private JDateChooser fechaSelector;
 
 	/**
 	 * Launch the application.
@@ -67,7 +67,7 @@ public class Registro extends JDialog implements ActionListener {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		
+
 		lblNewLabel = new JLabel("REGISTRO");
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Jokerman", Font.PLAIN, 59));
@@ -81,7 +81,7 @@ public class Registro extends JDialog implements ActionListener {
 			contentPanel.add(lblNombre);
 		}
 		{
-		    lblEmail = new JLabel("Email");
+			lblEmail = new JLabel("Email");
 			lblEmail.setForeground(Color.WHITE);
 			lblEmail.setFont(new Font("Jokerman", Font.PLAIN, 25));
 			lblEmail.setBounds(305, 612, 126, 54);
@@ -115,12 +115,12 @@ public class Registro extends JDialog implements ActionListener {
 			lblCvv.setBounds(1127, 693, 64, 54);
 			contentPanel.add(lblCvv);
 		}
-		
+
 		btnRegistrarse = new JButton("REGISTRARSE ");
 		btnRegistrarse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnRegistrarse.setFont(new Font("Jokerman", Font.BOLD, 20));
-		btnRegistrarse.setBackground(new Color(102,255,153));
-		btnRegistrarse.setBounds(291, 838, 183, 44);
+		btnRegistrarse.setBackground(new Color(102, 255, 153));
+		btnRegistrarse.setBounds(291, 838, 202, 44);
 		btnRegistrarse.addActionListener(this);
 		contentPanel.add(btnRegistrarse);
 		{
@@ -131,7 +131,7 @@ public class Registro extends JDialog implements ActionListener {
 			btnLimpiar.addActionListener(this);
 			contentPanel.add(btnLimpiar);
 		}
-		
+
 		textFNombre = new JTextField();
 		textFNombre.setOpaque(false);
 		textFNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
@@ -141,7 +141,7 @@ public class Registro extends JDialog implements ActionListener {
 		textFNombre.setBounds(617, 463, 208, 34);
 		contentPanel.add(textFNombre);
 		textFNombre.setColumns(10);
-		
+
 		textFEmail = new JTextField();
 		textFEmail.setOpaque(false);
 		textFEmail.setForeground(Color.WHITE);
@@ -151,7 +151,7 @@ public class Registro extends JDialog implements ActionListener {
 		textFEmail.setBackground(new Color(102, 255, 102));
 		textFEmail.setBounds(617, 628, 208, 34);
 		contentPanel.add(textFEmail);
-		
+
 		textFTelefono = new JTextField();
 		textFTelefono.setOpaque(false);
 		textFTelefono.setForeground(Color.WHITE);
@@ -161,7 +161,7 @@ public class Registro extends JDialog implements ActionListener {
 		textFTelefono.setBackground(new Color(102, 255, 102));
 		textFTelefono.setBounds(1384, 375, 208, 34);
 		contentPanel.add(textFTelefono);
-		
+
 		textFContrasena = new JTextField();
 		textFContrasena.setOpaque(false);
 		textFContrasena.setForeground(Color.WHITE);
@@ -193,13 +193,13 @@ public class Registro extends JDialog implements ActionListener {
 			textFcvv.setBounds(1384, 709, 208, 34);
 			contentPanel.add(textFcvv);
 		}
-		
+
 		lblNombredeUsuario = new JLabel("Nombre de usuario");
 		lblNombredeUsuario.setForeground(Color.WHITE);
 		lblNombredeUsuario.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblNombredeUsuario.setBounds(305, 359, 238, 54);
 		contentPanel.add(lblNombredeUsuario);
-		
+
 		textNombreUsuario = new JTextField();
 		textNombreUsuario.setOpaque(false);
 		textNombreUsuario.setForeground(Color.WHITE);
@@ -209,25 +209,25 @@ public class Registro extends JDialog implements ActionListener {
 		textNombreUsuario.setBackground(new Color(102, 255, 102));
 		textNombreUsuario.setBounds(617, 375, 208, 34);
 		contentPanel.add(textNombreUsuario);
-		
+
 		lblApellido = new JLabel("Apellido\r\n");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblApellido.setBounds(305, 529, 126, 54);
 		contentPanel.add(lblApellido);
-		
+
 		lblFechaNac = new JLabel("Fecha nac.");
 		lblFechaNac.setForeground(Color.WHITE);
 		lblFechaNac.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblFechaNac.setBounds(1127, 447, 183, 54);
 		contentPanel.add(lblFechaNac);
-		
+
 		lblDireccion = new JLabel("Direccion");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Jokerman", Font.PLAIN, 25));
 		lblDireccion.setBounds(1127, 529, 126, 54);
 		contentPanel.add(lblDireccion);
-		
+
 		textFapellido = new JTextField();
 		textFapellido.setOpaque(false);
 		textFapellido.setForeground(Color.WHITE);
@@ -237,7 +237,7 @@ public class Registro extends JDialog implements ActionListener {
 		textFapellido.setBackground(new Color(102, 255, 102));
 		textFapellido.setBounds(617, 539, 208, 34);
 		contentPanel.add(textFapellido);
-		
+
 		textFDireccion = new JTextField();
 		textFDireccion.setOpaque(false);
 		textFDireccion.setForeground(Color.WHITE);
@@ -247,16 +247,10 @@ public class Registro extends JDialog implements ActionListener {
 		textFDireccion.setBackground(new Color(102, 255, 102));
 		textFDireccion.setBounds(1384, 546, 208, 34);
 		contentPanel.add(textFDireccion);
-		
-		textFfechanac = new JTextField();
-		textFfechanac.setOpaque(false);
-		textFfechanac.setForeground(Color.WHITE);
-		textFfechanac.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textFfechanac.setColumns(10);
-		textFfechanac.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textFfechanac.setBackground(new Color(102, 255, 102));
-		textFfechanac.setBounds(1384, 463, 208, 34);
-		contentPanel.add(textFfechanac);
+
+		fechaSelector = new JDateChooser();
+		fechaSelector.setBounds(1384, 463, 208, 24);
+		contentPanel.add(fechaSelector);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -277,13 +271,12 @@ public class Registro extends JDialog implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(btnRegistrarse)) {
-			registrarse();
-		}
-		else if(e.getSource().equals(btnLimpiar)){
+		if (e.getSource().equals(btnRegistrarse)) {
+			registrarse(pers);
+		} else if (e.getSource().equals(btnLimpiar)) {
 			limpiar();
 		}
-		
+
 	}
 
 	private void limpiar() {
@@ -293,34 +286,89 @@ public class Registro extends JDialog implements ActionListener {
 		textFEmail.setText("");
 		textFContrasena.setText("");
 		textFTelefono.setText("");
-		textFfechanac.setText("");
 		textFDireccion.setText("");
 		textFNumeroTar.setText("");
 		textFcvv.setText("");
-		
+
 	}
 
-	private void registrarse() {
-		Usuario us;
-		Tarjeta tar = null;
-		
+	public String generarCodigo(Persona pers) {
 		DBImplementacion bd = new ControladorBdImplementacion();
-		
-		us = new Usuario();
-		us.setNombre(textNombreUsuario.getText());;
-		us.setNombrePersonal(textFNombre.getText());
-		us.setApellido(textFapellido.getText());
-		us.setEmail(textFEmail.getText());
-		us.setContrasea(textFContrasena.getText());
-		us.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
-		us.setFecha_nacimiento(Date.valueOf(textFfechanac.getText()).toLocalDate());
-		us.setDireccion(textFDireccion.getText());
-		tar = new Tarjeta();
-		tar.setNumeroTarjeta(textFNumeroTar.getText());
-		tar.setCVV(Integer.parseInt(textFcvv.getText()));
-		
-		bd.registro(us, tar);
-		JOptionPane.showMessageDialog(btnLimpiar, "Te has registrado correctamente!");
-		
+
+		String codigo = "", num;
+		int numero;
+		numero = bd.numeroPersona(pers) + 1;
+		if (pers instanceof Usuario) {
+			codigo = "U" + String.format("%03d", numero);
+		}
+
+		return codigo;
+	}
+
+	private void registrarse(Persona pers) {
+		Tarjeta tar = null;
+
+		DBImplementacion bd = new ControladorBdImplementacion();
+		if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
+				|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
+				|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
+				|| textFDireccion.getText().equals("") || textFNumeroTar.getText().equals("")
+				|| textFcvv.getText().equals("")) {
+			JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
+		} else {
+
+			if (bd.existePersona(textNombreUsuario.getText()) == 0) {
+
+				if (textFNumeroTar.getText().length() == 16) { 
+
+					if (bd.esEmail(textFEmail.getText())) {
+
+						if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0 ) {
+
+							if (textFTelefono.getText().length() == 9) {
+
+								if (textFcvv.getText().length() == 3) {
+
+									tar = new Tarjeta();
+									tar.setNumeroTarjeta(textFNumeroTar.getText());
+									tar.setCVV(Integer.parseInt(textFcvv.getText()));
+
+									bd.insertarTarjeta(tar);
+									pers = new Usuario();
+									pers.setCodigoPersona(generarCodigo(pers));
+									pers.setNombre(textNombreUsuario.getText());
+									;
+									pers.setEmail(textFEmail.getText());
+									pers.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
+									pers.setContrasea(textFContrasena.getText());
+									((Usuario) pers).setNumeroTarjeta(Long.parseLong(textFNumeroTar.getText()));
+									((Usuario) pers).setNombrePersonal(textFNombre.getText());
+									((Usuario) pers).setApellido(textFapellido.getText());
+									((Usuario) pers).setFecha_nacimiento(fechaSelector.getDate().toString());
+									((Usuario) pers).setDireccion(textFDireccion.getText());
+									bd.insertarPersona(pers);
+
+									JOptionPane.showMessageDialog(btnLimpiar, "Te has registrado correctamente!");
+
+								} else {
+									JOptionPane.showMessageDialog(this, "EL CVV NO TIENE 3 NUMEROS");
+								}
+							} else {
+								JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
+							}
+						} else {
+							JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
+						}
+					} else {
+						JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(this,"LA TARJETA NO TIENE 16 NUMEROS!!!");
+				}
+			} else {
+				JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
+			}
+		}
+
 	}
 }
