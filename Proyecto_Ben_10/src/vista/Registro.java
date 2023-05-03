@@ -50,20 +50,8 @@ public class Registro extends JDialog implements ActionListener {
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JButton btnCasa;
 
-	public static void main(String[] args) {
-		try {
-			Registro dialog = new Registro();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public Registro() {
+	
+	public Registro(Ventana_Principal principal) {
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -333,21 +321,22 @@ public class Registro extends JDialog implements ActionListener {
 			limpiar();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, null);
+			Ventana_Principal prin = new Ventana_Principal(null);
 			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
+			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro();
+			Registro reg = new Registro(null);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
-			inicio.setVisible(true);
+			Ventana_Principal prin = new Ventana_Principal(null);
+			prin.tabbedPane.setSelectedIndex(1);
+			prin.tabbedPane.setVisible(true);
 
 		}else if (e.getSource().equals(btnCesta)) {
 			this.dispose();

@@ -22,36 +22,19 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 
-public class Inicio_Sesion extends JFrame implements ActionListener {
+public class Inicio_Sesion extends JDialog implements ActionListener {
 
 	private JPanel contentPane;
 	private JTextField textEmail;
 	private JPasswordField passContrasena;
 	private JButton btnIniciarSesion;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Inicio_Sesion frame = new Inicio_Sesion();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
-	public Inicio_Sesion() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1920, 1080);
+	public Inicio_Sesion(Ventana_Principal principal, boolean modal) {
+		super(principal);
+		this.setModal(modal);
+		setBounds(100, 100, 450, 650);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
@@ -61,7 +44,7 @@ public class Inicio_Sesion extends JFrame implements ActionListener {
 		contentPane.setLayout(null);
 
 		textEmail = new JTextField();
-		textEmail.setBounds(786, 425, 356, 20);
+		textEmail.setBounds(90, 221, 268, 20);
 		textEmail.setOpaque(false);
 		textEmail.setForeground(Color.WHITE);
 		textEmail.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -73,13 +56,13 @@ public class Inicio_Sesion extends JFrame implements ActionListener {
 		JLabel lblEmail = new JLabel("Email");
 		lblEmail.setForeground(Color.WHITE);
 		lblEmail.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblEmail.setBounds(909, 327, 77, 54);
+		lblEmail.setBounds(173, 144, 77, 54);
 		contentPane.add(lblEmail);
 
 		JLabel lblContrasea = new JLabel("Contraseña");
 		lblContrasea.setForeground(Color.WHITE);
 		lblContrasea.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblContrasea.setBounds(881, 532, 232, 54);
+		lblContrasea.setBounds(140, 277, 232, 54);
 		contentPane.add(lblContrasea);
 
 		passContrasena = new JPasswordField();
@@ -89,15 +72,17 @@ public class Inicio_Sesion extends JFrame implements ActionListener {
 		passContrasena.setColumns(10);
 		passContrasena.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		passContrasena.setBackground(new Color(102, 255, 102));
-		passContrasena.setBounds(786, 640, 356, 34);
+		passContrasena.setBounds(90, 356, 268, 34);
 		contentPane.add(passContrasena);
 
 		btnIniciarSesion = new JButton("Iniciar Sesion");
 		btnIniciarSesion.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnIniciarSesion.setBackground(new Color(102, 255, 153));
-		btnIniciarSesion.setBounds(862, 768, 202, 44);
+		btnIniciarSesion.setBounds(120, 452, 202, 44);
 		btnIniciarSesion.addActionListener(this);
 		contentPane.add(btnIniciarSesion);
+		
+		
 	}
 
 	@Override
@@ -127,13 +112,13 @@ public class Inicio_Sesion extends JFrame implements ActionListener {
 				// SI EL TIPO ES IGUAL A ADMIN
 				if (pers.getCodigoPersona().charAt(0) == ('U')) {
 					this.dispose();
-					Ventana_Principal ven = new Ventana_Principal(null, null);
+					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
 
 					// SI EL TIPO ES IGUAL A CLIENTE
 				} else if (pers.getCodigoPersona().charAt(0) == ('A')) {
 					this.dispose();
-					Ventana_Principal ven = new Ventana_Principal(null, null);
+					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
 
 					// SI EL EMAIL O CONTRASEÑA NO COINCIDEN

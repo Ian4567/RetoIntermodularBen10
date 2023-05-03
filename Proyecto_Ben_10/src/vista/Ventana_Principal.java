@@ -57,14 +57,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private JTable tablaProducto;
 	private DBImplementacion db = new ControladorBdImplementacion();
 	private Map<String, Producto> productos;
-	private JButton btnPeli;
-	private JButton btnJuguete;
-	private JButton btnRopa;
-	private JComboBox comboCodigoRopa;
-	private JComboBox comboCodigoJuguete;
-	private JComboBox comboCodigoPeli;
+	private JButton btnPeli, btnJuguete, btnRopa;
+	private JComboBox comboCodigoRopa, comboCodigoJuguete, comboCodigoPeli;
+	private JButton btnCasa;
+	private JMenuItem iniciar, registro, borrado, btnCesta;
+	private JPanel usuario, main;
+	private JMenuBar menuBar;
+	private JButton btnNewButton;
+	JTabbedPane tabbedPane;
 
-	public Ventana_Principal(Producto producto, DBImplementacion info) {
+	public Ventana_Principal(Producto producto) {
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -73,14 +75,14 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabbedPane.setForeground(new Color(0, 0, 0));
 		tabbedPane.setBackground(new Color(0, 0, 0));
 		tabbedPane.setBounds(0, 0, 1999, 1008);
 		contentPanel.add(tabbedPane);
 
-		JPanel main = new JPanel();
+		main = new JPanel();
 		main.setForeground(new Color(128, 255, 128));
 		main.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Main", null, main, null);
@@ -95,46 +97,56 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		texto.setForeground(new Color(128, 255, 128));
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
-		JMenuBar menuBar = new JMenuBar();
+		menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(128, 255, 128));
 		menuBar.setBounds(0, 0, 255, 64);
 		main.add(menuBar);
 
-		JButton btnNewButton_1 = new JButton("");
-		btnNewButton_1.setBackground(new Color(128, 255, 128));
-		btnNewButton_1.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
-		menuBar.add(btnNewButton_1);
+		btnNewButton = new JButton("");
+		btnNewButton.setBackground(new Color(128, 255, 128));
+		btnNewButton.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		menuBar.add(btnNewButton);
 
 		JMenu mnNewMenu = new JMenu("");
 		mnNewMenu.setIcon(new ImageIcon("././imagenes/Ben_10_Omnitrix-removebg-preview.png"));
 		menuBar.add(mnNewMenu);
 
-		JMenuItem iniciar = new JMenuItem("Iniciar sesion");
-		iniciar.setForeground(Color.BLACK);
-		iniciar.setBackground(new Color(128, 255, 128));
-		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(iniciar);
-
-		JMenuItem mntmNewMenuItem = new JMenuItem("Registrarse");
-		mntmNewMenuItem.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem);
-
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Borrar Cuenta");
-		mntmNewMenuItem_1.setBackground(new Color(128, 255, 128));
-		mntmNewMenuItem_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mnNewMenu.add(mntmNewMenuItem_1);
-
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
 		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
+		btnCasa = new JButton("");
+		btnCasa.addActionListener(this);
 
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
-		mnNewMenu_1.add(mntmNewMenuItem_2);
+		btnCasa.setBackground(new Color(128, 255, 128));
+		btnCasa.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		menuBar.add(btnCasa);
+
+		iniciar = new JMenuItem("Iniciar sesion");
+		iniciar.setForeground(Color.BLACK);
+		iniciar.setBackground(new Color(128, 255, 128));
+		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar.addActionListener(this);
+		mnNewMenu.add(iniciar);
+
+		registro = new JMenuItem("Registrarse");
+		registro.setBackground(new Color(128, 255, 128));
+		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro.addActionListener(this);
+		mnNewMenu.add(registro);
+
+		borrado = new JMenuItem("Borrar Cuenta");
+		borrado.setBackground(new Color(128, 255, 128));
+		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		borrado.addActionListener(this);
+		mnNewMenu.add(borrado);
+
+		btnCesta = new JMenuItem("COMPRAR");
+		mnNewMenu_1.add(btnCesta);
+		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
-		JPanel usuario = new JPanel();
+		usuario = new JPanel();
 		usuario.setForeground(new Color(128, 255, 128));
 		usuario.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Cuenta", null, usuario, null);
@@ -314,6 +326,24 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			insertarCesta();
 		} else if (e.getSource().equals(btnPeli)) {
 			insertarCesta();
+		} else if (e.getSource().equals(btnCasa)) {
+			this.dispose();
+			Ventana_Principal prin = new Ventana_Principal(null);
+			prin.setVisible(true);
+		} else if (e.getSource().equals(iniciar)) {
+			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
+			inicio.setVisible(true);
+		} else if (e.getSource().equals(registro)) {
+			Registro reg = new Registro(this);
+			reg.setVisible(true);
+		} else if (e.getSource().equals(borrado)) {
+			tabbedPane.setSelectedIndex(1);
+			tabbedPane.setVisible(true);
+			
+		} else if (e.getSource().equals(btnCesta)) {
+			this.dispose();
+			Finalizar_Compra fin = new Finalizar_Compra();
+			fin.setVisible(true);
 		}
 
 	}
@@ -332,17 +362,14 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 		cesta.setFecha_Inicio(LocalDate.now());
 		cesta.setFecha_fin(null);
-		
-		
-		
+
 	}
-	
+
 	private float sumarPrecio() {
 		DBImplementacion db = new ControladorBdImplementacion();
 		ArrayList<Producto> productoss = db.recogerProductos();
 		return 0;
 
-		
 	}
 
 	private static void addPopup(Component component, final JPopupMenu popup) {

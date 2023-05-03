@@ -74,23 +74,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JMenuBar menuBar;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			Gestionar_Articulo dialog = new Gestionar_Articulo();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public Gestionar_Articulo() {
+	public Gestionar_Articulo(Ventana_Principal principal, boolean modal) {
+		super(principal);
+		this.setModal(modal);
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -105,7 +91,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
 		texto.setForeground(new Color(128, 255, 128));
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		menuBar = new JMenuBar();
 		menuBar.setBackground(new Color(128, 255, 128));
 		menuBar.setBounds(0, 0, 255, 64);
@@ -140,18 +126,17 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		borrado.addActionListener(this);
 		mnNewMenu.add(borrado);
-		
+
 		JMenu mnNewMenu_1 = new JMenu("");
 		mnNewMenu_1.setBackground(new Color(128, 255, 128));
 		mnNewMenu_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
 		menuBar.add(mnNewMenu_1);
-		
-		
+
 		btnCesta = new JMenuItem("COMPRAR");
 		mnNewMenu_1.add(btnCesta);
 		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
@@ -474,8 +459,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		btnBorrar.setBounds(163, 418, 200, 50);
 		btnBorrar.addActionListener(this);
 		contentPanel.add(btnBorrar);
-		
-		
 
 		textGenero = new JTextField();
 		textGenero.setOpaque(false);
@@ -523,7 +506,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		textIdioma = new JLocaleChooser();
 		textIdioma.setBounds(1576, 768, 171, 20);
 		contentPanel.add(textIdioma);
-		
+
 		JLabel lblPegi = new JLabel("Pegi");
 		lblPegi.setForeground(Color.WHITE);
 		lblPegi.setFont(new Font("Jokerman", Font.PLAIN, 25));
@@ -643,7 +626,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnAñadir)) {
 			añadirProducto();
-			
+
 		} else if (e.getSource().equals(btnModificar)) {
 			modificarProducto();
 		} else if (e.getSource().equals(btnBorrar)) {
@@ -656,23 +639,24 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			limpiarTodosLosCampos();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, null);
+			Ventana_Principal prin = new Ventana_Principal(null);
 			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
+			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro();
+			Registro reg = new Registro(null);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
-			inicio.setVisible(true);
+			Ventana_Principal prin = new Ventana_Principal(null);
+			prin.setVisible(true);
+			
 
-		}else if (e.getSource().equals(btnCesta)) {
+		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
 			Finalizar_Compra fin = new Finalizar_Compra();
 			fin.setVisible(true);
@@ -857,7 +841,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
-			} 
+			}
 
 		}
 

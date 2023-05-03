@@ -292,20 +292,22 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, null);
+			Ventana_Principal prin = new Ventana_Principal(null);
 			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
+			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro();
+			Registro reg = new Registro(null);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrarCuenta)) {
 			this.dispose();
-			Ventana_Principal ven = new Ventana_Principal(null, null);
+			Ventana_Principal prin = new Ventana_Principal(null);
+			prin.tabbedPane.setSelectedIndex(1);
+			prin.tabbedPane.setVisible(true);
 
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
