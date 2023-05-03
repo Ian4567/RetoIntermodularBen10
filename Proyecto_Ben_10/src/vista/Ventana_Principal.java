@@ -77,7 +77,12 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private JMenuItem registro;
 	private JMenuItem borrado;
 	private JPanel usuario;
-	private JTabbedPane tabbedPane ;
+	private JTabbedPane panelDoble;
+	private JMenuItem iniciar2;
+	private JMenuItem registro2;
+	private JMenuItem borrado2;
+	private JButton btnCasa2;
+
 	public Ventana_Principal(Producto producto, DBImplementacion info) {
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
@@ -87,19 +92,19 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		tabbedPane.setForeground(new Color(128, 255, 128));
-		tabbedPane.setBackground(Color.DARK_GRAY);
-		tabbedPane.setBounds(0, 0, 1999, 1008);
-		contentPanel.add(tabbedPane);
+		panelDoble = new JTabbedPane(JTabbedPane.TOP);
+		panelDoble.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		panelDoble.setForeground(new Color(128, 255, 128));
+		panelDoble.setBackground(Color.DARK_GRAY);
+		panelDoble.setBounds(0, 0, 1999, 1008);
+		contentPanel.add(panelDoble);
 
 		JPanel main = new JPanel();
 		main.setForeground(new Color(128, 255, 128));
 		main.setBackground(Color.DARK_GRAY);
-		tabbedPane.addTab("Main", null, main, null);
-		tabbedPane.setBackgroundAt(0, Color.DARK_GRAY);
-		tabbedPane.setForegroundAt(0, new Color(128, 255, 128));
+		panelDoble.addTab("Main", null, main, null);
+		panelDoble.setBackgroundAt(0, Color.DARK_GRAY);
+		panelDoble.setForegroundAt(0, new Color(128, 255, 128));
 		main.setLayout(null);
 
 		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
@@ -156,7 +161,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		usuario = new JPanel();
 		usuario.setForeground(new Color(128, 255, 128));
 		usuario.setBackground(Color.DARK_GRAY);
-		tabbedPane.addTab("Cuenta", null, usuario, null);
+		panelDoble.addTab("Cuenta", null, usuario, null);
 		usuario.setLayout(null);
 
 		JLabel User = new JLabel("Usuario:");
@@ -248,7 +253,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
 		lblComprasRealizadas.setForeground(Color.WHITE);
 		lblComprasRealizadas.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblComprasRealizadas.setBounds(882, 557, 311, 86);
+		lblComprasRealizadas.setBounds(878, 494, 311, 86);
 		usuario.add(lblComprasRealizadas);
 
 		this.presentarTablaRopa(producto, db, main);
@@ -358,31 +363,35 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		menuBar_1.setBounds(0, 0, 255, 64);
 		usuario.add(menuBar_1);
 
-		JButton inicio = new JButton("");
-		inicio.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
-		inicio.setBackground(new Color(128, 255, 128));
-		menuBar_1.add(inicio);
+		btnCasa2 = new JButton("");
+		btnCasa2.addActionListener(this);
+		btnCasa2.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		btnCasa2.setBackground(new Color(128, 255, 128));
+		menuBar_1.add(btnCasa2);
 
 		JMenu mnNewMenu_2 = new JMenu("");
 		mnNewMenu_2.setIcon(new ImageIcon("././imagenes/Ben_10_Omnitrix-removebg-preview.png"));
 		mnNewMenu_2.setBackground(new Color(128, 255, 128));
 		menuBar_1.add(mnNewMenu_2);
 
-		JMenuItem iniciar_1 = new JMenuItem("Iniciar sesion");
-		iniciar_1.setForeground(Color.BLACK);
-		iniciar_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		iniciar_1.setBackground(new Color(128, 255, 128));
-		mnNewMenu_2.add(iniciar_1);
+		iniciar2 = new JMenuItem("Iniciar sesion");
+		iniciar2.addActionListener(this);
+		iniciar2.setForeground(Color.BLACK);
+		iniciar2.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar2.setBackground(new Color(128, 255, 128));
+		mnNewMenu_2.add(iniciar2);
 
-		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Registrarse");
-		mntmNewMenuItem_3.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mntmNewMenuItem_3.setBackground(new Color(128, 255, 128));
-		mnNewMenu_2.add(mntmNewMenuItem_3);
+		registro2 = new JMenuItem("Registrarse");
+		registro2.addActionListener(this);
+		registro2.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro2.setBackground(new Color(128, 255, 128));
+		mnNewMenu_2.add(registro2);
 
-		JMenuItem mntmNewMenuItem_1_1 = new JMenuItem("Borrar Cuenta");
-		mntmNewMenuItem_1_1.setFont(new Font("Jokerman", Font.PLAIN, 15));
-		mntmNewMenuItem_1_1.setBackground(new Color(128, 255, 128));
-		mnNewMenu_2.add(mntmNewMenuItem_1_1);
+		borrado2 = new JMenuItem("Borrar Cuenta");
+		borrado2.addActionListener(this);
+		borrado2.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		borrado2.setBackground(new Color(128, 255, 128));
+		mnNewMenu_2.add(borrado2);
 
 		JMenu mnNewMenu_1_1 = new JMenu("");
 		mnNewMenu_1_1.setIcon(new ImageIcon("././imagenes/carrito-removebg-preview (1).png"));
@@ -391,9 +400,15 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 		JMenuItem mntmNewMenuItem_2_1 = new JMenuItem("New menu item");
 		mnNewMenu_1_1.add(mntmNewMenuItem_2_1);
+
+		JButton btnBorrarCuenta = new JButton("Borrar cuenta");
+		btnBorrarCuenta.setForeground(Color.GREEN);
+		btnBorrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 13));
+		btnBorrarCuenta.setBackground(Color.DARK_GRAY);
+		btnBorrarCuenta.setBounds(929, 862, 151, 64);
+		usuario.add(btnBorrarCuenta);
 	}
 
-	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnRopa)) {
 			insertarCesta();
@@ -401,26 +416,22 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			insertarCesta();
 		} else if (e.getSource().equals(btnPeli)) {
 			insertarCesta();
-		} else if (e.getSource().equals(btnCasa)) {
-			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, null);
-			prin.setVisible(true);
+		} else if (e.getSource().equals(btnCasa2)) {
+			panelDoble.setSelectedIndex(0);
 		} else if (e.getSource().equals(iniciar)) {
-			this.dispose();
+			Inicio_Sesion inicio = new Inicio_Sesion();
+			inicio.setVisible(true);
+		} else if (e.getSource().equals(iniciar2)) {
 			Inicio_Sesion inicio = new Inicio_Sesion();
 			inicio.setVisible(true);
 		} else if (e.getSource().equals(registro)) {
-			this.dispose();
+			Registro reg = new Registro();
+			reg.setVisible(true);
+		} else if (e.getSource().equals(registro2)) {
 			Registro reg = new Registro();
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
-			this.dispose();
-			Ventana_Principal borrar = new Ventana_Principal(null, null);
-			
-			borrar.setVisible(true);
-			tabbedPane.setSelectedIndex(1);
-			
-			
+			panelDoble.setSelectedIndex(1);
 		}
 
 	}
@@ -629,7 +640,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario) {
 
 		JScrollPane linea = new JScrollPane();
-		linea.setBounds(450, 642, 1179, 242);
+		linea.setBounds(450, 591, 1179, 242);
 		usuario.add(linea);
 		tablaProducto = this.cargarTablaCompra(compra, db);
 		tablaProducto.setBackground(new Color(128, 255, 128));
