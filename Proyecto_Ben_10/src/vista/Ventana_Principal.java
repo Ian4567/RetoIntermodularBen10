@@ -22,6 +22,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -38,6 +39,7 @@ import clases.Cesta_Compra;
 import clases.Juguete;
 import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
+import clases.Persona;
 import clases.Producto;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
@@ -65,6 +67,9 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private JMenuBar menuBar;
 	private JButton btnNewButton;
 	JTabbedPane tabbedPane;
+	private JButton btnGestionarProductos;
+	public Map<String, Cesta_Compra> compras;
+	private JTextField textLinea, textPelis, textJuguetes;
 
 	public Ventana_Principal(Producto producto) {
 		setBounds(100, 100, 1920, 1080);
@@ -80,6 +85,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		tabbedPane.setForeground(new Color(0, 0, 0));
 		tabbedPane.setBackground(new Color(0, 0, 0));
 		tabbedPane.setBounds(0, 0, 1999, 1008);
+
 		contentPanel.add(tabbedPane);
 
 		main = new JPanel();
@@ -138,6 +144,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		borrado = new JMenuItem("Borrar Cuenta");
 		borrado.setBackground(new Color(128, 255, 128));
 		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		borrado.setEnabled(false);
 		borrado.addActionListener(this);
 		mnNewMenu.add(borrado);
 
@@ -150,6 +157,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		usuario.setForeground(new Color(128, 255, 128));
 		usuario.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Cuenta", null, usuario, null);
+		tabbedPane.setEnabledAt(1, false);
 		usuario.setLayout(null);
 
 		JLabel User = new JLabel("Usuario:");
@@ -157,6 +165,36 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		User.setForeground(new Color(128, 255, 128));
 		User.setBounds(966, 30, 247, 55);
 		usuario.add(User);
+
+		textLinea = new JTextField();
+		textLinea.setOpaque(false);
+		textLinea.setForeground(Color.WHITE);
+		textLinea.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textLinea.setColumns(10);
+		textLinea.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textLinea.setBackground(new Color(102, 255, 102));
+		textLinea.setBounds(1718, 152, 130, 18);
+		main.add(textLinea);
+
+		textJuguetes = new JTextField();
+		textJuguetes.setOpaque(false);
+		textJuguetes.setForeground(Color.WHITE);
+		textJuguetes.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textJuguetes.setColumns(10);
+		textJuguetes.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textJuguetes.setBackground(new Color(102, 255, 102));
+		textJuguetes.setBounds(1718, 425, 130, 18);
+		main.add(textJuguetes);
+
+		textPelis = new JTextField();
+		textPelis.setOpaque(false);
+		textPelis.setForeground(Color.WHITE);
+		textPelis.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textPelis.setColumns(10);
+		textPelis.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textPelis.setBackground(new Color(102, 255, 102));
+		textPelis.setBounds(1701, 708, 147, 18);
+		main.add(textPelis);
 
 		textField = new JTextField();
 		textField.setOpaque(false);
@@ -241,7 +279,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
 		lblComprasRealizadas.setForeground(Color.WHITE);
 		lblComprasRealizadas.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblComprasRealizadas.setBounds(906, 555, 311, 86);
+		lblComprasRealizadas.setBounds(894, 533, 311, 86);
 		usuario.add(lblComprasRealizadas);
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
@@ -255,6 +293,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnJuguete.setFont(new Font("Jokerman", Font.PLAIN, 13));
 		btnJuguete.setBackground(Color.DARK_GRAY);
 		btnJuguete.setBounds(1521, 532, 151, 64);
+
 		main.add(btnJuguete);
 
 		btnPeli = new JButton("Agregar Articulo");
@@ -269,6 +308,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnRopa.setFont(new Font("Jokerman", Font.PLAIN, 13));
 		btnRopa.setBackground(Color.DARK_GRAY);
 		btnRopa.setBounds(1521, 233, 151, 64);
+		btnRopa.addActionListener(this);
 		main.add(btnRopa);
 
 		comboCodigoRopa = new JComboBox();
@@ -316,12 +356,76 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		lblLineaDeRopa.setBounds(792, 123, 312, 58);
 		main.add(lblLineaDeRopa);
 
+		btnGestionarProductos = new JButton("Gestionar Productos");
+		btnGestionarProductos.setForeground(new Color(255, 153, 102));
+		btnGestionarProductos.setFont(new Font("Jokerman", Font.PLAIN, 13));
+		btnGestionarProductos.setBackground(Color.DARK_GRAY);
+		btnGestionarProductos.setBounds(70, 190, 185, 87);
+
+		btnGestionarProductos.setVisible(false);
+		main.add(btnGestionarProductos);
+
+		JLabel lblStock = new JLabel("STOCK");
+		lblStock.setForeground(Color.WHITE);
+		lblStock.setFont(new Font("Jokerman", Font.BOLD, 15));
+		lblStock.setBounds(1743, 77, 105, 58);
+		main.add(lblStock);
+
+		JLabel lblStock_1 = new JLabel("STOCK");
+		lblStock_1.setForeground(Color.WHITE);
+		lblStock_1.setFont(new Font("Jokerman", Font.BOLD, 15));
+		lblStock_1.setBounds(1743, 343, 105, 58);
+		main.add(lblStock_1);
+
+		JLabel lblStock_2 = new JLabel("STOCK");
+		lblStock_2.setForeground(Color.WHITE);
+		lblStock_2.setFont(new Font("Jokerman", Font.BOLD, 15));
+		lblStock_2.setBounds(1743, 627, 105, 58);
+		main.add(lblStock_2);
+
+		this.presentarTablaCompra(null, db, usuario);
+
+	}
+
+	public boolean logeo(Persona per) {
+		DBImplementacion db = new ControladorBdImplementacion();
+		per = db.login(per);
+		boolean logeado = false;
+		if (per.getCodigoPersona().charAt(0) == 'U') {
+			tabbedPane.setEnabledAt(1, true);
+			btnJuguete.setEnabled(true);
+			btnPeli.setEnabled(true);
+			btnRopa.setEnabled(true);
+			borrado.setEnabled(true);
+			logeado = true;
+		} else if (per.getCodigoPersona().charAt(0) == 'A') {
+			borrado.setEnabled(false);
+			btnGestionarProductos.setVisible(true);
+			btnJuguete.setEnabled(false);
+			btnPeli.setEnabled(false);
+			btnRopa.setEnabled(false);
+			borrado.setEnabled(true);
+			logeado = true;
+		} else {
+			tabbedPane.setEnabledAt(1, false);
+			borrado.setEnabled(false);
+			btnJuguete.setEnabled(false);
+			btnPeli.setEnabled(false);
+			btnRopa.setEnabled(false);
+
+		}
+		return logeado;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Persona per = null;
+		DBImplementacion db = new ControladorBdImplementacion();
+		per = db.login(per);
 		if (e.getSource().equals(btnRopa)) {
+			logeo(per);
 			insertarCesta();
+
 		} else if (e.getSource().equals(btnJuguete)) {
 			insertarCesta();
 		} else if (e.getSource().equals(btnPeli)) {
@@ -339,11 +443,14 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		} else if (e.getSource().equals(borrado)) {
 			tabbedPane.setSelectedIndex(1);
 			tabbedPane.setVisible(true);
-			
+
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
 			Finalizar_Compra fin = new Finalizar_Compra();
 			fin.setVisible(true);
+		} else if (e.getSource().equals(btnGestionarProductos)) {
+			Gestionar_Articulo gest = new Gestionar_Articulo(null, true);
+			gest.setVisible(true);
 		}
 
 	}
@@ -547,5 +654,53 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 
 		comboCodigoPeli.setSelectedIndex(-1);
+	}
+
+	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario) {
+
+		JScrollPane linea = new JScrollPane();
+		linea.setBounds(444, 655, 1179, 242);
+		usuario.add(linea);
+		tablaProducto = this.cargarTablaCompra(compra, db);
+		tablaProducto.setBackground(new Color(128, 255, 128));
+		linea.setViewportView(tablaProducto);
+
+	}
+
+	private JTable cargarTablaCompra(Cesta_Compra compra, DBImplementacion db) {
+
+		String[] columnas = { "Numero_Referencia", "Fecha_Ini", "Fecha_Fin", "Peso_Total", "Precio_Total" };
+		String[] registros = new String[5];
+
+		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+		modelo.setRowCount(0);
+
+		compras = db.listarCompra();
+
+		for (Cesta_Compra com : compras.values()) {
+
+			registros[0] = com.getNumReferencia();
+			registros[1] = com.getFecha_Inicio().toString();
+			registros[2] = com.getFecha_fin().toString();
+			registros[3] = Float.toString(com.getPeso_total());
+			registros[4] = Float.toString(com.getPrecio_total());
+			modelo.addRow(registros);
+
+		}
+		return new JTable(modelo);
+	}
+
+	private Persona recogerUsuario() {
+		DBImplementacion bd = new ControladorBdImplementacion();
+		return null;
+
+	}
+
+	public void introducirStock() {
+		if (Integer.parseInt(textLinea.getText()) > productos.get(comboCodigoRopa.getSelectedItem().toString())
+				.getNumExistencias()) {
+			JOptionPane.showMessageDialog(null, "Error no puedes introducir mas de stock del que queda");
+		}
+
 	}
 }

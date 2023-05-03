@@ -324,10 +324,8 @@ public class Registro extends JDialog implements ActionListener {
 			Ventana_Principal prin = new Ventana_Principal(null);
 			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
-			this.dispose();
 			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
-
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
 			Registro reg = new Registro(null);

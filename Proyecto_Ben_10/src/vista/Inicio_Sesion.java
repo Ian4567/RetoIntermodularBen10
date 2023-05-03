@@ -81,8 +81,7 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 		btnIniciarSesion.setBounds(120, 452, 202, 44);
 		btnIniciarSesion.addActionListener(this);
 		contentPane.add(btnIniciarSesion);
-		
-		
+
 	}
 
 	@Override
@@ -114,13 +113,13 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 					this.dispose();
 					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
-
+					ven.logeo(pers);
 					// SI EL TIPO ES IGUAL A CLIENTE
 				} else if (pers.getCodigoPersona().charAt(0) == ('A')) {
 					this.dispose();
 					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
-
+					ven.logeo(pers);
 					// SI EL EMAIL O CONTRASEÑA NO COINCIDEN
 				} else {
 					JOptionPane.showMessageDialog(this, "ERROR! EMAIL O CONTRASEÑA INCORRECTOS");
@@ -131,4 +130,5 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 		}
 
 	}
+
 }
