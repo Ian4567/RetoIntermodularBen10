@@ -6,6 +6,7 @@ import java.util.Map;
 import clases.Cesta_Compra;
 import clases.Persona;
 import clases.Producto;
+import clases.Realiza;
 import clases.Tarjeta;
 
 public interface DBImplementacion {
@@ -30,27 +31,33 @@ public interface DBImplementacion {
 
 	public void modificarProducto(Producto prod);
 
-
 	public Map<String, Cesta_Compra> listarCompra();
-	
-	public Map<String, Producto> listarProdRopa();
-	
-	public Map<String, Producto> listarProdJuguete();
-	
-	public Map<String, Producto> listarProdPeli();
-	
-	public void insertarTarjeta(Tarjeta tar);
-	
-	public int numeroPersona(Persona pers);
-	
-	public void insertarPersona(Persona pers);
-	
-	public boolean esEmail(String email);
-	
-	public int existePersona(String persona);
-	
-	public int existeNumeroTarjeta(long numeroTarjeta);
-	
-	public Persona login(Persona pers);
-}
 
+	public Map<String, Producto> listarProdRopa();
+
+	public Map<String, Producto> listarProdJuguete();
+
+	public Map<String, Producto> listarProdPeli();
+
+	public void insertarTarjeta(Tarjeta tar);
+
+	public int numeroPersona(Persona pers);
+
+	public void insertarPersona(Persona pers);
+
+	public boolean esEmail(String email);
+
+	public int existePersona(String persona);
+
+	public int existeNumeroTarjeta(long numeroTarjeta);
+
+	public Persona login(Persona per);
+
+	public int numeroReferencia(Cesta_Compra cesta);
+
+	public void insertarCompra_Cesta(Cesta_Compra cesta);
+
+	public void insertarRealiza(Realiza realiza);
+	
+	
+}

@@ -50,7 +50,6 @@ public class Registro extends JDialog implements ActionListener {
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JButton btnCasa;
 
-	
 	public Registro(Ventana_Principal principal) {
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
@@ -111,7 +110,7 @@ public class Registro extends JDialog implements ActionListener {
 		mnNewMenu_1.add(btnCesta);
 		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		lblNewLabel = new JLabel("REGISTRO");
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Jokerman", Font.PLAIN, 59));
@@ -321,8 +320,6 @@ public class Registro extends JDialog implements ActionListener {
 			limpiar();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
-			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
@@ -336,11 +333,11 @@ public class Registro extends JDialog implements ActionListener {
 			prin.tabbedPane.setSelectedIndex(1);
 			prin.tabbedPane.setVisible(true);
 
-		}else if (e.getSource().equals(btnCesta)) {
+		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
 			Finalizar_Compra venCesta = new Finalizar_Compra();
 			venCesta.setVisible(true);
-		} 
+		}
 
 	}
 
@@ -412,7 +409,9 @@ public class Registro extends JDialog implements ActionListener {
 									((Usuario) pers).setFecha_nacimiento(fechaSelector.getDate().toString());
 									((Usuario) pers).setDireccion(textFDireccion.getText());
 									bd.insertarPersona(pers);
-
+									this.dispose();
+									Inicio_Sesion inicio = new Inicio_Sesion(null, true);
+									inicio.setVisible(true);
 									JOptionPane.showMessageDialog(btnLimpiar, "Te has registrado correctamente!");
 
 								} else {

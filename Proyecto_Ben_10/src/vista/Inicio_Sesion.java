@@ -114,12 +114,14 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
 					ven.logeo(pers);
+					this.dispose();
 					// SI EL TIPO ES IGUAL A CLIENTE
 				} else if (pers.getCodigoPersona().charAt(0) == ('A')) {
 					this.dispose();
 					Ventana_Principal ven = new Ventana_Principal(null);
 					ven.setVisible(true);
 					ven.logeo(pers);
+					this.dispose();
 					// SI EL EMAIL O CONTRASEÑA NO COINCIDEN
 				} else {
 					JOptionPane.showMessageDialog(this, "ERROR! EMAIL O CONTRASEÑA INCORRECTOS");

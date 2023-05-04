@@ -21,6 +21,7 @@ import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
 import clases.Persona;
 import clases.Producto;
+import clases.Realiza;
 import clases.Tarjeta;
 import clases.Usuario;
 
@@ -54,6 +55,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String INSERT_USUARIO = "INSERT INTO usuario (codigo_persona_usuario, numero_tarjeta, nombre, apellido, fecha_nacimiento, direccion) VALUES ( ?, ?, ?, ?, ?,?)";
 	private final String INSERT_TARJETA = "INSERT INTO tarjeta (numero_tarjeta, cvv) VALUES ( ?, ?)";
 	private final String SELECT_EN_CESTA = "SELECT P.CODIGO_PRODUCTO,P.NOMBRE,PESO, PRECIO, CC.NUMREFERENCIA,  FECHA_INICIO, CANTIDAD FROM REALIZA R JOIN PRODUCTO P ON P.CODIGO_PRODUCTO=R.CODIGO_PRODUCTO JOIN USUARIO U ON R.CODIGO_PERSONA= U.CODIGO_PERSONA_USUARIO JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA WHERE U.CODIGO_PERSONA_USUARIO=? AND CC.FECHA_FIN IS NULL AND R.NUMREFERENCIA=?";
+	private final String INSERT_REALIZA = "INSERT INTO REALIZA (NUMREFERENCIA, CODIGO_PRODUCTO, CODIGO_PERSONA,CANTIDAD) VALUES(?,?,?,?)";
+	private final String INSERT_CESTA = "INSERT INTO CESTA_COMPRA (NUMREFERENCIA, FECHA_INICIO,FECHA_FIN, PESO_TOTAL ,PRECIO_TOTAL) VALUES(?,?,?,?,?)";
+	private final String RECOGER_DATOS_EMAIL = "SELECT * FROM PERSONA WHERE EMAIL=?";
+
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -93,9 +98,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	public Persona login(Persona pers) {
 
 		ResultSet rs = null;
-
 		this.openConnection();
-
 		try {
 			stmt = con.prepareStatement(LOGEO);
 			stmt.setString(1, pers.getEmail());
@@ -103,9 +106,36 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 			rs = stmt.executeQuery();
 
-			pers = new Persona();
 			if (rs.next()) {
 				// RECOGEMOS LOS DATOS DE PERSONA
+				pers = new Persona();
+				pers.setCodigoPersona(rs.getString(1));
+				pers.setNombre(rs.getString(2));
+				pers.setEmail(rs.getString(3));
+				pers.setNumTelefono(rs.getInt(4));
+				pers.setContrasena(rs.getString(5));
+
+			}
+		} catch (SQLException e) {
+
+		}
+		return pers;
+	}
+
+	public Persona recogerDatosPersonaEmail(Persona pers) {
+
+		ResultSet rs = null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(RECOGER_DATOS_EMAIL);
+			stmt.setString(1, pers.getEmail());
+			stmt.setString(2, pers.getContrasena());
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				// RECOGEMOS LOS DATOS DE PERSONA
+				pers = new Persona();
 				pers.setCodigoPersona(rs.getString(1));
 				pers.setNombre(rs.getString(2));
 				pers.setEmail(rs.getString(3));
@@ -202,6 +232,28 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	public int numeroProducto(Producto prod) {
 		ResultSet rs = null;
 		String numJuguetes = "SELECT COUNT(codigo_producto)FROM producto";
+		int n = 0;
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(numJuguetes);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				// Si hay resultados obtengo el valor.
+				n = rs.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return n;
+
+	}
+
+	public int numeroReferencia(Cesta_Compra cesta) {
+		ResultSet rs = null;
+		String numJuguetes = "SELECT COUNT(numreferencia)FROM cesta_compra";
 		int n = 0;
 		this.openConnection();
 
@@ -488,8 +540,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			while (rs.next()) {
 				compra = new Cesta_Compra();
 				compra.setNumReferencia(rs.getString("numreferencia"));
-				compra.setFecha_Inicio(Date.valueOf(rs.getString("fecha_inicio")).toLocalDate());
-				compra.setFecha_fin(Date.valueOf(rs.getString("fecha_fin")).toLocalDate());
+				compra.setFecha_Inicio(rs.getDate("fecha_inicio"));
+				compra.setFecha_fin(rs.getDate("fecha_fin"));
 				compra.setPeso_total(rs.getFloat("peso_total"));
 				compra.setPeso_total(rs.getFloat("precio_total"));
 				listaCompra.put(compra.getNumReferencia(), compra);
@@ -515,6 +567,44 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			}
 		}
 		return listaCompra;
+	}
+
+	public void insertarCompra_Cesta(Cesta_Compra cesta) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_CESTA); // Cargamos el insert de persona con el stmt
+			// Posicionamos cada valor para insertarlo en la base de datos
+			stmt.setString(1, cesta.getNumReferencia());
+			stmt.setDate(2, Date.valueOf(cesta.getFecha_Inicio().toLocalDate()));
+			stmt.setDate(3, Date.valueOf(cesta.getFecha_fin().toLocalDate()));
+			stmt.setFloat(4, cesta.getPeso_total());
+			stmt.setFloat(5, cesta.getPrecio_total());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
+	public void insertarRealiza(Realiza realiza) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_REALIZA); // Cargamos el insert de persona con el stmt
+			// Posicionamos cada valor para insertarlo en la base de datos
+			stmt.setString(1, realiza.getNumReferencia());
+			stmt.setString(2, realiza.getCodigoProducto());
+			stmt.setString(3, realiza.getCodigoPersona());
+			stmt.setInt(4, realiza.getCantidad());
+
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
 	}
 
 	public Producto recogerCesta(String codigo_persona, String numreferencia) {

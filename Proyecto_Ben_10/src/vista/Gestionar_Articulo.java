@@ -639,8 +639,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			limpiarTodosLosCampos();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
-			prin.setVisible(true);
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
 			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
