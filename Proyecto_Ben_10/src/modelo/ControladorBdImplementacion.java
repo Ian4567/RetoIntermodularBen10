@@ -42,11 +42,12 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String ALTA_PELIS_SERIES = "INSERT INTO PELICULA_SERIE (codigo_producto, genero, fecha_de_lanzamiento, idioma, subtitulado, duracion) VALUES (?,?,?,?,?,?)";
 	private final String SELECT_PRODUCTOS = "SELECT * FROM PRODUCTO";
 	private final String DELETE_PRODUCTO = "DELETE FROM PRODUCTO WHERE CODIGO_PRODUCTO = ?";
+	private final String DELETE_CUENTA = "DELETE FROM PERSONA WHERE EMAIL=?";
 	private final String SELECT_PRODUCTO_COD = "SELECT * FROM PRODUCTO WHERE codigo_producto=?";
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
-	private final String SELECT_COMPRA = "SELECT * FROM CESTA_COMPRA";
+	private final String SELECT_COMPRA = "SELECT * FROM REALIZA R JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA = P.CODIGO_PERSONA WHERE EMAIL=?";
 	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
 	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
 	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
@@ -58,7 +59,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String INSERT_REALIZA = "INSERT INTO REALIZA (NUMREFERENCIA, CODIGO_PRODUCTO, CODIGO_PERSONA,CANTIDAD) VALUES(?,?,?,?)";
 	private final String INSERT_CESTA = "INSERT INTO CESTA_COMPRA (NUMREFERENCIA, FECHA_INICIO,FECHA_FIN, PESO_TOTAL ,PRECIO_TOTAL) VALUES(?,?,?,?,?)";
 	private final String RECOGER_DATOS_EMAIL = "SELECT * FROM PERSONA WHERE EMAIL=?";
-
+	private final String RECOGER_DATOS_USUARIO = "SELECT P.*, U.* FROM PERSONA P JOIN USUARIO U ON P.CODIGO_PERSONA=U.CODIGO_PERSONA_USUARIO WHERE EMAIL=?";
+	private final String RECOGER_DATOS_TARJETA =  "SELECT T.*, U.* FROM USUARIO U JOIN PERSONA P ON P.CODIGO_PERSONA=U.CODIGO_PERSONA_USUARIO JOIN TARJETA T ON U.NUMERO_TARJETA=T.NUMERO_TARJETA WHERE EMAIL=?";
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -109,11 +111,11 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			if (rs.next()) {
 				// RECOGEMOS LOS DATOS DE PERSONA
 				pers = new Persona();
-				pers.setCodigoPersona(rs.getString(1));
-				pers.setNombre(rs.getString(2));
-				pers.setEmail(rs.getString(3));
-				pers.setNumTelefono(rs.getInt(4));
-				pers.setContrasena(rs.getString(5));
+				pers.setCodigoPersona(rs.getString("codigo_persona"));
+				pers.setNombre(rs.getString("nombre"));
+				pers.setEmail(rs.getString("email"));
+				pers.setNumTelefono(rs.getInt("num_telefono"));
+				pers.setContrasena(rs.getString("contraseña"));
 
 			}
 		} catch (SQLException e) {
@@ -122,31 +124,55 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		return pers;
 	}
 
-	public Persona recogerDatosPersonaEmail(Persona pers) {
-
+	public Persona recogerDatosPersonaEmail(String email) {
 		ResultSet rs = null;
+		Persona pers = null;
 		this.openConnection();
 		try {
-			stmt = con.prepareStatement(RECOGER_DATOS_EMAIL);
-			stmt.setString(1, pers.getEmail());
-			stmt.setString(2, pers.getContrasena());
+			stmt = con.prepareStatement(RECOGER_DATOS_USUARIO);
+			stmt.setString(1, email);
 
 			rs = stmt.executeQuery();
 
 			if (rs.next()) {
 				// RECOGEMOS LOS DATOS DE PERSONA
-				pers = new Persona();
-				pers.setCodigoPersona(rs.getString(1));
-				pers.setNombre(rs.getString(2));
-				pers.setEmail(rs.getString(3));
-				pers.setNumTelefono(rs.getInt(4));
-				pers.setContrasena(rs.getString(5));
+				pers = new Usuario();
+				pers.setCodigoPersona(rs.getString("codigo_persona_usuario"));
+				pers.setNombre(rs.getString("nombre"));
+				pers.setEmail(rs.getString("email"));
+				((Usuario) pers).setNombrePersonal(rs.getString("nombre"));
+				((Usuario) pers).setApellido(rs.getString("apellido"));
+				pers.setNumTelefono(rs.getInt("num_telefono"));
+				((Usuario) pers).setDireccion(rs.getString("direccion"));
 
 			}
 		} catch (SQLException e) {
 
 		}
 		return pers;
+	}
+	
+	public Tarjeta recogerDatosTarjeta(String email) {
+		ResultSet rs = null;
+		Tarjeta tar= null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(RECOGER_DATOS_TARJETA);
+			stmt.setString(1, email);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				// RECOGEMOS LOS DATOS DE LA TARJETA
+				tar = new Tarjeta();
+				tar.setCVV(rs.getInt("CVV"));
+				tar.setNumeroTarjeta(rs.getString("numero_tarjeta"));
+
+			}
+		} catch (SQLException e) {
+
+		}
+		return tar;
 	}
 
 	public void insertarProducto(Producto prod) {
@@ -322,7 +348,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 
 			}
@@ -458,6 +484,33 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 
 	}
+	
+	public void eliminarCuenta(Persona per) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_CUENTA);
+			stmt.setString(1, per.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
 
 	public void modificarProducto(Producto prod) {
 
@@ -524,8 +577,10 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			}
 		}
 	}
+	
+	
 
-	public Map<String, Cesta_Compra> listarCompra() {
+	public Map<String, Cesta_Compra> listarCompra(Persona per) {
 		ResultSet rs = null;
 		Cesta_Compra compra;
 		Map<String, Cesta_Compra> listaCompra = new HashMap<>();
@@ -534,7 +589,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 		try {
 			stmt = con.prepareStatement(SELECT_COMPRA);
-
+			stmt.setString(1, per.getEmail());
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -577,7 +632,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			// Posicionamos cada valor para insertarlo en la base de datos
 			stmt.setString(1, cesta.getNumReferencia());
 			stmt.setDate(2, Date.valueOf(cesta.getFecha_Inicio().toLocalDate()));
-			stmt.setDate(3, Date.valueOf(cesta.getFecha_fin().toLocalDate()));
+			stmt.setDate(3, null);
 			stmt.setFloat(4, cesta.getPeso_total());
 			stmt.setFloat(5, cesta.getPrecio_total());
 			stmt.executeUpdate();
@@ -656,7 +711,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
 				((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
@@ -706,7 +761,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Juguete) prod).setMaterial(rs.getString("material"));
 				((Juguete) prod).setArticulable(rs.getString("articulable"));
@@ -731,6 +786,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			try {
 				this.closeConnection();
 			} catch (SQLException e) {
+				
+				
 				System.out.println("Error en el cierre de la BD");
 				e.printStackTrace();
 			}
@@ -756,7 +813,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
 				((Pelicula_Serie) prod).setFechaLanzamiento(rs.getString("fecha_de_lanzamiento"));

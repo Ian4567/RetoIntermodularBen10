@@ -16,7 +16,9 @@ public interface DBImplementacion {
 	public boolean validarFloat(String cadena);
 
 	public int numeroProducto(Producto prod);
-
+	
+	public Persona recogerDatosPersonaEmail(String email);
+	
 	public ArrayList<Producto> recogerProductos();
 
 	public void eliminarProducto(Producto prod);
@@ -31,7 +33,7 @@ public interface DBImplementacion {
 
 	public void modificarProducto(Producto prod);
 
-	public Map<String, Cesta_Compra> listarCompra();
+	public Map<String, Cesta_Compra> listarCompra(Persona per);
 
 	public Map<String, Producto> listarProdRopa();
 
@@ -59,5 +61,7 @@ public interface DBImplementacion {
 
 	public void insertarRealiza(Realiza realiza);
 	
-	
+	public Tarjeta recogerDatosTarjeta(String email);
+
+	public void eliminarCuenta(Persona per);
 }

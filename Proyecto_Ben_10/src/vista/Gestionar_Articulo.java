@@ -63,7 +63,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private JTextField textNumEstancias, textPrecio, textNombre, textDimensiones, textPeso, textColor, textFabricante,
 			textDuracion, textMaterial, textTejido, textGenero;
 	private JComboBox comboArticulable, comboPilas, comboSubtitulado, comboTalla, comboTipo, comboPegi;
-	private JButton btnAñadir, btnModificar, btnBorrar;
+	private JButton btnAnadir, btnModificar, btnBorrar;
 	private JLabel lblLinea, lblJuguete, lblSeriePeli, lblCodigoParaBorrar;
 	private JComboBox comboCodigos;
 	private JButton btnLimpiar;
@@ -77,7 +77,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	public Gestionar_Articulo(Ventana_Principal principal, boolean modal) {
 		super(principal);
 		this.setModal(modal);
-		setBounds(100, 100, 1920, 1080);
+		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.DARK_GRAY);
@@ -438,13 +438,13 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		textTejido.setBounds(279, 711, 174, 18);
 		contentPanel.add(textTejido);
 
-		btnAñadir = new JButton("AÑADIR ");
-		btnAñadir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btnAñadir.setBackground(new Color(102, 255, 153));
-		btnAñadir.setFont(new Font("Jokerman", Font.BOLD, 20));
-		btnAñadir.setBounds(163, 225, 200, 50);
-		btnAñadir.addActionListener(this);
-		contentPanel.add(btnAñadir);
+		btnAnadir = new JButton("AnADIR ");
+		btnAnadir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnAnadir.setBackground(new Color(102, 255, 153));
+		btnAnadir.setFont(new Font("Jokerman", Font.BOLD, 20));
+		btnAnadir.setBounds(163, 225, 200, 50);
+		btnAnadir.addActionListener(this);
+		contentPanel.add(btnAnadir);
 
 		btnModificar = new JButton("MODIFICAR");
 		btnModificar.setFont(new Font("Jokerman", Font.BOLD, 20));
@@ -483,7 +483,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 					recogerProducto();
 				}
 			}
+			
 		});
+		
 		contentPanel.add(comboCodigos);
 
 		lblCodigoParaBorrar = new JLabel("Codigo de productos");
@@ -624,8 +626,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(btnAñadir)) {
-			añadirProducto();
+		if (e.getSource().equals(btnAnadir)) {
+			anadirProducto();
 
 		} else if (e.getSource().equals(btnModificar)) {
 			modificarProducto();
@@ -650,13 +652,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
+			Ventana_Principal prin = new Ventana_Principal(null, null);
 			prin.setVisible(true);
-			
 
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
-			Finalizar_Compra fin = new Finalizar_Compra();
+			Finalizar_Compra fin = new Finalizar_Compra(null);
 			fin.setVisible(true);
 		}
 	}
@@ -706,6 +707,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 											"SI");
 									if (pregunt == 0) {
 										bd.modificarProducto(prod);
+										cargarComboCodigo();
 										limpiarTodosLosCampos();
 										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
 									}
@@ -740,6 +742,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 											"SI");
 									if (pregunt == 0) {
 										bd.modificarProducto(prod);
+										cargarComboCodigo();
 										limpiarTodosLosCampos();
 										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
 									}
@@ -779,6 +782,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 											"SI");
 									if (pregunt == 0) {
 										bd.modificarProducto(prod);
+										cargarComboCodigo();
 										limpiarTodosLosCampos();
 										JOptionPane.showMessageDialog(this, "PRODUCTO ACTUALIZADO CORRECTAMENTE!");
 									}
@@ -805,7 +809,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		DBImplementacion bd = new ControladorBdImplementacion();
 		Producto prod = null;
 
-		if (comboCodigos.getSelectedIndex() > -1) {
+		if (comboCodigos.getSelectedIndex() != -1) {
 			prod = bd.recogerProductoId(comboCodigos.getSelectedItem().toString());
 			textNombre.setText(prod.getNombre());
 			textPrecio.setText(Float.toString(prod.getPrecio()));
@@ -840,7 +844,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
 			}
-
 		}
 
 		return prod;
@@ -862,7 +865,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 						"SI");
 				if (pre == 0) {
 					bd.eliminarProducto(prod);
-					JOptionPane.showMessageDialog(btnAñadir, "SE HA DADO DE BAJA AL PRODUCTO!");
+					cargarComboCodigo();
+					limpiarTodosLosCampos();
+					JOptionPane.showMessageDialog(btnAnadir, "SE HA DADO DE BAJA AL PRODUCTO!");
 					comboCodigos.setSelectedIndex(-1);
 				} else {
 					comboCodigos.setSelectedIndex(-1);
@@ -875,7 +880,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		}
 	}
 
-	private void añadirProducto() {
+	private void anadirProducto() {
 		Producto prod;
 		DBImplementacion bd = new ControladorBdImplementacion();
 		boolean pre = bd.validarFloat(textPrecio.getText()), peso = bd.validarFloat(textPeso.getText());
@@ -908,8 +913,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									((Linea_De_Ropa) prod).setColor(textColor.getText());
 									((Linea_De_Ropa) prod).setFabricante(textFabricante.getText());
 									bd.insertarProducto(prod);
+									cargarComboCodigo();
 									limpiarTodosLosCampos();
 									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
+									//AKI
+									
+								
 								}
 
 							} else if (comboTipo.getSelectedItem().toString().equals("JUGUETE")) {
@@ -931,7 +940,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 											.setEdadMinima(Integer.parseInt(comboPegi.getSelectedItem().toString()));
 									((Juguete) prod).setPilas(comboPilas.getSelectedItem().toString());
 
+									
 									bd.insertarProducto(prod);
+									cargarComboCodigo();
 									limpiarTodosLosCampos();
 									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
 								}
@@ -960,8 +971,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									}
 									((Pelicula_Serie) prod).setDuracion(textDuracion.getText());
 									bd.insertarProducto(prod);
-									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
+									cargarComboCodigo();
 									limpiarTodosLosCampos();
+									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
+									
 								}
 
 							}
@@ -1001,6 +1014,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	public void cargarComboCodigo() {
+		
 		DBImplementacion db = new ControladorBdImplementacion();
 		ArrayList<Producto> codProd = db.recogerProductos();
 		comboCodigos.removeAllItems();

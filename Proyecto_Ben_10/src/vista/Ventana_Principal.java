@@ -43,6 +43,8 @@ import clases.Pelicula_Serie;
 import clases.Persona;
 import clases.Producto;
 import clases.Realiza;
+import clases.Tarjeta;
+import clases.Usuario;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
 
@@ -51,13 +53,16 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
+import java.awt.Toolkit;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
 
 public class Ventana_Principal extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 ///jmdk,reo,e
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textField, textField_1, textField_2, textField_3, textField_4;
+	private JTextField textField, textNombre, textApellido, textDireccion, textTelefono;
 	private JTable tablaProducto;
 	private DBImplementacion db = new ControladorBdImplementacion();
 	private Map<String, Producto> productos;
@@ -72,9 +77,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private JButton btnGestionarProductos;
 	public Map<String, Cesta_Compra> compras;
 	private JTextField textCantidad;
+	private JButton btnBorrar;
 
-	public Ventana_Principal(Producto producto) {
-		setBounds(100, 100, 1920, 1080);
+	public Ventana_Principal(Producto producto, Persona per) {
+
+		setIconImage(Toolkit.getDefaultToolkit().getImage(
+				"C:\\Users\\1dam\\Desktop\\Reto_Final_GIT\\RetoIntermodularBen10\\Proyecto_Ben_10\\imagenes\\icono.png"));
+		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.DARK_GRAY);
@@ -150,9 +159,14 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		borrado.addActionListener(this);
 		mnNewMenu.add(borrado);
 
-		btnCesta = new JMenuItem("COMPRAR");
+		btnCesta = new JMenuItem("Cesta");
 		mnNewMenu_1.add(btnCesta);
-		btnCesta.addActionListener(this);
+		btnCesta.setEnabled(false);
+		btnCesta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verCesta(per);
+			}
+		});
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		usuario = new JPanel();
@@ -165,7 +179,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel User = new JLabel("Usuario:");
 		User.setFont(new Font("Jokerman", Font.PLAIN, 30));
 		User.setForeground(new Color(128, 255, 128));
-		User.setBounds(966, 30, 247, 55);
+		User.setBounds(925, 29, 247, 55);
 		usuario.add(User);
 
 		textCantidad = new JTextField();
@@ -179,96 +193,102 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		main.add(textCantidad);
 
 		textField = new JTextField();
+		textField.setEditable(false);
+		textField.setEnabled(false);
 		textField.setOpaque(false);
 		textField.setForeground(Color.WHITE);
 		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
 		textField.setColumns(10);
 		textField.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textField.setBackground(new Color(102, 255, 102));
-		textField.setBounds(934, 96, 174, 18);
+		textField.setBounds(912, 96, 174, 18);
 		usuario.add(textField);
 
 		JLabel lblNewLabel = new JLabel("Tus Datos:");
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblNewLabel.setBounds(966, 125, 152, 86);
+		lblNewLabel.setBounds(927, 125, 152, 86);
 		usuario.add(lblNewLabel);
 
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblArticulo.setBounds(429, 231, 163, 68);
+		lblArticulo.setBounds(618, 231, 163, 68);
 		usuario.add(lblArticulo);
 
-		textField_1 = new JTextField();
-		textField_1.setOpaque(false);
-		textField_1.setForeground(Color.WHITE);
-		textField_1.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField_1.setColumns(10);
-		textField_1.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textField_1.setBackground(new Color(102, 255, 102));
-		textField_1.setBounds(602, 262, 174, 18);
-		usuario.add(textField_1);
+		textNombre = new JTextField();
+		textNombre.setEnabled(false);
+		textNombre.setEditable(false);
+		textNombre.setOpaque(false);
+		textNombre.setForeground(Color.WHITE);
+		textNombre.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textNombre.setColumns(10);
+		textNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textNombre.setBackground(new Color(102, 255, 102));
+		textNombre.setBounds(791, 262, 174, 18);
+		usuario.add(textNombre);
 
 		JLabel lblApellido = new JLabel("Apellido");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblApellido.setBounds(1282, 231, 163, 68);
+		lblApellido.setBounds(1075, 231, 163, 68);
 		usuario.add(lblApellido);
 
-		textField_2 = new JTextField();
-		textField_2.setOpaque(false);
-		textField_2.setForeground(Color.WHITE);
-		textField_2.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField_2.setColumns(10);
-		textField_2.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textField_2.setBackground(new Color(102, 255, 102));
-		textField_2.setBounds(1455, 262, 174, 18);
-		usuario.add(textField_2);
+		textApellido = new JTextField();
+		textApellido.setEnabled(false);
+		textApellido.setEditable(false);
+		textApellido.setOpaque(false);
+		textApellido.setForeground(Color.WHITE);
+		textApellido.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textApellido.setColumns(10);
+		textApellido.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textApellido.setBackground(new Color(102, 255, 102));
+		textApellido.setBounds(1248, 262, 174, 18);
+		usuario.add(textApellido);
 
 		JLabel lblDireccion = new JLabel("Direccion");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblDireccion.setBounds(429, 424, 163, 68);
+		lblDireccion.setBounds(618, 368, 163, 68);
 		usuario.add(lblDireccion);
 
-		textField_3 = new JTextField();
-		textField_3.setOpaque(false);
-		textField_3.setForeground(Color.WHITE);
-		textField_3.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField_3.setColumns(10);
-		textField_3.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textField_3.setBackground(new Color(102, 255, 102));
-		textField_3.setBounds(602, 455, 174, 18);
-		usuario.add(textField_3);
+		textDireccion = new JTextField();
+		textDireccion.setEnabled(false);
+		textDireccion.setEditable(false);
+		textDireccion.setOpaque(false);
+		textDireccion.setForeground(Color.WHITE);
+		textDireccion.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textDireccion.setColumns(10);
+		textDireccion.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textDireccion.setBackground(new Color(102, 255, 102));
+		textDireccion.setBounds(791, 399, 174, 18);
+		usuario.add(textDireccion);
 
 		JLabel lblTelefono = new JLabel("Telefono");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblTelefono.setBounds(1282, 424, 163, 68);
+		lblTelefono.setBounds(1075, 368, 163, 68);
 		usuario.add(lblTelefono);
 
-		textField_4 = new JTextField();
-		textField_4.setOpaque(false);
-		textField_4.setForeground(Color.WHITE);
-		textField_4.setFont(new Font("Tahoma", Font.BOLD, 14));
-		textField_4.setColumns(10);
-		textField_4.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		textField_4.setBackground(new Color(102, 255, 102));
-		textField_4.setBounds(1455, 455, 174, 18);
-		usuario.add(textField_4);
+		textTelefono = new JTextField();
+		textTelefono.setEditable(false);
+		textTelefono.setEnabled(false);
+		textTelefono.setOpaque(false);
+		textTelefono.setForeground(Color.WHITE);
+		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTelefono.setColumns(10);
+		textTelefono.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textTelefono.setBackground(new Color(102, 255, 102));
+		textTelefono.setBounds(1248, 399, 174, 18);
+		usuario.add(textTelefono);
 
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
 		lblComprasRealizadas.setForeground(Color.WHITE);
 		lblComprasRealizadas.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblComprasRealizadas.setBounds(894, 533, 311, 86);
+		lblComprasRealizadas.setBounds(902, 428, 311, 86);
 		usuario.add(lblComprasRealizadas);
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
-
-		this.presentarTablaRopa(producto, db, main);
-		this.presentarTablaJuguete(producto, db, main);
-		this.presentarTablaPeli(producto, db, main);
 
 		btnAgregar = new JButton("Agregar Articulo");
 		btnAgregar.setEnabled(false);
@@ -276,7 +296,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnAgregar.setFont(new Font("Jokerman", Font.PLAIN, 13));
 		btnAgregar.setBackground(Color.DARK_GRAY);
 		btnAgregar.setBounds(1521, 233, 151, 64);
-		btnAgregar.addActionListener(this);
+		btnAgregar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				insertarCesta(per);
+			}
+		});
 		main.add(btnAgregar);
 
 		comboCodigo = new JComboBox();
@@ -321,7 +345,39 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		lblStock.setFont(new Font("Jokerman", Font.BOLD, 15));
 		lblStock.setBounds(1743, 77, 105, 58);
 		main.add(lblStock);
-		this.presentarTablaCompra(null, db, usuario);
+		if (per != null) {
+			this.presentarTablaCompra(null, db, usuario, per);
+		}
+
+		btnBorrar = new JButton("BORRAR");
+		btnBorrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				borrarCuenta(per);
+			}
+		});
+		btnBorrar.setFont(new Font("Jokerman", Font.BOLD, 20));
+		btnBorrar.setBackground(new Color(250, 128, 114));
+		btnBorrar.setBounds(903, 859, 200, 50);
+		usuario.add(btnBorrar);
+
+		JLabel lblBorrarCuenta = new JLabel("BORRAR CUENTA");
+		lblBorrarCuenta.setForeground(Color.WHITE);
+		lblBorrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 25));
+		lblBorrarCuenta.setBounds(889, 762, 259, 86);
+		usuario.add(lblBorrarCuenta);
+
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+				presentarTablaRopa(producto, db, main);
+				presentarTablaJuguete(producto, db, main);
+				presentarTablaPeli(producto, db, main);
+				cargarComboCodigo();
+				presentarTablaCompra(null, db, usuario, per);
+			}
+
+			public void windowLostFocus(WindowEvent e) {
+			}
+		});
 
 	}
 
@@ -337,35 +393,41 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return codigo;
 	}
 
-	private void insertarCesta() {
+	private void insertarCesta(Persona per) {
 		DBImplementacion db = new ControladorBdImplementacion();
 		Cesta_Compra cesta;
 		boolean cantidad = db.validarFloat(textCantidad.getText());
 		Producto prod;
 		Realiza realiza = null;
-		Persona per = null;
-		per = db.login(per);
+
 		if (comboCodigo.getSelectedIndex() == -1 || textCantidad.getText().equals("")) {
 			JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 		} else {
 			prod = db.recogerProductoId(comboCodigo.getSelectedItem().toString());
 			if (cantidad) {
 				if (Integer.parseInt(textCantidad.getText()) > prod.getNumExistencias()) {
-			  		JOptionPane.showMessageDialog(null, "Error no puedes introducir mas de stock del que queda!");
+					JOptionPane.showMessageDialog(null, "Error no puedes introducir mas de stock del que queda!");
 				} else {
 					cesta = new Cesta_Compra();
 					cesta.setNumReferencia(generarCodigoRef(cesta));
 					cesta.setFecha_Inicio(Date.valueOf(LocalDate.now()));
-					cesta.setFecha_fin(Date.valueOf(LocalDate.ofYearDay(ALLBITS, ABORT)));
+					
 					cesta.setPeso_total(sumarPeso());
 					cesta.setPrecio_total(sumarPrecio());
 					db.insertarCompra_Cesta(cesta);
+					
 					realiza = new Realiza();
 					realiza.setNumReferencia(cesta.getNumReferencia());
 					realiza.setCodigoProducto(comboCodigo.getSelectedItem().toString());
 					realiza.setCodigoPersona(per.getCodigoPersona());
 					realiza.setCantidad(Integer.parseInt(textCantidad.getText()));
 					db.insertarRealiza(realiza);
+					prod.setNumExistencias(prod.getNumExistencias() - Integer.parseInt(textCantidad.getText()));
+					db.insertarRealiza(realiza);
+					db.modificarProducto(prod);
+					if (prod.getNumExistencias() == 0) {
+						db.eliminarProducto(prod);
+					}
 					JOptionPane.showMessageDialog(this, "PRODUCTO AÑADIDO CORRECTAMENTE A LA CESTA!");
 				}
 			} else {
@@ -374,32 +436,36 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 	}
 
-	public boolean logeo(Persona per) {
+	public Persona logeo(Persona per) {
 		DBImplementacion db = new ControladorBdImplementacion();
-		per = db.recogerD
-		boolean logeado = false;
+
 		if (per.getCodigoPersona().charAt(0) == 'U') {
 			tabbedPane.setEnabledAt(1, true);
 			btnAgregar.setEnabled(true);
 			borrado.setEnabled(true);
 			btnCesta.setEnabled(true);
-
-			logeado = true;
+			registro.setEnabled(false);
+			iniciar.setEnabled(false);
+			cargarDatosCuenta(per);
 		} else if (per.getCodigoPersona().charAt(0) == 'A') {
 			borrado.setEnabled(false);
 			btnGestionarProductos.setVisible(true);
 			btnAgregar.setEnabled(false);
 			borrado.setEnabled(true);
-			logeado = true;
+			registro.setEnabled(false);
+			iniciar.setEnabled(false);
+
 		} else {
 			tabbedPane.setEnabledAt(1, false);
 			borrado.setEnabled(false);
 			btnAgregar.setEnabled(false);
 			btnGestionarProductos.setVisible(false);
 			btnCesta.setEnabled(false);
+			btnGestionarProductos.setVisible(true);
+			btnCesta.setEnabled(true);
 
 		}
-		return logeado;
+		return per;
 	}
 
 	@Override
@@ -407,12 +473,10 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		Persona per = null;
 		DBImplementacion db = new ControladorBdImplementacion();
 
-		if (e.getSource().equals(btnAgregar)) {
-			logeo(per);
-			insertarCesta();
-		} else if (e.getSource().equals(iniciar)) {
+		if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
 			inicio.setVisible(true);
+			this.dispose();
 		} else if (e.getSource().equals(registro)) {
 			Registro reg = new Registro(this);
 			reg.setVisible(true);
@@ -420,13 +484,47 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			tabbedPane.setSelectedIndex(1);
 			tabbedPane.setVisible(true);
 
-		} else if (e.getSource().equals(btnCesta)) {
-			Finalizar_Compra fin = new Finalizar_Compra();
-			fin.setVisible(true);
 		} else if (e.getSource().equals(btnGestionarProductos)) {
+
 			Gestionar_Articulo gest = new Gestionar_Articulo(null, true);
 			gest.setVisible(true);
+
 		}
+
+	}
+
+	private void borrarCuenta(Persona pers) {
+		DBImplementacion db = new ControladorBdImplementacion();
+		int pregunt;
+
+		pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS MODIFICAR EL CUENTA?  ", // ventana
+				"Pregunta", // titulo de la ventana
+				JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+				JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+				null, // null para icono por defecto.
+				new Object[] { "SI", "NO" }, // objeto para las opciones
+				// null para YES, NO y CANCEL
+				"SI");
+		if (pregunt == 0) {
+			db.eliminarCuenta(pers);
+			JOptionPane.showMessageDialog(this, "CUENTA ELIMINADA CORRECTAMENTE!");
+			this.dispose();
+			Ventana_Principal ven = new Ventana_Principal(null, pers);
+			ven.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(this, "SE HA CANCELADO EL BORRADO!");
+		}
+
+	}
+
+	private void verCesta(Persona pers) {
+		DBImplementacion db = new ControladorBdImplementacion();
+		pers = logeo(pers);
+		Tarjeta tar;
+		tar = db.recogerDatosTarjeta(pers.getEmail());
+		Finalizar_Compra fin = new Finalizar_Compra(pers);
+		fin.cargarDatosCompra(pers, tar);
+		fin.setVisible(true);
 
 	}
 
@@ -601,51 +699,49 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return new JTable(modelo);
 	}
 
-	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario) {
-
+	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario, Persona per) {
 		JScrollPane linea = new JScrollPane();
-		linea.setBounds(444, 655, 1179, 242);
+		linea.setBounds(432, 514, 1179, 242);
 		usuario.add(linea);
-		tablaProducto = this.cargarTablaCompra(compra, db);
+		tablaProducto = this.cargarTablaCompra(compra, db, per);
 		tablaProducto.setBackground(new Color(128, 255, 128));
 		linea.setViewportView(tablaProducto);
 
 	}
 
-	private JTable cargarTablaCompra(Cesta_Compra compra, DBImplementacion db) {
-
+	private JTable cargarTablaCompra(Cesta_Compra compra, DBImplementacion db, Persona per) {
 		String[] columnas = { "Numero_Referencia", "Fecha_Ini", "Fecha_Fin", "Peso_Total", "Precio_Total" };
 		String[] registros = new String[5];
 
 		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
-		modelo.setRowCount(0);
+		if (per != null) {
+			modelo.setRowCount(0);
 
-		compras = db.listarCompra();
+			compras = db.listarCompra(per);
 
-		for (Cesta_Compra com : compras.values()) {
-			if (com.getFecha_fin() != null) {
-				registros[0] = com.getNumReferencia();
-				registros[1] = com.getFecha_Inicio().toString();
-				registros[2] = com.getFecha_fin().toString();
-				registros[3] = Float.toString(com.getPeso_total());
-				registros[4] = Float.toString(com.getPrecio_total());
-				modelo.addRow(registros);
+			for (Cesta_Compra com : compras.values()) {
+				if (com.getFecha_fin() != null) {
+					registros[0] = com.getNumReferencia();
+					registros[1] = com.getFecha_Inicio().toString();
+					registros[2] = com.getFecha_fin().toString();
+					registros[3] = Float.toString(com.getPeso_total());
+					registros[4] = Float.toString(com.getPrecio_total());
+					modelo.addRow(registros);
+				}
 			}
 		}
 		return new JTable(modelo);
+
 	}
 
-	private Persona recogerUsuario() {
+	public Persona cargarDatosCuenta(Persona pers) {
 		DBImplementacion bd = new ControladorBdImplementacion();
-		return null;
-
-	}
-
-	public void introducirStock() {
-		if (Integer.parseInt(textCantidad.getText()) > productos.get(comboCodigo.getSelectedItem().toString())
-				.getNumExistencias()) {
-			JOptionPane.showMessageDialog(null, "Error no puedes introducir mas de stock del que queda");
-		}
-
+		pers = db.recogerDatosPersonaEmail(pers.getEmail());
+		textNombre.setText(((Usuario) pers).getNombrePersonal());
+		textApellido.setText(((Usuario) pers).getApellido());
+		textDireccion.setText(((Usuario) pers).getDireccion());
+		textField.setText(pers.getNombre());
+		textTelefono.setText(Integer.toString(((Usuario) pers).getNumTelefono()));
+		return pers;
 	}
 }

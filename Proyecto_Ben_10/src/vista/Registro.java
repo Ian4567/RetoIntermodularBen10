@@ -46,7 +46,7 @@ public class Registro extends JDialog implements ActionListener {
 			lblNombredeUsuario, lblApellido, lblFechaNac, lblDireccion;
 	private Persona pers;
 	private JDateChooser fechaSelector;
-	private JPasswordField passwordField;
+	private JPasswordField textFContrasena;
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JButton btnCasa;
 
@@ -285,15 +285,15 @@ public class Registro extends JDialog implements ActionListener {
 		fechaSelector.setBounds(1384, 463, 208, 24);
 		contentPanel.add(fechaSelector);
 
-		passwordField = new JPasswordField();
-		passwordField.setOpaque(false);
-		passwordField.setForeground(Color.WHITE);
-		passwordField.setFont(new Font("Tahoma", Font.BOLD, 14));
-		passwordField.setColumns(10);
-		passwordField.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		passwordField.setBackground(new Color(102, 255, 102));
-		passwordField.setBounds(617, 709, 208, 34);
-		contentPanel.add(passwordField);
+		textFContrasena = new JPasswordField();
+		textFContrasena.setOpaque(false);
+		textFContrasena.setForeground(Color.WHITE);
+		textFContrasena.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textFContrasena.setColumns(10);
+		textFContrasena.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textFContrasena.setBackground(new Color(102, 255, 102));
+		textFContrasena.setBounds(617, 709, 208, 34);
+		contentPanel.add(textFContrasena);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -329,13 +329,13 @@ public class Registro extends JDialog implements ActionListener {
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
+			Ventana_Principal prin = new Ventana_Principal(null, pers);
 			prin.tabbedPane.setSelectedIndex(1);
 			prin.tabbedPane.setVisible(true);
 
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
-			Finalizar_Compra venCesta = new Finalizar_Compra();
+			Finalizar_Compra venCesta = new Finalizar_Compra(null);
 			venCesta.setVisible(true);
 		}
 
@@ -346,7 +346,7 @@ public class Registro extends JDialog implements ActionListener {
 		textFNombre.setText("");
 		textFapellido.setText("");
 		textFEmail.setText("");
-		passwordField.setText("");
+		textFContrasena.setText("");
 		textFTelefono.setText("");
 		textFDireccion.setText("");
 		textFNumeroTar.setText("");
@@ -373,66 +373,79 @@ public class Registro extends JDialog implements ActionListener {
 		DBImplementacion bd = new ControladorBdImplementacion();
 		if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
 				|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
-				|| passwordField.getText().equals("") || textFTelefono.getText().equals("")
+				|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
 				|| textFDireccion.getText().equals("") || textFNumeroTar.getText().equals("")
 				|| textFcvv.getText().equals("")) {
 			JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
 		} else {
 
-			if (bd.existePersona(textNombreUsuario.getText()) == 0) {
+			if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
+					|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
+					|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
+					|| textFDireccion.getText().equals("") || textFNumeroTar.getText().equals("")
+					|| textFcvv.getText().equals("")) {
+				JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
+			} else {
 
-				if (textFNumeroTar.getText().length() == 16) {
+				if (bd.existePersona(textNombreUsuario.getText()) == 0) {
 
-					if (bd.esEmail(textFEmail.getText())) {
+					if (textFNumeroTar.getText().length() == 16) {
 
-						if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
+						if (bd.esEmail(textFEmail.getText())) {
 
-							if (textFTelefono.getText().length() == 9) {
+							if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
 
-								if (textFcvv.getText().length() == 3) {
+								if (textFTelefono.getText().length() == 9) {
 
-									tar = new Tarjeta();
-									tar.setNumeroTarjeta(textFNumeroTar.getText());
-									tar.setCVV(Integer.parseInt(textFcvv.getText()));
+									if (textFcvv.getText().length() == 3) {
+										if (fechaSelector != null) {
+											tar = new Tarjeta();
+											tar.setNumeroTarjeta(textFNumeroTar.getText());
+											tar.setCVV(Integer.parseInt(textFcvv.getText()));
 
-									bd.insertarTarjeta(tar);
-									pers = new Usuario();
-									pers.setCodigoPersona(generarCodigo(pers));
-									pers.setNombre(textNombreUsuario.getText());
-									;
-									pers.setEmail(textFEmail.getText());
-									pers.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
-									pers.setContrasena(passwordField.getText());
-									((Usuario) pers).setNumeroTarjeta(Long.parseLong(textFNumeroTar.getText()));
-									((Usuario) pers).setNombrePersonal(textFNombre.getText());
-									((Usuario) pers).setApellido(textFapellido.getText());
-									((Usuario) pers).setFecha_nacimiento(fechaSelector.getDate().toString());
-									((Usuario) pers).setDireccion(textFDireccion.getText());
-									bd.insertarPersona(pers);
-									this.dispose();
-									Inicio_Sesion inicio = new Inicio_Sesion(null, true);
-									inicio.setVisible(true);
-									JOptionPane.showMessageDialog(btnLimpiar, "Te has registrado correctamente!");
+											bd.insertarTarjeta(tar);
+											pers = new Usuario();
+											pers.setCodigoPersona(generarCodigo(pers));
+											pers.setNombre(textNombreUsuario.getText());
 
+											pers.setEmail(textFEmail.getText());
+											pers.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
+											pers.setContrasena(textFContrasena.getText());
+											((Usuario) pers).setNumeroTarjeta(Long.parseLong(textFNumeroTar.getText()));
+											((Usuario) pers).setNombrePersonal(textFNombre.getText());
+											((Usuario) pers).setApellido(textFapellido.getText());
+											((Usuario) pers).setFecha_nacimiento(fechaSelector.getDate().toString());
+											((Usuario) pers).setDireccion(textFDireccion.getText());
+											bd.insertarPersona(pers);
+
+											JOptionPane.showMessageDialog(btnLimpiar,
+													"Te has registrado correctamente!");
+											this.dispose();
+											Inicio_Sesion inicio = new Inicio_Sesion(null, true);
+											inicio.setVisible(true);
+										} else {
+											JOptionPane.showMessageDialog(this,
+													"DEBES ELEGIR UNA FECHA DE NACIMIENTO!");
+										}
+									} else {
+										JOptionPane.showMessageDialog(this, "EL CVV NO TIENE 3 NUMEROS");
+									}
 								} else {
-									JOptionPane.showMessageDialog(this, "EL CVV NO TIENE 3 NUMEROS");
+									JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
 								}
 							} else {
-								JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
+								JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
 							}
 						} else {
-							JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
+							JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
 						}
 					} else {
-						JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
+						JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
 					}
 				} else {
-					JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
+					JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
 				}
-			} else {
-				JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
 			}
 		}
-
 	}
 }

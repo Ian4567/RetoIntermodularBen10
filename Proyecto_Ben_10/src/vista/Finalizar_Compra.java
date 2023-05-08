@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,7 +26,10 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 
 import clases.Cesta_Compra;
+import clases.Persona;
 import clases.Producto;
+import clases.Tarjeta;
+import clases.Usuario;
 import modelo.ControladorBdImplementacion;
 import modelo.DBImplementacion;
 import javax.swing.table.DefaultTableModel;
@@ -37,7 +41,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTable tablaProducto;
-	private JTextField textEmail, textTelefono, textNombre, texCvv, textCVV;
+	private JTextField textEmail, textTelefono, textNombre, textTarjeta, textCVV;
 	private Map<String, Cesta_Compra> listaCompra;
 	private DBImplementacion db = new ControladorBdImplementacion();
 	private Cesta_Compra compra;
@@ -52,24 +56,8 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	private JLabel lblNumeroDeTarjeta;
 	private JLabel texto;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			Finalizar_Compra dialog = new Finalizar_Compra();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public Finalizar_Compra() {
-		setBounds(100, 100, 1920, 1080);
+	public Finalizar_Compra(Persona pers) {
+		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.DARK_GRAY);
@@ -107,6 +95,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		btnCasa = new JButton("");
 		btnCasa.setBackground(new Color(128, 255, 128));
 		btnCasa.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		btnCasa.addActionListener(this);
 		menuBar.add(btnCasa);
 
 		JMenu mnNewMenu = new JMenu("");
@@ -117,12 +106,14 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		iniciar.setForeground(Color.BLACK);
 		iniciar.setBackground(new Color(128, 255, 128));
 		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar.setEnabled(false);
 		iniciar.addActionListener(this);
 		mnNewMenu.add(iniciar);
 
 		registro = new JMenuItem("Registrarse");
 		registro.setBackground(new Color(128, 255, 128));
 		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro.setEnabled(false);
 		registro.addActionListener(this);
 		mnNewMenu.add(registro);
 
@@ -172,15 +163,15 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		textNombre.setBounds(622, 169, 174, 18);
 		main.add(textNombre);
 
-		texCvv = new JTextField();
-		texCvv.setOpaque(false);
-		texCvv.setForeground(Color.WHITE);
-		texCvv.setFont(new Font("Tahoma", Font.BOLD, 14));
-		texCvv.setColumns(10);
-		texCvv.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		texCvv.setBackground(new Color(102, 255, 102));
-		texCvv.setBounds(1259, 168, 174, 18);
-		main.add(texCvv);
+		textTarjeta = new JTextField();
+		textTarjeta.setOpaque(false);
+		textTarjeta.setForeground(Color.WHITE);
+		textTarjeta.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTarjeta.setColumns(10);
+		textTarjeta.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textTarjeta.setBackground(new Color(102, 255, 102));
+		textTarjeta.setBounds(1259, 168, 174, 18);
+		main.add(textTarjeta);
 
 		textCVV = new JTextField();
 		textCVV.setOpaque(false);
@@ -232,50 +223,48 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		btnFinalizarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnFinalizarCompra.setBackground(new Color(102, 255, 153));
-		btnFinalizarCompra.setBounds(525, 897, 313, 50);
+		btnFinalizarCompra.setBounds(522, 864, 313, 50);
 		btnFinalizarCompra.addActionListener(this);
 		main.add(btnFinalizarCompra);
 
 		btnCancelarCompra = new JButton("CANCELAR COMPRA");
 		btnCancelarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnCancelarCompra.setBackground(new Color(102, 255, 153));
-		btnCancelarCompra.setBounds(1109, 897, 339, 50);
+		btnCancelarCompra.setBounds(1089, 864, 339, 50);
 		btnCancelarCompra.addActionListener(this);
 		main.add(btnCancelarCompra);
 
-		this.presentarTabla(compra, db, main);
+		this.presentarTabla(compra, db, main, pers);
 
 	}
 
-	private void presentarTabla(Cesta_Compra compra, DBImplementacion db, JPanel main) {
+	private void presentarTabla(Cesta_Compra compra, DBImplementacion db, JPanel main, Persona pers) {
 
 		DBImplementacion bd = new ControladorBdImplementacion();
 		JScrollPane scroll = new JScrollPane();
 		scroll.setBounds(360, 551, 1177, 286);
 		main.add(scroll);
 
-		tablaProducto = this.cargarTabla(compra, db);
+		tablaProducto = this.cargarTabla(compra, db, pers);
 		tablaProducto.setGridColor(Color.green);
 		scroll.setViewportView(tablaProducto);
 
 	}
 
-	private JTable cargarTabla(Cesta_Compra comprar, DBImplementacion db) {
-
-		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "FECHA_FIN", "PESO_TOTAL", "PRECIO_TOTAL" };
-		String[] registros = new String[5];
+	private JTable cargarTabla(Cesta_Compra comprar, DBImplementacion db, Persona pers) {
+		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "PESO_TOTAL", "PRECIO_TOTAL" };
+		String[] registros = new String[4];
 
 		DefaultTableModel modelo = new DefaultTableModel(null, nombreColumnas);
 		modelo.setRowCount(0);
 
-		listaCompra = db.listarCompra();
+		listaCompra = db.listarCompra(pers);
 
 		for (Cesta_Compra compra : listaCompra.values()) {
 			registros[0] = compra.getNumReferencia();
 			registros[1] = compra.getFecha_Inicio().toString();
-			registros[2] = compra.getFecha_fin().toString();
+			registros[2] = Float.toString(compra.getPeso_total());
 			registros[3] = Float.toString(compra.getPeso_total());
-			registros[4] = Float.toString(compra.getPeso_total());
 
 			modelo.addRow(registros);
 		}
@@ -289,11 +278,10 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		if (e.getSource().equals(btnFinalizarCompra)) {
 			comprar();
 		} else if (e.getSource().equals(btnCancelarCompra)) {
-
+			cancelarCompra();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
-			prin.setVisible(true);
+			
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
 			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
@@ -305,20 +293,34 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrarCuenta)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null);
+			Ventana_Principal prin = new Ventana_Principal(null, null);
 			prin.tabbedPane.setSelectedIndex(1);
 			prin.tabbedPane.setVisible(true);
 
-		} else if (e.getSource().equals(btnCesta)) {
-			this.dispose();
-			Finalizar_Compra venCesta = new Finalizar_Compra();
-			venCesta.setVisible(true);
 		} 
 
 	}
 
-	private void comprar() {
-
+	private void cancelarCompra() {
+	
+		
 	}
 
+	private void comprar() {
+		
+	}
+
+	public Persona cargarDatosCompra(Persona pers, Tarjeta tar) {
+		
+		DBImplementacion bd = new ControladorBdImplementacion();
+		pers = db.recogerDatosPersonaEmail(pers.getEmail());
+		tar = db.recogerDatosTarjeta(pers.getEmail());
+		textNombre.setText(((Usuario) pers).getNombrePersonal());
+		textEmail.setText(pers.getEmail());
+		textTelefono.setText(Integer.toString(pers.getNumTelefono()));
+		textCVV.setText(Integer.toString(tar.getCVV()));
+		textTarjeta.setText(tar.getNumeroTarjeta());
+		
+		return pers;
+	}
 }

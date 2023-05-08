@@ -92,7 +92,7 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 
 	}
 
-	private void inicarSesion() {
+	private Persona inicarSesion() {
 		Persona pers = new Usuario();
 		// RECOGER EMAIL Y CONTRASEÑA
 		pers.setEmail(textEmail.getText());
@@ -110,15 +110,14 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 			if (textEmail.getText().equals(pers.getEmail()) && passContrasena.getText().equals(pers.getContrasena())) {
 				// SI EL TIPO ES IGUAL A ADMIN
 				if (pers.getCodigoPersona().charAt(0) == ('U')) {
-					this.dispose();
-					Ventana_Principal ven = new Ventana_Principal(null);
+					Ventana_Principal ven = new Ventana_Principal(null, pers);
 					ven.setVisible(true);
-					ven.logeo(pers);
 					this.dispose();
+					ven.logeo(pers);	
+					
 					// SI EL TIPO ES IGUAL A CLIENTE
 				} else if (pers.getCodigoPersona().charAt(0) == ('A')) {
-					this.dispose();
-					Ventana_Principal ven = new Ventana_Principal(null);
+					Ventana_Principal ven = new Ventana_Principal(null, pers);
 					ven.setVisible(true);
 					ven.logeo(pers);
 					this.dispose();
@@ -130,6 +129,7 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "USUARIO O CONTRASEÑA INCORRECTOS!");
 			}
 		}
+		return pers;
 
 	}
 
