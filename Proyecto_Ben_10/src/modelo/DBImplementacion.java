@@ -64,4 +64,16 @@ public interface DBImplementacion {
 	public Tarjeta recogerDatosTarjeta(String email);
 
 	public void eliminarCuenta(Persona per);
+	
+	public void modificarCesta(Cesta_Compra cesta, Persona pers);
+	
+	public void eliminarRealiza(Persona pers);
+	
+	public void eliminarCesta(Persona pers);
+	
+	public void añadirStockProducto(Producto prod, Persona pers);
+	
+	public ArrayList<Producto> recogerProductosId(Persona pers);
+	
+	public ArrayList<Realiza> recogerCantidad(Persona pers);
 }

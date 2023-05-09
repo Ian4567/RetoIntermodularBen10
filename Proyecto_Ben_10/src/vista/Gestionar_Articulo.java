@@ -483,9 +483,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 					recogerProducto();
 				}
 			}
-			
+
 		});
-		
+
 		contentPanel.add(comboCodigos);
 
 		lblCodigoParaBorrar = new JLabel("Codigo de productos");
@@ -890,9 +890,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 
 		} else {
-			if (pre != false) {
-				if (exis != false) {
-					if (peso != false) {
+			if (pre != false && Integer.parseInt(textPrecio.getText()) > 0) {
+				if (exis != false && Integer.parseInt(textNumEstancias.getText()) > 0) {
+					if (peso != false && Integer.parseInt(textPeso.getText()) > 0) {
 						if (comboTipo.getSelectedIndex() > -1) {
 
 							bd = new ControladorBdImplementacion();
@@ -916,9 +916,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									cargarComboCodigo();
 									limpiarTodosLosCampos();
 									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
-									//AKI
-									
-								
+									// AKI
+
 								}
 
 							} else if (comboTipo.getSelectedItem().toString().equals("JUGUETE")) {
@@ -940,7 +939,6 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 											.setEdadMinima(Integer.parseInt(comboPegi.getSelectedItem().toString()));
 									((Juguete) prod).setPilas(comboPilas.getSelectedItem().toString());
 
-									
 									bd.insertarProducto(prod);
 									cargarComboCodigo();
 									limpiarTodosLosCampos();
@@ -974,7 +972,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									cargarComboCodigo();
 									limpiarTodosLosCampos();
 									JOptionPane.showMessageDialog(this, "PRODUCTO INTRODUCIDO CORRECTAMENTE!");
-									
+
 								}
 
 							}
@@ -1014,7 +1012,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	public void cargarComboCodigo() {
-		
+
 		DBImplementacion db = new ControladorBdImplementacion();
 		ArrayList<Producto> codProd = db.recogerProductos();
 		comboCodigos.removeAllItems();

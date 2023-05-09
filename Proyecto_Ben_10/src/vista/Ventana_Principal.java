@@ -78,11 +78,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public Map<String, Cesta_Compra> compras;
 	private JTextField textCantidad;
 	private JButton btnBorrar;
+	private JLabel lblNewLabel_2;
+	private JLabel lblNewLabel_3;
+	private JLabel lblNewLabel_4;
 
 	public Ventana_Principal(Producto producto, Persona per) {
 
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				"C:\\Users\\1dam\\Desktop\\Reto_Final_GIT\\RetoIntermodularBen10\\Proyecto_Ben_10\\imagenes\\icono.png"));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("././imagenes/icono.png"));
 		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -107,8 +109,8 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		tabbedPane.setForegroundAt(0, new Color(128, 255, 128));
 		main.setLayout(null);
 
-		JLabel texto = new JLabel("Bienvenido  Alienigena a la tienda de");
-		texto.setBounds(610, 46, 661, 81);
+		JLabel texto = new JLabel("Bienvenido  Alienigena a la Tienda ");
+		texto.setBounds(576, 30, 661, 81);
 		main.add(texto);
 		texto.setFont(new Font("Jokerman", Font.PLAIN, 30));
 		texto.setForeground(new Color(128, 255, 128));
@@ -179,7 +181,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel User = new JLabel("Usuario:");
 		User.setFont(new Font("Jokerman", Font.PLAIN, 30));
 		User.setForeground(new Color(128, 255, 128));
-		User.setBounds(925, 29, 247, 55);
+		User.setBounds(845, 29, 247, 55);
 		usuario.add(User);
 
 		textCantidad = new JTextField();
@@ -201,19 +203,19 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textField.setColumns(10);
 		textField.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textField.setBackground(new Color(102, 255, 102));
-		textField.setBounds(912, 96, 174, 18);
+		textField.setBounds(832, 96, 174, 18);
 		usuario.add(textField);
 
 		JLabel lblNewLabel = new JLabel("Tus Datos:");
 		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblNewLabel.setBounds(927, 125, 152, 86);
+		lblNewLabel.setBounds(847, 125, 152, 86);
 		usuario.add(lblNewLabel);
 
 		JLabel lblArticulo = new JLabel("Nombre");
 		lblArticulo.setForeground(Color.WHITE);
 		lblArticulo.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblArticulo.setBounds(618, 231, 163, 68);
+		lblArticulo.setBounds(538, 231, 163, 68);
 		usuario.add(lblArticulo);
 
 		textNombre = new JTextField();
@@ -225,13 +227,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textNombre.setColumns(10);
 		textNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textNombre.setBackground(new Color(102, 255, 102));
-		textNombre.setBounds(791, 262, 174, 18);
+		textNombre.setBounds(711, 262, 174, 18);
 		usuario.add(textNombre);
 
 		JLabel lblApellido = new JLabel("Apellido");
 		lblApellido.setForeground(Color.WHITE);
 		lblApellido.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblApellido.setBounds(1075, 231, 163, 68);
+		lblApellido.setBounds(995, 231, 163, 68);
 		usuario.add(lblApellido);
 
 		textApellido = new JTextField();
@@ -243,13 +245,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textApellido.setColumns(10);
 		textApellido.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textApellido.setBackground(new Color(102, 255, 102));
-		textApellido.setBounds(1248, 262, 174, 18);
+		textApellido.setBounds(1168, 262, 174, 18);
 		usuario.add(textApellido);
 
 		JLabel lblDireccion = new JLabel("Direccion");
 		lblDireccion.setForeground(Color.WHITE);
 		lblDireccion.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblDireccion.setBounds(618, 368, 163, 68);
+		lblDireccion.setBounds(538, 368, 163, 68);
 		usuario.add(lblDireccion);
 
 		textDireccion = new JTextField();
@@ -261,13 +263,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textDireccion.setColumns(10);
 		textDireccion.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textDireccion.setBackground(new Color(102, 255, 102));
-		textDireccion.setBounds(791, 399, 174, 18);
+		textDireccion.setBounds(711, 399, 174, 18);
 		usuario.add(textDireccion);
 
 		JLabel lblTelefono = new JLabel("Telefono");
 		lblTelefono.setForeground(Color.WHITE);
 		lblTelefono.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblTelefono.setBounds(1075, 368, 163, 68);
+		lblTelefono.setBounds(995, 368, 163, 68);
 		usuario.add(lblTelefono);
 
 		textTelefono = new JTextField();
@@ -279,23 +281,23 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textTelefono.setColumns(10);
 		textTelefono.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textTelefono.setBackground(new Color(102, 255, 102));
-		textTelefono.setBounds(1248, 399, 174, 18);
+		textTelefono.setBounds(1168, 399, 174, 18);
 		usuario.add(textTelefono);
 
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
 		lblComprasRealizadas.setForeground(Color.WHITE);
 		lblComprasRealizadas.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblComprasRealizadas.setBounds(902, 428, 311, 86);
+		lblComprasRealizadas.setBounds(822, 428, 311, 86);
 		usuario.add(lblComprasRealizadas);
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
 
 		btnAgregar = new JButton("Agregar Articulo");
 		btnAgregar.setEnabled(false);
-		btnAgregar.setForeground(Color.GREEN);
-		btnAgregar.setFont(new Font("Jokerman", Font.PLAIN, 13));
-		btnAgregar.setBackground(Color.DARK_GRAY);
-		btnAgregar.setBounds(1521, 233, 151, 64);
+		btnAgregar.setForeground(new Color(0, 0, 0));
+		btnAgregar.setFont(new Font("Jokerman", Font.BOLD, 15));
+		btnAgregar.setBackground(new Color(128, 255, 128));
+		btnAgregar.setBounds(1521, 222, 220, 64);
 		btnAgregar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				insertarCesta(per);
@@ -321,7 +323,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel lblP = new JLabel("PELIS Y SERIES");
 		lblP.setForeground(Color.WHITE);
 		lblP.setFont(new Font("Jokerman", Font.BOLD, 32));
-		lblP.setBounds(777, 679, 312, 58);
+		lblP.setBounds(792, 678, 312, 58);
 		main.add(lblP);
 
 		JLabel lblLineaDeRopa = new JLabel("LINEA DE ROPA");
@@ -331,11 +333,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		main.add(lblLineaDeRopa);
 
 		btnGestionarProductos = new JButton("Gestionar Productos");
-		btnGestionarProductos.setForeground(new Color(255, 153, 102));
-		btnGestionarProductos.setFont(new Font("Jokerman", Font.PLAIN, 13));
-		btnGestionarProductos.setBackground(Color.DARK_GRAY);
+		btnGestionarProductos.setForeground(new Color(0, 0, 0));
+		btnGestionarProductos.setFont(new Font("Jokerman", Font.BOLD, 15));
+		btnGestionarProductos.setBackground(new Color(255, 153, 102));
 		btnGestionarProductos.addActionListener(this);
-		btnGestionarProductos.setBounds(70, 190, 185, 87);
+		btnGestionarProductos.setBounds(343, 33, 205, 87);
 
 		btnGestionarProductos.setVisible(false);
 		main.add(btnGestionarProductos);
@@ -345,6 +347,21 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		lblStock.setFont(new Font("Jokerman", Font.BOLD, 15));
 		lblStock.setBounds(1743, 77, 105, 58);
 		main.add(lblStock);
+
+		JLabel lblNewLabel_1 = new JLabel("");
+		lblNewLabel_1.setIcon(new ImageIcon("././imagenes/logo.png"));
+		lblNewLabel_1.setBounds(40, 113, 269, 256);
+		main.add(lblNewLabel_1);
+
+		lblNewLabel_4 = new JLabel("");
+		lblNewLabel_4.setIcon(new ImageIcon("././imagenes/rapidin.png"));
+		lblNewLabel_4.setBounds(1388, 208, 520, 863);
+		main.add(lblNewLabel_4);
+
+		JLabel lblNewLabel_5 = new JLabel("");
+		lblNewLabel_5.setIcon(new ImageIcon("././imagenes/4.png"));
+		lblNewLabel_5.setBounds(50, 374, 412, 669);
+		main.add(lblNewLabel_5);
 		if (per != null) {
 			this.presentarTablaCompra(null, db, usuario, per);
 		}
@@ -357,14 +374,24 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		});
 		btnBorrar.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnBorrar.setBackground(new Color(250, 128, 114));
-		btnBorrar.setBounds(903, 859, 200, 50);
+		btnBorrar.setBounds(845, 861, 200, 50);
 		usuario.add(btnBorrar);
 
 		JLabel lblBorrarCuenta = new JLabel("BORRAR CUENTA");
 		lblBorrarCuenta.setForeground(Color.WHITE);
 		lblBorrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblBorrarCuenta.setBounds(889, 762, 259, 86);
+		lblBorrarCuenta.setBounds(832, 756, 259, 86);
 		usuario.add(lblBorrarCuenta);
+
+		lblNewLabel_2 = new JLabel("");
+		lblNewLabel_2.setIcon(new ImageIcon("././imagenes/BEN.png"));
+		lblNewLabel_2.setBounds(1558, 441, 426, 581);
+		usuario.add(lblNewLabel_2);
+
+		lblNewLabel_3 = new JLabel("");
+		lblNewLabel_3.setIcon(new ImageIcon("././imagenes/linterna.png"));
+		lblNewLabel_3.setBounds(63, 11, 444, 1011);
+		usuario.add(lblNewLabel_3);
 
 		addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent e) {
@@ -411,11 +438,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 					cesta = new Cesta_Compra();
 					cesta.setNumReferencia(generarCodigoRef(cesta));
 					cesta.setFecha_Inicio(Date.valueOf(LocalDate.now()));
-					
+
 					cesta.setPeso_total(sumarPeso());
 					cesta.setPrecio_total(sumarPrecio());
 					db.insertarCompra_Cesta(cesta);
-					
+
 					realiza = new Realiza();
 					realiza.setNumReferencia(cesta.getNumReferencia());
 					realiza.setCodigoProducto(comboCodigo.getSelectedItem().toString());
@@ -425,9 +452,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 					prod.setNumExistencias(prod.getNumExistencias() - Integer.parseInt(textCantidad.getText()));
 					db.insertarRealiza(realiza);
 					db.modificarProducto(prod);
-					if (prod.getNumExistencias() == 0) {
-						db.eliminarProducto(prod);
-					}
+
 					JOptionPane.showMessageDialog(this, "PRODUCTO AÑADIDO CORRECTAMENTE A LA CESTA!");
 				}
 			} else {
@@ -590,6 +615,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setBounds(428, 192, 1037, 149);
 		main.add(linea);
 		tablaProducto = this.cargarTablaRopa(producto, db);
+		tablaProducto.setEnabled(false);
 		linea.setViewportView(tablaProducto);
 
 	}
@@ -606,18 +632,19 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		productos = db.listarProdRopa();
 
 		for (Producto prod : productos.values()) {
-			registros[0] = prod.getCodigoProducto();
-			registros[1] = prod.getNombre();
-			registros[2] = Float.toString(prod.getPrecio());
-			registros[3] = Float.toString(prod.getPeso());
-			registros[4] = Integer.toString(prod.getNumExistencias());
-			registros[5] = prod.getDimensiones();
-			registros[6] = ((Linea_De_Ropa) prod).getTalla();
-			registros[7] = ((Linea_De_Ropa) prod).getTejido();
-			registros[8] = ((Linea_De_Ropa) prod).getColor();
-			registros[9] = ((Linea_De_Ropa) prod).getFabricante();
-			modelo.addRow(registros);
-
+			if (prod.getNumExistencias() > 0) {
+				registros[0] = prod.getCodigoProducto();
+				registros[1] = prod.getNombre();
+				registros[2] = Float.toString(prod.getPrecio());
+				registros[3] = Float.toString(prod.getPeso());
+				registros[4] = Integer.toString(prod.getNumExistencias());
+				registros[5] = prod.getDimensiones();
+				registros[6] = ((Linea_De_Ropa) prod).getTalla();
+				registros[7] = ((Linea_De_Ropa) prod).getTejido();
+				registros[8] = ((Linea_De_Ropa) prod).getColor();
+				registros[9] = ((Linea_De_Ropa) prod).getFabricante();
+				modelo.addRow(registros);
+			}
 		}
 		return new JTable(modelo);
 	}
@@ -628,6 +655,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setBounds(428, 468, 1037, 149);
 		main.add(linea);
 		tablaProducto = this.cargarTablaJuguete(producto, db);
+		tablaProducto.setEnabled(false);
 		linea.setViewportView(tablaProducto);
 
 	}
@@ -644,18 +672,19 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		productos = db.listarProdJuguete();
 
 		for (Producto prod : productos.values()) {
-			registros[0] = prod.getCodigoProducto();
-			registros[1] = prod.getNombre();
-			registros[2] = Float.toString(prod.getPrecio());
-			registros[3] = Float.toString(prod.getPeso());
-			registros[4] = Integer.toString(prod.getNumExistencias());
-			registros[5] = prod.getDimensiones();
-			registros[6] = ((Juguete) prod).getMaterial();
-			registros[7] = ((Juguete) prod).getArticulable();
-			registros[8] = Integer.toString(((Juguete) prod).getEdadMinima());
-			registros[9] = ((Juguete) prod).getPilas();
-			modelo.addRow(registros);
-
+			if (prod.getNumExistencias() > 0) {
+				registros[0] = prod.getCodigoProducto();
+				registros[1] = prod.getNombre();
+				registros[2] = Float.toString(prod.getPrecio());
+				registros[3] = Float.toString(prod.getPeso());
+				registros[4] = Integer.toString(prod.getNumExistencias());
+				registros[5] = prod.getDimensiones();
+				registros[6] = ((Juguete) prod).getMaterial();
+				registros[7] = ((Juguete) prod).getArticulable();
+				registros[8] = Integer.toString(((Juguete) prod).getEdadMinima());
+				registros[9] = ((Juguete) prod).getPilas();
+				modelo.addRow(registros);
+			}
 		}
 		return new JTable(modelo);
 	}
@@ -666,6 +695,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setBounds(428, 759, 1037, 149);
 		main.add(linea);
 		tablaProducto = this.cargarTablaPeli(producto, db);
+		tablaProducto.setEnabled(false);
 		linea.setViewportView(tablaProducto);
 
 	}
@@ -682,29 +712,31 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		productos = db.listarProdPeli();
 
 		for (Producto prod : productos.values()) {
-			registros[0] = prod.getCodigoProducto();
-			registros[1] = prod.getNombre();
-			registros[2] = Float.toString(prod.getPrecio());
-			registros[3] = Float.toString(prod.getPeso());
-			registros[4] = Integer.toString(prod.getNumExistencias());
-			registros[5] = prod.getDimensiones();
-			registros[6] = ((Pelicula_Serie) prod).getGenero();
-			registros[7] = ((Pelicula_Serie) prod).getFechaLanzamiento();
-			registros[8] = ((Pelicula_Serie) prod).getIdioma();
-			registros[9] = ((Pelicula_Serie) prod).getSubtitulado();
-			registros[10] = ((Pelicula_Serie) prod).getDuracion();
-			modelo.addRow(registros);
-
+			if (prod.getNumExistencias() > 0) {
+				registros[0] = prod.getCodigoProducto();
+				registros[1] = prod.getNombre();
+				registros[2] = Float.toString(prod.getPrecio());
+				registros[3] = Float.toString(prod.getPeso());
+				registros[4] = Integer.toString(prod.getNumExistencias());
+				registros[5] = prod.getDimensiones();
+				registros[6] = ((Pelicula_Serie) prod).getGenero();
+				registros[7] = ((Pelicula_Serie) prod).getFechaLanzamiento();
+				registros[8] = ((Pelicula_Serie) prod).getIdioma();
+				registros[9] = ((Pelicula_Serie) prod).getSubtitulado();
+				registros[10] = ((Pelicula_Serie) prod).getDuracion();
+				modelo.addRow(registros);
+			}
 		}
 		return new JTable(modelo);
 	}
 
 	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario, Persona per) {
 		JScrollPane linea = new JScrollPane();
-		linea.setBounds(432, 514, 1179, 242);
+		linea.setBounds(400, 514, 1179, 242);
 		usuario.add(linea);
 		tablaProducto = this.cargarTablaCompra(compra, db, per);
 		tablaProducto.setBackground(new Color(128, 255, 128));
+		tablaProducto.setEnabled(false);
 		linea.setViewportView(tablaProducto);
 
 	}
