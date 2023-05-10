@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +34,7 @@ import clases.Realiza;
 import clases.Tarjeta;
 import clases.Usuario;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.sql.Date;
@@ -48,21 +49,16 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	private JTable tablaProducto;
 	private JTextField textEmail, textTelefono, textNombre, textTarjeta, textCVV;
 	private Map<String, Cesta_Compra> listaCompra;
-	private DBImplementacion db = new ControladorBdImplementacion();
+	private DAO db = new ControladorBdImplementacion();
 	private Cesta_Compra compra;
 	private JPanel main;
 	private JButton btnFinalizarCompra, btnCancelarCompra, btnCasa;
 	private JMenuItem iniciar, registro, borrarCuenta, btnCesta;
-	private JLabel lblNombre;
-	private JLabel lblEmail;
-	private JLabel lblTelefono;
-	private JLabel lblCvv;
-	private JLabel lblDatosDeLa;
-	private JLabel lblNumeroDeTarjeta;
-	private JLabel texto;
+	private JLabel lblNombre, lblEmail, lblTelefono, lblCvv, lblDatosDeLa, lblNumeroDeTarjeta, texto, lblNewLabel;
 
-	public Finalizar_Compra(Persona pers) {
-
+	public Finalizar_Compra(Persona pers, Ventana_Principal principal, boolean modal) {
+		super(principal);
+		this.setModal(modal);
 		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -142,51 +138,51 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		textEmail = new JTextField();
 		textEmail.setOpaque(false);
 		textEmail.setForeground(Color.WHITE);
-		textEmail.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textEmail.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textEmail.setColumns(10);
 		textEmail.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textEmail.setBackground(new Color(102, 255, 102));
-		textEmail.setBounds(622, 291, 174, 18);
+		textEmail.setBounds(622, 291, 229, 18);
 		main.add(textEmail);
 
 		textTelefono = new JTextField();
 		textTelefono.setOpaque(false);
 		textTelefono.setForeground(Color.WHITE);
-		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textTelefono.setColumns(10);
 		textTelefono.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textTelefono.setBackground(new Color(102, 255, 102));
-		textTelefono.setBounds(622, 419, 174, 18);
+		textTelefono.setBounds(622, 419, 229, 18);
 		main.add(textTelefono);
 
 		textNombre = new JTextField();
 		textNombre.setOpaque(false);
 		textNombre.setForeground(Color.WHITE);
-		textNombre.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textNombre.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textNombre.setColumns(10);
 		textNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textNombre.setBackground(new Color(102, 255, 102));
-		textNombre.setBounds(622, 169, 174, 18);
+		textNombre.setBounds(622, 169, 229, 18);
 		main.add(textNombre);
 
 		textTarjeta = new JTextField();
 		textTarjeta.setOpaque(false);
 		textTarjeta.setForeground(Color.WHITE);
-		textTarjeta.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTarjeta.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textTarjeta.setColumns(10);
 		textTarjeta.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textTarjeta.setBackground(new Color(102, 255, 102));
-		textTarjeta.setBounds(1259, 168, 174, 18);
+		textTarjeta.setBounds(1259, 168, 217, 18);
 		main.add(textTarjeta);
 
 		textCVV = new JTextField();
 		textCVV.setOpaque(false);
 		textCVV.setForeground(Color.WHITE);
-		textCVV.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textCVV.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textCVV.setColumns(10);
 		textCVV.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textCVV.setBackground(new Color(102, 255, 102));
-		textCVV.setBounds(1259, 290, 174, 18);
+		textCVV.setBounds(1259, 290, 217, 18);
 		main.add(textCVV);
 
 		lblNombre = new JLabel("Nombre");
@@ -249,6 +245,12 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		});
 		btnCancelarCompra.addActionListener(this);
 		main.add(btnCancelarCompra);
+
+		lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon(
+				"C:\\Users\\1dam\\Desktop\\Reto_Final_GIT\\RetoIntermodularBen10\\Proyecto_Ben_10\\imagenes\\Materia_Gris_SO_29.png"));
+		lblNewLabel.setBounds(92, 342, 255, 581);
+		main.add(lblNewLabel);
 		addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent e) {
 				presentarTabla(compra, db, main, pers);
@@ -270,30 +272,32 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		cesta.setFecha_fin(Date.valueOf(LocalDate.now()));
 		cesta.setPeso_total(cesta.getPeso_total());
 		cesta.setPrecio_total(cesta.getPrecio_total());
-
+		ArrayList<Producto> productos = db.recogerProductosId(pers);
 		int pregunt;
+		if (productos.size() > 0) {
+			pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS REALIZAR LA COMPRA?  ", // ventana
+					"Pregunta", // titulo de la ventana
+					JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+					JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+					null, // null para icono por defecto.
+					new Object[] { "SI", "NO" }, // objeto para las opciones
+					// null para YES, NO y CANCEL
+					"SI");
+			if (pregunt == 0) {
+				db.modificarCesta(cesta, pers);
+				JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
 
-		pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS REALIZAR LA COMPRA?  ", // ventana
-				"Pregunta", // titulo de la ventana
-				JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
-				JOptionPane.QUESTION_MESSAGE, // tipo de ícono
-				null, // null para icono por defecto.
-				new Object[] { "SI", "NO" }, // objeto para las opciones
-				// null para YES, NO y CANCEL
-				"SI");
-		if (pregunt == 0) {
-			db.modificarCesta(cesta, pers);
-			JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
-
+			} else {
+				JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
+			}
 		} else {
-			JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
+			JOptionPane.showMessageDialog(this, "TODAVIA NO HAY PRODUCTOS EN LA CESTA!");
 		}
-
 	}
 
-	private void presentarTabla(Cesta_Compra compra, DBImplementacion db, JPanel main, Persona pers) {
+	private void presentarTabla(Cesta_Compra compra, DAO db, JPanel main, Persona pers) {
 
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		JScrollPane scroll = new JScrollPane();
 		scroll.setBounds(360, 551, 1177, 286);
 		main.add(scroll);
@@ -304,7 +308,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	}
 
-	private JTable cargarTabla(Cesta_Compra comprar, DBImplementacion db, Persona pers) {
+	private JTable cargarTabla(Cesta_Compra comprar, DAO db, Persona pers) {
 		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "PESO_TOTAL", "PRECIO_TOTAL" };
 		String[] registros = new String[4];
 
@@ -353,7 +357,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 	}
 
 	private void cancelarCompra(Persona pers) {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 
 		ArrayList<Producto> productos = bd.recogerProductosId(pers);
 		ArrayList<Realiza> realizas = bd.recogerCantidad(pers);
@@ -372,17 +376,17 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 				for (Producto prod : productos) {
 					for (Realiza rea : realizas) {
-
-						System.out.println(prod.getNumExistencias());
-						prod.setNumExistencias(prod.getNumExistencias() + rea.getCantidad());
-						db.modificarProducto(prod);
-						db.eliminarCesta(pers);
-
-						db.eliminarRealiza(pers);
+						if (prod.getCodigoProducto().equals(rea.getCodigoProducto())) {
+							prod.setNumExistencias(prod.getNumExistencias() + rea.getCantidad());
+						}
 					}
+					db.modificarProducto(prod);
+					db.eliminarCesta(pers);
 
-					JOptionPane.showMessageDialog(borrarCuenta, "LA CESTA SE HA ELIMINADO CORRECTAMENTE!");
+					db.eliminarRealiza(pers);
+
 				}
+				JOptionPane.showMessageDialog(borrarCuenta, "LA CESTA SE HA ELIMINADO CORRECTAMENTE!");
 			} else {
 				JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
 			}
@@ -394,7 +398,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	public Persona cargarDatosCompra(Persona pers, Tarjeta tar) {
 
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		pers = db.recogerDatosPersonaEmail(pers.getEmail());
 		tar = db.recogerDatosTarjeta(pers.getEmail());
 		textNombre.setText(((Usuario) pers).getNombrePersonal());

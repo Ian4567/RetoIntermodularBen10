@@ -25,7 +25,7 @@ import clases.Realiza;
 import clases.Tarjeta;
 import clases.Usuario;
 
-public class ControladorBdImplementacion implements DBImplementacion {
+public class ControladorBdImplementacion implements DAO {
 
 	private Connection con;
 	private PreparedStatement stmt;

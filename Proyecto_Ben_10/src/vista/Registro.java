@@ -31,7 +31,7 @@ import clases.Producto;
 import clases.Tarjeta;
 import clases.Usuario;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JPasswordField;
 
@@ -335,7 +335,7 @@ public class Registro extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
-			Finalizar_Compra venCesta = new Finalizar_Compra(null);
+			Finalizar_Compra venCesta = new Finalizar_Compra(null, null, true);
 			venCesta.setVisible(true);
 		}
 
@@ -355,7 +355,7 @@ public class Registro extends JDialog implements ActionListener {
 	}
 
 	public String generarCodigo(Persona pers) {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 
 		String codigo = "", num;
 		int numero;
@@ -370,7 +370,7 @@ public class Registro extends JDialog implements ActionListener {
 	private void registrarse(Persona pers) {
 		Tarjeta tar = null;
 
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
 				|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
 				|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
@@ -398,7 +398,7 @@ public class Registro extends JDialog implements ActionListener {
 								if (textFTelefono.getText().length() == 9) {
 
 									if (textFcvv.getText().length() == 3) {
-										if (fechaSelector != null) {
+										if (fechaSelector.getDate() != null) {
 											tar = new Tarjeta();
 											tar.setNumeroTarjeta(textFNumeroTar.getText());
 											tar.setCVV(Integer.parseInt(textFcvv.getText()));

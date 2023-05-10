@@ -9,7 +9,7 @@ import clases.Producto;
 import clases.Realiza;
 import clases.Tarjeta;
 
-public interface DBImplementacion {
+public interface DAO {
 
 	public void insertarProducto(Producto prod);
 

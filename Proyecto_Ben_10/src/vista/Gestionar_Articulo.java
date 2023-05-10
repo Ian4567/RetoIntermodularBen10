@@ -24,7 +24,7 @@ import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
 import clases.Producto;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 
 import javax.swing.border.EtchedBorder;
 import javax.swing.UIManager;
@@ -62,15 +62,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textNumEstancias, textPrecio, textNombre, textDimensiones, textPeso, textColor, textFabricante,
 			textDuracion, textMaterial, textTejido, textGenero;
-	private JComboBox comboArticulable, comboPilas, comboSubtitulado, comboTalla, comboTipo, comboPegi;
+	private JComboBox comboArticulable, comboPilas, comboSubtitulado, comboTalla, comboTipo, comboPegi, comboCodigos;
 	private JButton btnAnadir, btnModificar, btnBorrar;
 	private JLabel lblLinea, lblJuguete, lblSeriePeli, lblCodigoParaBorrar;
-	private JComboBox comboCodigos;
-	private JButton btnLimpiar;
+	private JButton btnLimpiar, btnCasa;
 	private JLocaleChooser textIdioma;
 	private JDateChooser fechaSelector;
 	private JTable tablaProducto;
-	private JButton btnCasa;
+
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JMenuBar menuBar;
 
@@ -438,7 +437,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		textTejido.setBounds(279, 711, 174, 18);
 		contentPanel.add(textTejido);
 
-		btnAnadir = new JButton("AnADIR ");
+		btnAnadir = new JButton("ANADIR ");
 		btnAnadir.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnAnadir.setBackground(new Color(102, 255, 153));
 		btnAnadir.setFont(new Font("Jokerman", Font.BOLD, 20));
@@ -613,6 +612,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		comboSubtitulado.setSelectedIndex(-1);
 		comboTalla.setSelectedIndex(-1);
 		comboTipo.setEnabled(true);
+
 	}
 
 	public void limpiarTodosLosCampos() {
@@ -657,14 +657,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(btnCesta)) {
 			this.dispose();
-			Finalizar_Compra fin = new Finalizar_Compra(null);
+			Finalizar_Compra fin = new Finalizar_Compra(null, null, true);
 			fin.setVisible(true);
 		}
 	}
 
 	private void modificarProducto() {
 		Producto prod = null;
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		boolean pre = bd.validarFloat(textPrecio.getText()), peso = bd.validarFloat(textPeso.getText());
 		boolean exis = bd.validarFloat(textNumEstancias.getText());
 		int pregunt;
@@ -806,7 +806,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	private Producto recogerProducto() {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		Producto prod = null;
 
 		if (comboCodigos.getSelectedIndex() != -1) {
@@ -840,6 +840,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				prod = bd.recogerPeliculaId(comboCodigos.getSelectedItem().toString());
 				textGenero.setText(((Pelicula_Serie) prod).getGenero());
 				textIdioma.setSelectedItem(((Pelicula_Serie) prod).getIdioma());
+//				fechaSelector.setDate(((Pelicula_Serie) prod).getFechaLanzamiento());
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
@@ -851,7 +852,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	private void borrarProducto() {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		if (comboCodigos.getSelectedIndex() > -1) {
 			Producto prod = bd.recogerProductoId(comboCodigos.getSelectedItem().toString());
 			if (prod != null) {
@@ -882,7 +883,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 	private void anadirProducto() {
 		Producto prod;
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		boolean pre = bd.validarFloat(textPrecio.getText()), peso = bd.validarFloat(textPeso.getText());
 		boolean exis = bd.validarFloat(textNumEstancias.getText());
 		if (textNumEstancias.getText().equals("") || textPrecio.getText().equals("") || textNombre.getText().equals("")
@@ -890,9 +891,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 
 		} else {
-			if (pre != false && Integer.parseInt(textPrecio.getText()) > 0) {
+			if (pre != false && Float.parseFloat(textPrecio.getText()) > 0) {
 				if (exis != false && Integer.parseInt(textNumEstancias.getText()) > 0) {
-					if (peso != false && Integer.parseInt(textPeso.getText()) > 0) {
+					if (peso != false && Float.parseFloat(textPeso.getText()) > 0) {
 						if (comboTipo.getSelectedIndex() > -1) {
 
 							bd = new ControladorBdImplementacion();
@@ -946,9 +947,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 								}
 							} else if (comboTipo.getSelectedItem().toString().equals("PELICULA/SERIE")) {
 								if (textGenero.getText().equals("") || textIdioma.getSelectedIndex() == -1
-										|| fechaSelector.getDate().equals("")
 										|| comboSubtitulado.getSelectedIndex() == -1
-										|| textDuracion.getText().equals("")) {
+										|| textDuracion.getText().equals("") || fechaSelector.getDate() == null) {
 									JOptionPane.showMessageDialog(this, "FALTAN CAMPOS POR RELLENAR!");
 								} else {
 									prod = new Pelicula_Serie();
@@ -959,8 +959,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 									prod.setDimensiones(textDimensiones.getText());
 									prod.setPeso(Float.parseFloat(textPeso.getText()));
 									((Pelicula_Serie) prod).setGenero(textGenero.getText());
-									((Pelicula_Serie) prod)
-											.setFechaLanzamiento(fechaSelector.getDate().toLocaleString());
+									((Pelicula_Serie) prod).setFechaLanzamiento(fechaSelector.getDate().toString());
+
 									((Pelicula_Serie) prod).setIdioma(textIdioma.getSelectedItem().toString());
 									if (comboSubtitulado.getSelectedItem().equals("SI")) {
 										((Pelicula_Serie) prod).setSubtitulado("SI");
@@ -995,7 +995,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 	}
 
 	public String generarCodigo(Producto prod) {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 
 		String codigo = "", num;
 		int numero;
@@ -1013,7 +1013,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 	public void cargarComboCodigo() {
 
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		ArrayList<Producto> codProd = db.recogerProductos();
 		comboCodigos.removeAllItems();
 		for (Producto prod : codProd) {

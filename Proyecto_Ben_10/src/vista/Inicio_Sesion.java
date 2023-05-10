@@ -12,7 +12,7 @@ import javax.swing.border.MatteBorder;
 import clases.Persona;
 import clases.Usuario;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -87,18 +87,21 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnIniciarSesion)) {
-			inicarSesion();
+			iniciar();
 		}
 
 	}
 
-	private Persona inicarSesion() {
-		Persona pers = new Usuario();
+	public Persona iniciar() {
+		Persona pers, existe = null;
+		pers = new Persona();
+		pers.setEmail(textEmail.getText());
+		pers.setContrasena(new String(passContrasena.getPassword()));
 		// RECOGER EMAIL Y CONTRASEÑA
 		pers.setEmail(textEmail.getText());
 		pers.setContrasena(new String(passContrasena.getPassword()));
 
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 
 		pers = db.login(pers);
 
@@ -109,19 +112,9 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 			// COMPROBAR QUE EL USUARIO ES CORRECTO
 			if (textEmail.getText().equals(pers.getEmail()) && passContrasena.getText().equals(pers.getContrasena())) {
 				// SI EL TIPO ES IGUAL A ADMIN
-				if (pers.getCodigoPersona().charAt(0) == ('U')) {
-					Ventana_Principal ven = new Ventana_Principal(null, pers);
-					ven.setVisible(true);
+				if (pers.getCodigoPersona() != null) {
+					existe = pers;
 					this.dispose();
-					ven.logeo(pers);	
-					
-					// SI EL TIPO ES IGUAL A CLIENTE
-				} else if (pers.getCodigoPersona().charAt(0) == ('A')) {
-					Ventana_Principal ven = new Ventana_Principal(null, pers);
-					ven.setVisible(true);
-					ven.logeo(pers);
-					this.dispose();
-					// SI EL EMAIL O CONTRASEÑA NO COINCIDEN
 				} else {
 					JOptionPane.showMessageDialog(this, "ERROR! EMAIL O CONTRASEÑA INCORRECTOS");
 				}
@@ -129,8 +122,8 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "USUARIO O CONTRASEÑA INCORRECTOS!");
 			}
 		}
-		return pers;
-
+		return existe;
 	}
+
 
 }

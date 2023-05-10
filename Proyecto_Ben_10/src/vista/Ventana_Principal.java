@@ -46,7 +46,7 @@ import clases.Realiza;
 import clases.Tarjeta;
 import clases.Usuario;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
@@ -64,7 +64,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField, textNombre, textApellido, textDireccion, textTelefono;
 	private JTable tablaProducto;
-	private DBImplementacion db = new ControladorBdImplementacion();
+	private DAO db = new ControladorBdImplementacion();
 	private Map<String, Producto> productos;
 	private JButton btnAgregar;
 	private JComboBox comboCodigo;
@@ -199,7 +199,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textField.setEnabled(false);
 		textField.setOpaque(false);
 		textField.setForeground(Color.WHITE);
-		textField.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textField.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textField.setColumns(10);
 		textField.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textField.setBackground(new Color(102, 255, 102));
@@ -223,11 +223,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textNombre.setEditable(false);
 		textNombre.setOpaque(false);
 		textNombre.setForeground(Color.WHITE);
-		textNombre.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textNombre.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textNombre.setColumns(10);
 		textNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textNombre.setBackground(new Color(102, 255, 102));
-		textNombre.setBounds(711, 262, 174, 18);
+		textNombre.setBounds(711, 262, 218, 18);
 		usuario.add(textNombre);
 
 		JLabel lblApellido = new JLabel("Apellido");
@@ -241,11 +241,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textApellido.setEditable(false);
 		textApellido.setOpaque(false);
 		textApellido.setForeground(Color.WHITE);
-		textApellido.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textApellido.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textApellido.setColumns(10);
 		textApellido.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textApellido.setBackground(new Color(102, 255, 102));
-		textApellido.setBounds(1168, 262, 174, 18);
+		textApellido.setBounds(1168, 262, 200, 18);
 		usuario.add(textApellido);
 
 		JLabel lblDireccion = new JLabel("Direccion");
@@ -259,11 +259,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textDireccion.setEditable(false);
 		textDireccion.setOpaque(false);
 		textDireccion.setForeground(Color.WHITE);
-		textDireccion.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textDireccion.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textDireccion.setColumns(10);
 		textDireccion.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textDireccion.setBackground(new Color(102, 255, 102));
-		textDireccion.setBounds(711, 399, 174, 18);
+		textDireccion.setBounds(711, 399, 218, 18);
 		usuario.add(textDireccion);
 
 		JLabel lblTelefono = new JLabel("Telefono");
@@ -277,11 +277,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textTelefono.setEnabled(false);
 		textTelefono.setOpaque(false);
 		textTelefono.setForeground(Color.WHITE);
-		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textTelefono.setColumns(10);
 		textTelefono.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textTelefono.setBackground(new Color(102, 255, 102));
-		textTelefono.setBounds(1168, 399, 174, 18);
+		textTelefono.setBounds(1168, 399, 200, 18);
 		usuario.add(textTelefono);
 
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
@@ -409,7 +409,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	public String generarCodigoRef(Cesta_Compra cesta) {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 
 		String codigo = "", num;
 		int numero;
@@ -421,7 +421,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	private void insertarCesta(Persona per) {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		Cesta_Compra cesta;
 		boolean cantidad = db.validarFloat(textCantidad.getText());
 		Producto prod;
@@ -452,7 +452,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 					prod.setNumExistencias(prod.getNumExistencias() - Integer.parseInt(textCantidad.getText()));
 					db.insertarRealiza(realiza);
 					db.modificarProducto(prod);
-
+					textCantidad.setText("");
 					JOptionPane.showMessageDialog(this, "PRODUCTO AÑADIDO CORRECTAMENTE A LA CESTA!");
 				}
 			} else {
@@ -462,7 +462,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	public Persona logeo(Persona per) {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 
 		if (per.getCodigoPersona().charAt(0) == 'U') {
 			tabbedPane.setEnabledAt(1, true);
@@ -496,12 +496,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Persona per = null;
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 
 		if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
 			inicio.setVisible(true);
-			this.dispose();
+			per = inicio.iniciar();
+			if (per != null) {
+				logeo(per);
+			}
+			
 		} else if (e.getSource().equals(registro)) {
 			Registro reg = new Registro(this);
 			reg.setVisible(true);
@@ -519,7 +523,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	private void borrarCuenta(Persona pers) {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		int pregunt;
 
 		pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS MODIFICAR EL CUENTA?  ", // ventana
@@ -543,18 +547,18 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	private void verCesta(Persona pers) {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		pers = logeo(pers);
 		Tarjeta tar;
 		tar = db.recogerDatosTarjeta(pers.getEmail());
-		Finalizar_Compra fin = new Finalizar_Compra(pers);
+		Finalizar_Compra fin = new Finalizar_Compra(pers, null, true);
 		fin.cargarDatosCompra(pers, tar);
 		fin.setVisible(true);
 
 	}
 
 	private float sumarPrecio() {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		Producto prod;
 		prod = db.recogerProductoId(comboCodigo.getSelectedItem().toString());
 		float suma;
@@ -566,7 +570,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	private float sumarPeso() {
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		Producto prod;
 		prod = db.recogerProductoId(comboCodigo.getSelectedItem().toString());
 		float suma;
@@ -579,7 +583,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	public void cargarComboCodigo() {
 
-		DBImplementacion db = new ControladorBdImplementacion();
+		DAO db = new ControladorBdImplementacion();
 		ArrayList<Producto> codProd = db.recogerProductos();
 		comboCodigo.removeAllItems();
 		for (Producto prod : codProd) {
@@ -609,7 +613,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		});
 	}
 
-	private void presentarTablaRopa(Producto producto, DBImplementacion db, JPanel main) {
+	private void presentarTablaRopa(Producto producto, DAO db, JPanel main) {
 
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(428, 192, 1037, 149);
@@ -620,7 +624,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	private JTable cargarTablaRopa(Producto producto, DBImplementacion db) {
+	private JTable cargarTablaRopa(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Talla", "Tejido",
 				"Color", "Fabricante" };
@@ -649,7 +653,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return new JTable(modelo);
 	}
 
-	private void presentarTablaJuguete(Producto producto, DBImplementacion db, JPanel main) {
+	private void presentarTablaJuguete(Producto producto, DAO db, JPanel main) {
 
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(428, 468, 1037, 149);
@@ -660,7 +664,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	private JTable cargarTablaJuguete(Producto producto, DBImplementacion db) {
+	private JTable cargarTablaJuguete(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Material",
 				"Articulable", "Edad_Minima", "Pilas" };
@@ -689,7 +693,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return new JTable(modelo);
 	}
 
-	private void presentarTablaPeli(Producto producto, DBImplementacion db, JPanel main) {
+	private void presentarTablaPeli(Producto producto, DAO db, JPanel main) {
 
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(428, 759, 1037, 149);
@@ -700,7 +704,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	private JTable cargarTablaPeli(Producto producto, DBImplementacion db) {
+	private JTable cargarTablaPeli(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Genero",
 				"Fecha de Lanzamineto", "Idioma", "Subtitulado", "Duracion" };
@@ -720,7 +724,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 				registros[4] = Integer.toString(prod.getNumExistencias());
 				registros[5] = prod.getDimensiones();
 				registros[6] = ((Pelicula_Serie) prod).getGenero();
-				registros[7] = ((Pelicula_Serie) prod).getFechaLanzamiento();
+				registros[7] = ((Pelicula_Serie) prod).getFechaLanzamiento().toString();
 				registros[8] = ((Pelicula_Serie) prod).getIdioma();
 				registros[9] = ((Pelicula_Serie) prod).getSubtitulado();
 				registros[10] = ((Pelicula_Serie) prod).getDuracion();
@@ -730,7 +734,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return new JTable(modelo);
 	}
 
-	private void presentarTablaCompra(Cesta_Compra compra, DBImplementacion db, JPanel usuario, Persona per) {
+	private void presentarTablaCompra(Cesta_Compra compra, DAO db, JPanel usuario, Persona per) {
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(400, 514, 1179, 242);
 		usuario.add(linea);
@@ -741,7 +745,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	private JTable cargarTablaCompra(Cesta_Compra compra, DBImplementacion db, Persona per) {
+	private JTable cargarTablaCompra(Cesta_Compra compra, DAO db, Persona per) {
 		String[] columnas = { "Numero_Referencia", "Fecha_Ini", "Fecha_Fin", "Peso_Total", "Precio_Total" };
 		String[] registros = new String[5];
 
@@ -767,7 +771,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	public Persona cargarDatosCuenta(Persona pers) {
-		DBImplementacion bd = new ControladorBdImplementacion();
+		DAO bd = new ControladorBdImplementacion();
 		pers = db.recogerDatosPersonaEmail(pers.getEmail());
 		textNombre.setText(((Usuario) pers).getNombrePersonal());
 		textApellido.setText(((Usuario) pers).getApellido());
@@ -776,4 +780,5 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		textTelefono.setText(Integer.toString(((Usuario) pers).getNumTelefono()));
 		return pers;
 	}
+
 }
