@@ -501,6 +501,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		contentPanel.add(btnLimpiar);
 
 		fechaSelector = new JDateChooser();
+		fechaSelector.setEnabled(false);
 		fechaSelector.setBounds(1576, 687, 171, 20);
 		contentPanel.add(fechaSelector);
 
@@ -587,6 +588,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			textGenero.setEnabled(true);
 			comboSubtitulado.setEnabled(true);
 			lblSeriePeli.setForeground(Color.YELLOW);
+			fechaSelector.setEnabled(true);
 
 		} else {
 			textIdioma.setEnabled(false);
@@ -594,6 +596,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			textGenero.setEnabled(false);
 			comboSubtitulado.setEnabled(false);
 			lblSeriePeli.setForeground(Color.white);
+			fechaSelector.setEnabled(false);
 			limpiarCampos();
 		}
 	}
@@ -840,7 +843,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				prod = bd.recogerPeliculaId(comboCodigos.getSelectedItem().toString());
 				textGenero.setText(((Pelicula_Serie) prod).getGenero());
 				textIdioma.setSelectedItem(((Pelicula_Serie) prod).getIdioma());
-//				fechaSelector.setDate(((Pelicula_Serie) prod).getFechaLanzamiento());
+				
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 

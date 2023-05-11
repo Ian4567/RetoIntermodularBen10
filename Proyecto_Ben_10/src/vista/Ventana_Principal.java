@@ -66,21 +66,18 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	private JTable tablaProducto;
 	private DAO db = new ControladorBdImplementacion();
 	private Map<String, Producto> productos;
-	private JButton btnAgregar;
+	private JButton btnAgregar, btnCasa;
 	private JComboBox comboCodigo;
-	private JButton btnCasa;
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JPanel usuario, main;
 	private JMenuBar menuBar;
 	private JButton btnNewButton;
 	JTabbedPane tabbedPane;
-	private JButton btnGestionarProductos;
+	private JButton btnGestionarProductos, btnBorrar;
 	public Map<String, Cesta_Compra> compras;
 	private JTextField textCantidad;
-	private JButton btnBorrar;
-	private JLabel lblNewLabel_2;
-	private JLabel lblNewLabel_3;
-	private JLabel lblNewLabel_4;
+	private JLabel lblNewLabel_2, lblNewLabel_3, lblNewLabel_4;
+	private Persona pers;
 
 	public Ventana_Principal(Producto producto, Persona per) {
 
@@ -166,7 +163,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnCesta.setEnabled(false);
 		btnCesta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				verCesta(per);
+				verCesta(pers);
 			}
 		});
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
@@ -300,7 +297,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnAgregar.setBounds(1521, 222, 220, 64);
 		btnAgregar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				insertarCesta(per);
+				insertarCesta(pers);
 			}
 		});
 		main.add(btnAgregar);
@@ -369,7 +366,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnBorrar = new JButton("BORRAR");
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				borrarCuenta(per);
+				borrarCuenta(pers);
 			}
 		});
 		btnBorrar.setFont(new Font("Jokerman", Font.BOLD, 20));
@@ -490,25 +487,30 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			btnCesta.setEnabled(true);
 
 		}
+
 		return per;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Persona per = null;
+
 		DAO db = new ControladorBdImplementacion();
 
 		if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
 			inicio.setVisible(true);
-			per = inicio.iniciar();
-			if (per != null) {
-				logeo(per);
+			pers = inicio.iniciar();
+			if (pers != null) {
+				logeo(pers);
 			}
-			
+
 		} else if (e.getSource().equals(registro)) {
 			Registro reg = new Registro(this);
 			reg.setVisible(true);
+			if (reg.registrarse(pers)) {
+				reg.registrarse(pers);
+			}
+
 		} else if (e.getSource().equals(borrado)) {
 			tabbedPane.setSelectedIndex(1);
 			tabbedPane.setVisible(true);
@@ -537,9 +539,9 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		if (pregunt == 0) {
 			db.eliminarCuenta(pers);
 			JOptionPane.showMessageDialog(this, "CUENTA ELIMINADA CORRECTAMENTE!");
-			this.dispose();
-			Ventana_Principal ven = new Ventana_Principal(null, pers);
-			ven.setVisible(true);
+			tabbedPane.setSelectedIndex(0);
+			pers = logeo(pers);
+
 		} else {
 			JOptionPane.showMessageDialog(this, "SE HA CANCELADO EL BORRADO!");
 		}
@@ -772,12 +774,15 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	public Persona cargarDatosCuenta(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
-		pers = db.recogerDatosPersonaEmail(pers.getEmail());
-		textNombre.setText(((Usuario) pers).getNombrePersonal());
-		textApellido.setText(((Usuario) pers).getApellido());
-		textDireccion.setText(((Usuario) pers).getDireccion());
-		textField.setText(pers.getNombre());
-		textTelefono.setText(Integer.toString(((Usuario) pers).getNumTelefono()));
+		if (pers != null) {
+			pers = db.recogerDatosPersonaEmail(pers.getEmail());
+			textNombre.setText(((Usuario) pers).getNombrePersonal());
+			textApellido.setText(((Usuario) pers).getApellido());
+			textDireccion.setText(((Usuario) pers).getDireccion());
+			textField.setText(pers.getNombre());
+			textTelefono.setText(Integer.toString(((Usuario) pers).getNumTelefono()));
+
+		}
 		return pers;
 	}
 

@@ -30,6 +30,7 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 	private JTextField textEmail;
 	private JPasswordField passContrasena;
 	private JButton btnIniciarSesion;
+	private boolean entra = true;
 
 	public Inicio_Sesion(Ventana_Principal principal, boolean modal) {
 		super(principal);
@@ -82,6 +83,7 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 		btnIniciarSesion.addActionListener(this);
 		contentPane.add(btnIniciarSesion);
 
+		
 	}
 
 	@Override
@@ -92,26 +94,31 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 
 	}
 
+	public boolean segundaVez() {
+		if (entra) {
+			entra = false;
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	public Persona iniciar() {
 		Persona pers, existe = null;
-		pers = new Persona();
-		pers.setEmail(textEmail.getText());
-		pers.setContrasena(new String(passContrasena.getPassword()));
 		// RECOGER EMAIL Y CONTRASEÑA
+		pers = new Persona();
 		pers.setEmail(textEmail.getText());
 		pers.setContrasena(new String(passContrasena.getPassword()));
 
 		DAO db = new ControladorBdImplementacion();
-
+		// PASAMOS LOS DATOS A LA BASE DE DATOS
 		pers = db.login(pers);
 
 		// SI FALTA ALGUN CAMPO VACIO
-		if (textEmail.getText().equals("") || passContrasena.getText().equals("")) {
-			JOptionPane.showMessageDialog(this, "FALTA CAMPOS POR RELLENAR!");
-		} else {
+		if (!textEmail.getText().equals("") || !passContrasena.getText().equals("")) {
 			// COMPROBAR QUE EL USUARIO ES CORRECTO
 			if (textEmail.getText().equals(pers.getEmail()) && passContrasena.getText().equals(pers.getContrasena())) {
-				// SI EL TIPO ES IGUAL A ADMIN
+				// SI LA PERSONA ES DIFERENTE DE NULL
 				if (pers.getCodigoPersona() != null) {
 					existe = pers;
 					this.dispose();
@@ -121,9 +128,11 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(this, "USUARIO O CONTRASEÑA INCORRECTOS!");
 			}
+		} else {
+			JOptionPane.showMessageDialog(this, "FALTA CAMPOS POR RELLENAR!");
 		}
+
 		return existe;
 	}
-
 
 }

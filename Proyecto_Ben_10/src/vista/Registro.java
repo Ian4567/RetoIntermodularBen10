@@ -49,6 +49,7 @@ public class Registro extends JDialog implements ActionListener {
 	private JPasswordField textFContrasena;
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JButton btnCasa;
+	private boolean entra = true;
 
 	public Registro(Ventana_Principal principal) {
 		setBounds(100, 100, 1920, 1080);
@@ -298,17 +299,6 @@ public class Registro extends JDialog implements ActionListener {
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
 		}
 	}
 
@@ -354,6 +344,17 @@ public class Registro extends JDialog implements ActionListener {
 
 	}
 
+	
+
+	public boolean segundaVez() {
+		if (entra) {
+			entra= false;
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	public String generarCodigo(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
 
@@ -367,37 +368,30 @@ public class Registro extends JDialog implements ActionListener {
 		return codigo;
 	}
 
-	private void registrarse(Persona pers) {
+	public boolean registrarse(Persona pers) {
 		Tarjeta tar = null;
-
+		boolean registro = false;
 		DAO bd = new ControladorBdImplementacion();
-		if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
-				|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
-				|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
-				|| textFDireccion.getText().equals("") || textFNumeroTar.getText().equals("")
-				|| textFcvv.getText().equals("")) {
-			JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
-		} else {
+		boolean numeroTar = bd.validarInt(textFNumeroTar.getText()), numeroTel = bd.validarInt(textFTelefono.getText()),
+				cvv = bd.validarInt(textFcvv.getText());
 
-			if (textNombreUsuario.getText().equals("") || textFNombre.getText().equals("")
-					|| textFapellido.getText().equals("") || textFEmail.getText().equals("")
-					|| textFContrasena.getText().equals("") || textFTelefono.getText().equals("")
-					|| textFDireccion.getText().equals("") || textFNumeroTar.getText().equals("")
-					|| textFcvv.getText().equals("")) {
-				JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
-			} else {
+		if (segundaVez()) {
+			if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
+					|| !textFapellido.getText().equals("") || !textFEmail.getText().equals("")
+					|| !textFContrasena.getText().equals("") || !textFTelefono.getText().equals("")
+					|| !textFDireccion.getText().equals("") || !textFNumeroTar.getText().equals("")
+					|| !textFcvv.getText().equals("") || fechaSelector.getDate() != null) {
 
 				if (bd.existePersona(textNombreUsuario.getText()) == 0) {
 
-					if (textFNumeroTar.getText().length() == 16) {
+					if (bd.esEmail(textFEmail.getText())) {
 
-						if (bd.esEmail(textFEmail.getText())) {
-
+						if (textFNumeroTar.getText().length() == 16 && numeroTar) {
 							if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
 
-								if (textFTelefono.getText().length() == 9) {
+								if (textFTelefono.getText().length() == 9 && numeroTel) {
 
-									if (textFcvv.getText().length() == 3) {
+									if (textFcvv.getText().length() == 3 && cvv) {
 										if (fechaSelector.getDate() != null) {
 											tar = new Tarjeta();
 											tar.setNumeroTarjeta(textFNumeroTar.getText());
@@ -420,9 +414,7 @@ public class Registro extends JDialog implements ActionListener {
 
 											JOptionPane.showMessageDialog(btnLimpiar,
 													"Te has registrado correctamente!");
-											this.dispose();
-											Inicio_Sesion inicio = new Inicio_Sesion(null, true);
-											inicio.setVisible(true);
+											registro = true;
 										} else {
 											JOptionPane.showMessageDialog(this,
 													"DEBES ELEGIR UNA FECHA DE NACIMIENTO!");
@@ -437,15 +429,18 @@ public class Registro extends JDialog implements ActionListener {
 								JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
 							}
 						} else {
-							JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
+							JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
 						}
 					} else {
-						JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
+						JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
 					}
 				} else {
 					JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
 				}
+			} else {
+				JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
 			}
 		}
+		return registro;
 	}
 }
