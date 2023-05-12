@@ -77,5 +77,7 @@ public interface DAO {
 	
 	public ArrayList<Realiza> recogerCantidad(Persona pers);
 	
-	public boolean validarInt(String cadena) ;
+	public boolean validarInt(String cadena);
+	
+	public boolean validarLong(String cadena);
 }

@@ -18,6 +18,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.awt.Color;
 import java.awt.Cursor;
 import javax.swing.JTextField;
@@ -344,11 +345,9 @@ public class Registro extends JDialog implements ActionListener {
 
 	}
 
-	
-
 	public boolean segundaVez() {
 		if (entra) {
-			entra= false;
+			entra = false;
 			return false;
 		} else {
 			return true;
@@ -372,8 +371,8 @@ public class Registro extends JDialog implements ActionListener {
 		Tarjeta tar = null;
 		boolean registro = false;
 		DAO bd = new ControladorBdImplementacion();
-		boolean numeroTar = bd.validarInt(textFNumeroTar.getText()), numeroTel = bd.validarInt(textFTelefono.getText()),
-				cvv = bd.validarInt(textFcvv.getText());
+		boolean numeroTel = bd.validarInt(textFTelefono.getText()), cvv = bd.validarInt(textFcvv.getText()),
+				numeroTar = bd.validarLong(textFNumeroTar.getText());
 
 		if (segundaVez()) {
 			if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
@@ -383,16 +382,20 @@ public class Registro extends JDialog implements ActionListener {
 					|| !textFcvv.getText().equals("") || fechaSelector.getDate() != null) {
 
 				if (bd.existePersona(textNombreUsuario.getText()) == 0) {
-
+					// VERIFICAMOS QUE EL EMAIL NO EXISTE
 					if (bd.esEmail(textFEmail.getText())) {
-
-						if (textFNumeroTar.getText().length() == 16 && numeroTar) {
-							if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
-
-								if (textFTelefono.getText().length() == 9 && numeroTel) {
-
+						// MIRAMOS LA LARGURA DEL TELEFONO Y SI ES DE TIPO INT
+						if (textFTelefono.getText().length() == 9 && numeroTel) {
+							// MIRAMOS LA LARGURA DEL NUMERO DE TARJETA Y MIRAMOS SI ES LONG
+							if (textFNumeroTar.getText().length() == 16 && numeroTar) {
+								// COMPROBAMOS SI EXISTE LA TARJETA
+								if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
+									// COMPROBAMOS LA LARGURA DEL CVV Y SI ES DE TIPO ENTERO
 									if (textFcvv.getText().length() == 3 && cvv) {
-										if (fechaSelector.getDate() != null) {
+										// MIRAMOS QUE NO DEJE LA FECHA SIN ELEGIR Y QUE LA FECHA ES ANTERIOR AL DIA
+										// ACTUAL
+										if (fechaSelector.getDate() != null
+												&& fechaSelector.getDate().before(Date.valueOf(LocalDate.now()))) {
 											tar = new Tarjeta();
 											tar.setNumeroTarjeta(textFNumeroTar.getText());
 											tar.setCVV(Integer.parseInt(textFcvv.getText()));
@@ -423,13 +426,15 @@ public class Registro extends JDialog implements ActionListener {
 										JOptionPane.showMessageDialog(this, "EL CVV NO TIENE 3 NUMEROS");
 									}
 								} else {
-									JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
+									JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
 								}
 							} else {
-								JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
+
+								JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
 							}
 						} else {
-							JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
+							JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
+
 						}
 					} else {
 						JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");

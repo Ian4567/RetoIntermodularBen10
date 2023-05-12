@@ -262,6 +262,19 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	public boolean validarLong(String cadena) {
+		Long num;
+		try {
+			// SI ES UN INT
+			num = Long.parseLong(cadena);
+			return true;
+
+		} catch (Exception e) {
+			// SI ES UN STRING
+			return false;
+		}
+	}
+
 	public int numeroProducto(Producto prod) {
 		ResultSet rs = null;
 		String numJuguetes = "SELECT COUNT(codigo_producto)FROM producto";
@@ -1141,7 +1154,7 @@ public class ControladorBdImplementacion implements DAO {
 	public int existeNumeroTarjeta(long numeroTarjeta) {
 
 		ResultSet rs = null;
-		String registrar = "SELECT COUNT(numero_tarjeta)FROM TARJETA WHERE numero_tarjeta=?";
+		String registrar = "SELECT numero_tarjeta FROM TARJETA WHERE numero_tarjeta=?";
 		this.openConnection();
 
 		try {
