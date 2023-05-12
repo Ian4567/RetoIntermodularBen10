@@ -1,12 +1,13 @@
 package clases;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Cesta_Compra {
 	// atributos
 	private String numReferencia;
-	private LocalDate fecha_Inicio;
-	private LocalDate fecha_fin;
+	private Date fecha_Inicio;
+	private Date fecha_fin;
 	private float peso_total;
 	private float precio_total;
 
@@ -25,19 +26,19 @@ public class Cesta_Compra {
 		this.numReferencia = numReferencia;
 	}
 
-	public LocalDate getFecha_Inicio() {
+	public Date getFecha_Inicio() {
 		return fecha_Inicio;
 	}
 
-	public void setFecha_Inicio(LocalDate fecha_Inicio) {
-		this.fecha_Inicio = fecha_Inicio;
+	public void setFecha_Inicio(Date date) {
+		this.fecha_Inicio = date;
 	}
 
-	public LocalDate getFecha_fin() {
+	public Date getFecha_fin() {
 		return fecha_fin;
 	}
 
-	public void setFecha_fin(LocalDate fecha_fin) {
+	public void setFecha_fin(Date fecha_fin) {
 		this.fecha_fin = fecha_fin;
 	}
 

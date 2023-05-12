@@ -21,10 +21,11 @@ import clases.Linea_De_Ropa;
 import clases.Pelicula_Serie;
 import clases.Persona;
 import clases.Producto;
+import clases.Realiza;
 import clases.Tarjeta;
 import clases.Usuario;
 
-public class ControladorBdImplementacion implements DBImplementacion {
+public class ControladorBdImplementacion implements DAO {
 
 	private Connection con;
 	private PreparedStatement stmt;
@@ -41,11 +42,14 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String ALTA_PELIS_SERIES = "INSERT INTO PELICULA_SERIE (codigo_producto, genero, fecha_de_lanzamiento, idioma, subtitulado, duracion) VALUES (?,?,?,?,?,?)";
 	private final String SELECT_PRODUCTOS = "SELECT * FROM PRODUCTO";
 	private final String DELETE_PRODUCTO = "DELETE FROM PRODUCTO WHERE CODIGO_PRODUCTO = ?";
+	private final String DELETE_CESTA = "DELETE FROM CESTA_COMPRA WHERE NUMREFERENCIA IN(SELECT NUMREFERENCIA FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?))";
+	private final String DELETE_REALIZA = "DELETE FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?)";
+	private final String DELETE_CUENTA = "DELETE FROM PERSONA WHERE EMAIL=?";
 	private final String SELECT_PRODUCTO_COD = "SELECT * FROM PRODUCTO WHERE codigo_producto=?";
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
-	private final String SELECT_COMPRA = "SELECT * FROM CESTA_COMPRA";
+	private final String SELECT_COMPRA = "SELECT * FROM REALIZA R JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA = P.CODIGO_PERSONA WHERE EMAIL=?";
 	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
 	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
 	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
@@ -54,6 +58,16 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	private final String INSERT_USUARIO = "INSERT INTO usuario (codigo_persona_usuario, numero_tarjeta, nombre, apellido, fecha_nacimiento, direccion) VALUES ( ?, ?, ?, ?, ?,?)";
 	private final String INSERT_TARJETA = "INSERT INTO tarjeta (numero_tarjeta, cvv) VALUES ( ?, ?)";
 	private final String SELECT_EN_CESTA = "SELECT P.CODIGO_PRODUCTO,P.NOMBRE,PESO, PRECIO, CC.NUMREFERENCIA,  FECHA_INICIO, CANTIDAD FROM REALIZA R JOIN PRODUCTO P ON P.CODIGO_PRODUCTO=R.CODIGO_PRODUCTO JOIN USUARIO U ON R.CODIGO_PERSONA= U.CODIGO_PERSONA_USUARIO JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA WHERE U.CODIGO_PERSONA_USUARIO=? AND CC.FECHA_FIN IS NULL AND R.NUMREFERENCIA=?";
+	private final String INSERT_REALIZA = "REPLACE INTO REALIZA (NUMREFERENCIA, CODIGO_PRODUCTO, CODIGO_PERSONA,CANTIDAD) VALUES(?,?,?,?)";
+	private final String INSERT_CESTA = "INSERT INTO CESTA_COMPRA (NUMREFERENCIA, FECHA_INICIO,FECHA_FIN, PESO_TOTAL ,PRECIO_TOTAL) VALUES(?,?,?,?,?)";
+	private final String RECOGER_DATOS_EMAIL = "SELECT * FROM PERSONA WHERE EMAIL=?";
+	private final String RECOGER_DATOS_USUARIO = "SELECT P.*, U.* FROM PERSONA P JOIN USUARIO U ON P.CODIGO_PERSONA=U.CODIGO_PERSONA_USUARIO WHERE EMAIL=?";
+	private final String RECOGER_DATOS_TARJETA = "SELECT T.*, U.* FROM USUARIO U JOIN PERSONA P ON P.CODIGO_PERSONA=U.CODIGO_PERSONA_USUARIO JOIN TARJETA T ON U.NUMERO_TARJETA=T.NUMERO_TARJETA WHERE EMAIL=?";
+	private final String ACTUALIZAR_DATOS_CESTA = "UPDATE CESTA_COMPRA SET FECHA_FIN=? WHERE NUMREFERENCIA IN (SELECT NUMREFERENCIA FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?))";
+	private final String ACTUALIZAR_DATOS_PRODUCTO = "UPDATE PRODUCTO SET NUM_EXISTENCIAS=? WHERE CODIGO_PRODUCTO=?";
+	private final String SELECT_PROD_ID = "SELECT * FROM PRODUCTO P WHERE CODIGO_PRODUCTO IN (SELECT CODIGO_PRODUCTO FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?))";
+	private final String SELECT_CANTIDAD = "SELECT * FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?)";
+
 	private ResourceBundle configFichero;
 	private String driverBD;
 	private String urlBD;
@@ -93,9 +107,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	public Persona login(Persona pers) {
 
 		ResultSet rs = null;
-
 		this.openConnection();
-
 		try {
 			stmt = con.prepareStatement(LOGEO);
 			stmt.setString(1, pers.getEmail());
@@ -103,20 +115,71 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 			rs = stmt.executeQuery();
 
-			pers = new Persona();
 			if (rs.next()) {
 				// RECOGEMOS LOS DATOS DE PERSONA
-				pers.setCodigoPersona(rs.getString(1));
-				pers.setNombre(rs.getString(2));
-				pers.setEmail(rs.getString(3));
-				pers.setNumTelefono(rs.getInt(4));
-				pers.setContrasena(rs.getString(5));
+				pers = new Persona();
+				pers.setCodigoPersona(rs.getString("codigo_persona"));
+				pers.setNombre(rs.getString("nombre"));
+				pers.setEmail(rs.getString("email"));
+				pers.setNumTelefono(rs.getInt("num_telefono"));
+				pers.setContrasena(rs.getString("contraseña"));
 
 			}
 		} catch (SQLException e) {
 
 		}
 		return pers;
+	}
+
+	public Persona recogerDatosPersonaEmail(String email) {
+		ResultSet rs = null;
+		Persona pers = null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(RECOGER_DATOS_USUARIO);
+			stmt.setString(1, email);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				// RECOGEMOS LOS DATOS DE PERSONA
+				pers = new Usuario();
+				pers.setCodigoPersona(rs.getString("codigo_persona_usuario"));
+				pers.setNombre(rs.getString("nombre"));
+				pers.setEmail(rs.getString("email"));
+				((Usuario) pers).setNombrePersonal(rs.getString("nombre"));
+				((Usuario) pers).setApellido(rs.getString("apellido"));
+				pers.setNumTelefono(rs.getInt("num_telefono"));
+				((Usuario) pers).setDireccion(rs.getString("direccion"));
+
+			}
+		} catch (SQLException e) {
+
+		}
+		return pers;
+	}
+
+	public Tarjeta recogerDatosTarjeta(String email) {
+		ResultSet rs = null;
+		Tarjeta tar = null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(RECOGER_DATOS_TARJETA);
+			stmt.setString(1, email);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				// RECOGEMOS LOS DATOS DE LA TARJETA
+				tar = new Tarjeta();
+				tar.setCVV(rs.getInt("CVV"));
+				tar.setNumeroTarjeta(rs.getString("numero_tarjeta"));
+
+			}
+		} catch (SQLException e) {
+
+		}
+		return tar;
 	}
 
 	public void insertarProducto(Producto prod) {
@@ -199,9 +262,44 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 	}
 
+	public boolean validarLong(String cadena) {
+		Long num;
+		try {
+			// SI ES UN INT
+			num = Long.parseLong(cadena);
+			return true;
+
+		} catch (Exception e) {
+			// SI ES UN STRING
+			return false;
+		}
+	}
+
 	public int numeroProducto(Producto prod) {
 		ResultSet rs = null;
 		String numJuguetes = "SELECT COUNT(codigo_producto)FROM producto";
+		int n = 0;
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(numJuguetes);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				// Si hay resultados obtengo el valor.
+				n = rs.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return n;
+
+	}
+
+	public int numeroReferencia(Cesta_Compra cesta) {
+		ResultSet rs = null;
+		String numJuguetes = "SELECT COUNT(numreferencia)FROM cesta_compra";
 		int n = 0;
 		this.openConnection();
 
@@ -254,6 +352,72 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 	}
 
+	public ArrayList<Producto> recogerProductosId(Persona pers) {
+		this.openConnection();
+		Producto prod;
+		ArrayList<Producto> codProd = new ArrayList<>();
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_PROD_ID);
+			stmt.setString(1, pers.getEmail());
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				prod = new Producto();
+				prod.setCodigoProducto(rs.getString("codigo_producto"));
+				prod.setNombre(rs.getString("nombre"));
+				prod.setPrecio(rs.getFloat("precio"));
+				prod.setPeso(rs.getFloat("peso"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
+				prod.setDimensiones(rs.getString("dimensiones"));
+				codProd.add(prod);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return codProd;
+
+	}
+
+	public ArrayList<Realiza> recogerCantidad(Persona pers) {
+		this.openConnection();
+		Realiza realiza;
+		ArrayList<Realiza> realizas = new ArrayList<>();
+		ResultSet rs;
+
+		try {
+			stmt = con.prepareStatement(SELECT_CANTIDAD);
+			stmt.setString(1, pers.getEmail());
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				realiza = new Realiza();
+				realiza.setNumReferencia(rs.getString("numreferencia"));
+				realiza.setCodigoProducto(rs.getString("codigo_producto"));
+				realiza.setCodigoPersona(rs.getString("codigo_persona"));
+				realiza.setCantidad(rs.getInt("cantidad"));
+				realizas.add(realiza);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			this.closeConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return realizas;
+	}
+
 	public Producto recogerProductoId(String codigo_producto) {
 		this.openConnection();
 		Producto prod = null;
@@ -270,7 +434,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 
 			}
@@ -407,6 +571,87 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 	}
 
+	public void eliminarCesta(Persona pers) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_CESTA);
+			stmt.setString(1, pers.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public void eliminarRealiza(Persona pers) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_REALIZA);
+			stmt.setString(1, pers.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public void eliminarCuenta(Persona per) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_CUENTA);
+			stmt.setString(1, per.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
 	public void modificarProducto(Producto prod) {
 
 		ResultSet rs = null;
@@ -420,8 +665,8 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 			stmt.setString(1, prod.getNombre());
 			stmt.setFloat(2, prod.getPrecio());
-			stmt.setFloat(4, prod.getPeso());
-			stmt.setInt(3, prod.getNumExistencias());
+			stmt.setFloat(3, prod.getPeso());
+			stmt.setInt(4, prod.getNumExistencias());
 			stmt.setFloat(5, Float.parseFloat(prod.getDimensiones()));
 
 			stmt.setString(6, prod.getCodigoProducto());
@@ -473,7 +718,65 @@ public class ControladorBdImplementacion implements DBImplementacion {
 		}
 	}
 
-	public Map<String, Cesta_Compra> listarCompra() {
+	public void modificarCesta(Cesta_Compra cesta, Persona pers) {
+		ResultSet rs = null;
+
+		// Abrimos la conexion con la base de datos
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(ACTUALIZAR_DATOS_CESTA);
+
+			stmt.setDate(1, cesta.getFecha_fin());
+			stmt.setString(2, pers.getEmail());
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e1) {
+			System.out.println("Error en la modificación SQL");
+			e1.printStackTrace();
+
+		} finally {
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void añadirStockProducto(Producto prod, Persona pers) {
+		ResultSet rs = null;
+
+		// Abrimos la conexion con la base de datos
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(ACTUALIZAR_DATOS_PRODUCTO);
+
+			stmt.setInt(1, prod.getNumExistencias());
+			stmt.setString(2, prod.getCodigoProducto());
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e1) {
+			System.out.println("Error en la modificación SQL");
+			e1.printStackTrace();
+
+		} finally {
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public Map<String, Cesta_Compra> listarCompra(Persona per) {
 		ResultSet rs = null;
 		Cesta_Compra compra;
 		Map<String, Cesta_Compra> listaCompra = new HashMap<>();
@@ -482,14 +785,14 @@ public class ControladorBdImplementacion implements DBImplementacion {
 
 		try {
 			stmt = con.prepareStatement(SELECT_COMPRA);
-
+			stmt.setString(1, per.getEmail());
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
 				compra = new Cesta_Compra();
 				compra.setNumReferencia(rs.getString("numreferencia"));
-				compra.setFecha_Inicio(Date.valueOf(rs.getString("fecha_inicio")).toLocalDate());
-				compra.setFecha_fin(Date.valueOf(rs.getString("fecha_fin")).toLocalDate());
+				compra.setFecha_Inicio(rs.getDate("fecha_inicio"));
+				compra.setFecha_fin(rs.getDate("fecha_fin"));
 				compra.setPeso_total(rs.getFloat("peso_total"));
 				compra.setPeso_total(rs.getFloat("precio_total"));
 				listaCompra.put(compra.getNumReferencia(), compra);
@@ -515,6 +818,44 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			}
 		}
 		return listaCompra;
+	}
+
+	public void insertarCompra_Cesta(Cesta_Compra cesta) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_CESTA); // Cargamos el insert de persona con el stmt
+			// Posicionamos cada valor para insertarlo en la base de datos
+			stmt.setString(1, cesta.getNumReferencia());
+			stmt.setDate(2, Date.valueOf(cesta.getFecha_Inicio().toLocalDate()));
+			stmt.setDate(3, null);
+			stmt.setFloat(4, cesta.getPeso_total());
+			stmt.setFloat(5, cesta.getPrecio_total());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
+	public void insertarRealiza(Realiza realiza) {
+		this.openConnection();
+
+		try {
+			stmt = con.prepareStatement(INSERT_REALIZA); // Cargamos el insert de persona con el stmt
+			// Posicionamos cada valor para insertarlo en la base de datos
+			stmt.setString(1, realiza.getNumReferencia());
+			stmt.setString(2, realiza.getCodigoProducto());
+			stmt.setString(3, realiza.getCodigoPersona());
+			stmt.setInt(4, realiza.getCantidad());
+
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
 	}
 
 	public Producto recogerCesta(String codigo_persona, String numreferencia) {
@@ -566,7 +907,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Linea_De_Ropa) prod).setTalla(rs.getString("talla"));
 				((Linea_De_Ropa) prod).setTejido(rs.getString("tejido"));
@@ -616,7 +957,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Juguete) prod).setMaterial(rs.getString("material"));
 				((Juguete) prod).setArticulable(rs.getString("articulable"));
@@ -641,6 +982,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 			try {
 				this.closeConnection();
 			} catch (SQLException e) {
+
 				System.out.println("Error en el cierre de la BD");
 				e.printStackTrace();
 			}
@@ -666,7 +1008,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 				prod.setNombre(rs.getString("nombre"));
 				prod.setPrecio(rs.getFloat("precio"));
 				prod.setPeso(rs.getFloat("peso"));
-				prod.setPrecio(rs.getFloat("num_existencias"));
+				prod.setNumExistencias(rs.getInt("num_existencias"));
 				prod.setDimensiones(rs.getString("dimensiones"));
 				((Pelicula_Serie) prod).setGenero(rs.getString("genero"));
 				((Pelicula_Serie) prod).setFechaLanzamiento(rs.getString("fecha_de_lanzamiento"));
@@ -812,7 +1154,7 @@ public class ControladorBdImplementacion implements DBImplementacion {
 	public int existeNumeroTarjeta(long numeroTarjeta) {
 
 		ResultSet rs = null;
-		String registrar = "SELECT COUNT(numero_tarjeta)FROM TARJETA WHERE numero_tarjeta=?";
+		String registrar = "SELECT numero_tarjeta FROM TARJETA WHERE numero_tarjeta=?";
 		this.openConnection();
 
 		try {

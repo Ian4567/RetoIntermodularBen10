@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,51 +28,38 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 
 import clases.Cesta_Compra;
+import clases.Persona;
 import clases.Producto;
+import clases.Realiza;
+import clases.Tarjeta;
+import clases.Usuario;
 import modelo.ControladorBdImplementacion;
-import modelo.DBImplementacion;
+import modelo.DAO;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
 
 public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTable tablaProducto;
-	private JTextField textEmail, textTelefono, textNombre, texCvv, textCVV;
+	private JTextField textEmail, textTelefono, textNombre, textTarjeta, textCVV;
 	private Map<String, Cesta_Compra> listaCompra;
-	private DBImplementacion db = new ControladorBdImplementacion();
+	private DAO db = new ControladorBdImplementacion();
 	private Cesta_Compra compra;
 	private JPanel main;
 	private JButton btnFinalizarCompra, btnCancelarCompra, btnCasa;
 	private JMenuItem iniciar, registro, borrarCuenta, btnCesta;
-	private JLabel lblNombre;
-	private JLabel lblEmail;
-	private JLabel lblTelefono;
-	private JLabel lblCvv;
-	private JLabel lblDatosDeLa;
-	private JLabel lblNumeroDeTarjeta;
-	private JLabel texto;
+	private JLabel lblNombre, lblEmail, lblTelefono, lblCvv, lblDatosDeLa, lblNumeroDeTarjeta, texto, lblNewLabel;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			Finalizar_Compra dialog = new Finalizar_Compra();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public Finalizar_Compra() {
-		setBounds(100, 100, 1920, 1080);
+	public Finalizar_Compra(Persona pers, Ventana_Principal principal, boolean modal) {
+		super(principal);
+		this.setModal(modal);
+		setBounds(100, 100, 1920, 1024);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBackground(Color.DARK_GRAY);
@@ -107,6 +97,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		btnCasa = new JButton("");
 		btnCasa.setBackground(new Color(128, 255, 128));
 		btnCasa.setIcon(new ImageIcon("././imagenes/casa-removebg-preview.png"));
+		btnCasa.addActionListener(this);
 		menuBar.add(btnCasa);
 
 		JMenu mnNewMenu = new JMenu("");
@@ -117,12 +108,14 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		iniciar.setForeground(Color.BLACK);
 		iniciar.setBackground(new Color(128, 255, 128));
 		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		iniciar.setEnabled(false);
 		iniciar.addActionListener(this);
 		mnNewMenu.add(iniciar);
 
 		registro = new JMenuItem("Registrarse");
 		registro.setBackground(new Color(128, 255, 128));
 		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
+		registro.setEnabled(false);
 		registro.addActionListener(this);
 		mnNewMenu.add(registro);
 
@@ -145,51 +138,51 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		textEmail = new JTextField();
 		textEmail.setOpaque(false);
 		textEmail.setForeground(Color.WHITE);
-		textEmail.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textEmail.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textEmail.setColumns(10);
 		textEmail.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textEmail.setBackground(new Color(102, 255, 102));
-		textEmail.setBounds(622, 291, 174, 18);
+		textEmail.setBounds(622, 291, 229, 18);
 		main.add(textEmail);
 
 		textTelefono = new JTextField();
 		textTelefono.setOpaque(false);
 		textTelefono.setForeground(Color.WHITE);
-		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textTelefono.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textTelefono.setColumns(10);
 		textTelefono.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textTelefono.setBackground(new Color(102, 255, 102));
-		textTelefono.setBounds(622, 419, 174, 18);
+		textTelefono.setBounds(622, 419, 229, 18);
 		main.add(textTelefono);
 
 		textNombre = new JTextField();
 		textNombre.setOpaque(false);
 		textNombre.setForeground(Color.WHITE);
-		textNombre.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textNombre.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textNombre.setColumns(10);
 		textNombre.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textNombre.setBackground(new Color(102, 255, 102));
-		textNombre.setBounds(622, 169, 174, 18);
+		textNombre.setBounds(622, 169, 229, 18);
 		main.add(textNombre);
 
-		texCvv = new JTextField();
-		texCvv.setOpaque(false);
-		texCvv.setForeground(Color.WHITE);
-		texCvv.setFont(new Font("Tahoma", Font.BOLD, 14));
-		texCvv.setColumns(10);
-		texCvv.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
-		texCvv.setBackground(new Color(102, 255, 102));
-		texCvv.setBounds(1259, 168, 174, 18);
-		main.add(texCvv);
+		textTarjeta = new JTextField();
+		textTarjeta.setOpaque(false);
+		textTarjeta.setForeground(Color.WHITE);
+		textTarjeta.setFont(new Font("Tahoma", Font.BOLD, 20));
+		textTarjeta.setColumns(10);
+		textTarjeta.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
+		textTarjeta.setBackground(new Color(102, 255, 102));
+		textTarjeta.setBounds(1259, 168, 217, 18);
+		main.add(textTarjeta);
 
 		textCVV = new JTextField();
 		textCVV.setOpaque(false);
 		textCVV.setForeground(Color.WHITE);
-		textCVV.setFont(new Font("Tahoma", Font.BOLD, 14));
+		textCVV.setFont(new Font("Tahoma", Font.BOLD, 20));
 		textCVV.setColumns(10);
 		textCVV.setBorder(new MatteBorder(0, 0, 3, 0, (Color) new Color(102, 255, 102)));
 		textCVV.setBackground(new Color(102, 255, 102));
-		textCVV.setBounds(1259, 290, 174, 18);
+		textCVV.setBounds(1259, 290, 217, 18);
 		main.add(textCVV);
 
 		lblNombre = new JLabel("Nombre");
@@ -232,52 +225,107 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		btnFinalizarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnFinalizarCompra.setBackground(new Color(102, 255, 153));
-		btnFinalizarCompra.setBounds(525, 897, 313, 50);
+		btnFinalizarCompra.setBounds(522, 864, 313, 50);
+		btnFinalizarCompra.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				finalizarCompra(pers);
+			}
+		});
 		btnFinalizarCompra.addActionListener(this);
 		main.add(btnFinalizarCompra);
 
 		btnCancelarCompra = new JButton("CANCELAR COMPRA");
 		btnCancelarCompra.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnCancelarCompra.setBackground(new Color(102, 255, 153));
-		btnCancelarCompra.setBounds(1109, 897, 339, 50);
+		btnCancelarCompra.setBounds(1089, 864, 339, 50);
+		btnCancelarCompra.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelarCompra(pers);
+			}
+		});
 		btnCancelarCompra.addActionListener(this);
 		main.add(btnCancelarCompra);
 
-		this.presentarTabla(compra, db, main);
+		lblNewLabel = new JLabel("");
+		lblNewLabel.setIcon(new ImageIcon(
+				"C:\\Users\\1dam\\Desktop\\Reto_Final_GIT\\RetoIntermodularBen10\\Proyecto_Ben_10\\imagenes\\Materia_Gris_SO_29.png"));
+		lblNewLabel.setBounds(92, 342, 255, 581);
+		main.add(lblNewLabel);
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+				presentarTabla(compra, db, main, pers);
+			}
+
+			public void windowLostFocus(WindowEvent e) {
+
+			}
+		});
 
 	}
 
-	private void presentarTabla(Cesta_Compra compra, DBImplementacion db, JPanel main) {
+	private void finalizarCompra(Persona pers) {
+		pers = db.login(pers);
+		Cesta_Compra cesta;
+		cesta = new Cesta_Compra();
+		cesta.setNumReferencia(cesta.getNumReferencia());
+		cesta.setFecha_Inicio(cesta.getFecha_Inicio());
+		cesta.setFecha_fin(Date.valueOf(LocalDate.now()));
+		cesta.setPeso_total(cesta.getPeso_total());
+		cesta.setPrecio_total(cesta.getPrecio_total());
+		ArrayList<Producto> productos = db.recogerProductosId(pers);
+		int pregunt;
+		if (productos.size() > 0) {
+			pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS REALIZAR LA COMPRA?  ", // ventana
+					"Pregunta", // titulo de la ventana
+					JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+					JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+					null, // null para icono por defecto.
+					new Object[] { "SI", "NO" }, // objeto para las opciones
+					// null para YES, NO y CANCEL
+					"SI");
+			if (pregunt == 0) {
+				db.modificarCesta(cesta, pers);
+				JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
 
-		DBImplementacion bd = new ControladorBdImplementacion();
+			} else {
+				JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "TODAVIA NO HAY PRODUCTOS EN LA CESTA!");
+		}
+	}
+
+	private void presentarTabla(Cesta_Compra compra, DAO db, JPanel main, Persona pers) {
+
+		DAO bd = new ControladorBdImplementacion();
 		JScrollPane scroll = new JScrollPane();
 		scroll.setBounds(360, 551, 1177, 286);
 		main.add(scroll);
 
-		tablaProducto = this.cargarTabla(compra, db);
+		tablaProducto = this.cargarTabla(compra, db, pers);
 		tablaProducto.setGridColor(Color.green);
 		scroll.setViewportView(tablaProducto);
 
 	}
 
-	private JTable cargarTabla(Cesta_Compra comprar, DBImplementacion db) {
-
-		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "FECHA_FIN", "PESO_TOTAL", "PRECIO_TOTAL" };
-		String[] registros = new String[5];
+	private JTable cargarTabla(Cesta_Compra comprar, DAO db, Persona pers) {
+		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "PESO_TOTAL", "PRECIO_TOTAL" };
+		String[] registros = new String[4];
 
 		DefaultTableModel modelo = new DefaultTableModel(null, nombreColumnas);
 		modelo.setRowCount(0);
 
-		listaCompra = db.listarCompra();
+		listaCompra = db.listarCompra(pers);
 
 		for (Cesta_Compra compra : listaCompra.values()) {
-			registros[0] = compra.getNumReferencia();
-			registros[1] = compra.getFecha_Inicio().toString();
-			registros[2] = compra.getFecha_fin().toString();
-			registros[3] = Float.toString(compra.getPeso_total());
-			registros[4] = Float.toString(compra.getPeso_total());
+			if (compra.getFecha_fin() == null) {
+				registros[0] = compra.getNumReferencia();
+				registros[1] = compra.getFecha_Inicio().toString();
+				registros[2] = Float.toString(compra.getPeso_total());
+				registros[3] = Float.toString(compra.getPeso_total());
 
-			modelo.addRow(registros);
+				modelo.addRow(registros);
+			}
 		}
 
 		return new JTable(modelo);
@@ -286,37 +334,79 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(btnFinalizarCompra)) {
-			comprar();
-		} else if (e.getSource().equals(btnCancelarCompra)) {
-
-		} else if (e.getSource().equals(btnCasa)) {
+		if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, null);
-			prin.setVisible(true);
+
 		} else if (e.getSource().equals(iniciar)) {
 			this.dispose();
-			Inicio_Sesion inicio = new Inicio_Sesion();
+			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
 			inicio.setVisible(true);
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro();
+			Registro reg = new Registro(null);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrarCuenta)) {
 			this.dispose();
-			Ventana_Principal ven = new Ventana_Principal(null, null);
+			Ventana_Principal prin = new Ventana_Principal(null, null);
+			prin.tabbedPane.setSelectedIndex(1);
+			prin.tabbedPane.setVisible(true);
 
-		} else if (e.getSource().equals(btnCesta)) {
-			this.dispose();
-			Finalizar_Compra venCesta = new Finalizar_Compra();
-			venCesta.setVisible(true);
-		} 
+		}
 
 	}
 
-	private void comprar() {
+	private void cancelarCompra(Persona pers) {
+		DAO bd = new ControladorBdImplementacion();
+
+		ArrayList<Producto> productos = bd.recogerProductosId(pers);
+		ArrayList<Realiza> realizas = bd.recogerCantidad(pers);
+		if (productos.size() > 0) {
+			int pregunt;
+
+			pregunt = JOptionPane.showOptionDialog(null, "¿ESTAS SEGURO QUE DESEAS BORRAR LA CESTA?  ", // ventana
+					"Pregunta", // titulo de la ventana
+					JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+					JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+					null, // null para icono por defecto.
+					new Object[] { "SI", "NO" }, // objeto para las opciones
+					// null para YES, NO y CANCEL
+					"SI");
+			if (pregunt == 0) {
+
+				for (Producto prod : productos) {
+					for (Realiza rea : realizas) {
+						if (prod.getCodigoProducto().equals(rea.getCodigoProducto())) {
+							prod.setNumExistencias(prod.getNumExistencias() + rea.getCantidad());
+						}
+					}
+					db.modificarProducto(prod);
+					db.eliminarCesta(pers);
+
+					db.eliminarRealiza(pers);
+
+				}
+				JOptionPane.showMessageDialog(borrarCuenta, "LA CESTA SE HA ELIMINADO CORRECTAMENTE!");
+			} else {
+				JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
+			}
+		} else {
+			JOptionPane.showMessageDialog(borrarCuenta, "TODAVIA NO HAY CESTA!");
+		}
 
 	}
 
+	public Persona cargarDatosCompra(Persona pers, Tarjeta tar) {
+
+		DAO bd = new ControladorBdImplementacion();
+		pers = db.recogerDatosPersonaEmail(pers.getEmail());
+		tar = db.recogerDatosTarjeta(pers.getEmail());
+		textNombre.setText(((Usuario) pers).getNombrePersonal());
+		textEmail.setText(pers.getEmail());
+		textTelefono.setText(Integer.toString(pers.getNumTelefono()));
+		textCVV.setText(Integer.toString(tar.getCVV()));
+		textTarjeta.setText(tar.getNumeroTarjeta());
+
+		return pers;
+	}
 }
