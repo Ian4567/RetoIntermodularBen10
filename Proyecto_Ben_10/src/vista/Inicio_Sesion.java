@@ -83,7 +83,6 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 		btnIniciarSesion.addActionListener(this);
 		contentPane.add(btnIniciarSesion);
 
-		
 	}
 
 	@Override
@@ -134,5 +133,4 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 
 		return existe;
 	}
-
 }

@@ -43,13 +43,14 @@ public class ControladorBdImplementacion implements DAO {
 	private final String SELECT_PRODUCTOS = "SELECT * FROM PRODUCTO";
 	private final String DELETE_PRODUCTO = "DELETE FROM PRODUCTO WHERE CODIGO_PRODUCTO = ?";
 	private final String DELETE_CESTA = "DELETE FROM CESTA_COMPRA WHERE NUMREFERENCIA IN(SELECT NUMREFERENCIA FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?))";
+	private final String DELETE_TARJETA = "DELETE FROM TARJETA WHERE NUMERO_TARJETA IN(SELECT NUMERO_TARJETA FROM USUARIO WHERE CODIGO_PERSONA_USUARIO IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?))";
 	private final String DELETE_REALIZA = "DELETE FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?)";
 	private final String DELETE_CUENTA = "DELETE FROM PERSONA WHERE EMAIL=?";
 	private final String SELECT_PRODUCTO_COD = "SELECT * FROM PRODUCTO WHERE codigo_producto=?";
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
-	private final String SELECT_COMPRA = "SELECT * FROM REALIZA R JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA = P.CODIGO_PERSONA WHERE EMAIL=?";
+	private final String SELECT_COMPRA = "select * from realiza r join cesta_compra cc ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA=P.CODIGO_PERSONA WHERE P.CODIGO_PERSONA=?";
 	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
 	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
 	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
@@ -67,6 +68,7 @@ public class ControladorBdImplementacion implements DAO {
 	private final String ACTUALIZAR_DATOS_PRODUCTO = "UPDATE PRODUCTO SET NUM_EXISTENCIAS=? WHERE CODIGO_PRODUCTO=?";
 	private final String SELECT_PROD_ID = "SELECT * FROM PRODUCTO P WHERE CODIGO_PRODUCTO IN (SELECT CODIGO_PRODUCTO FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?))";
 	private final String SELECT_CANTIDAD = "SELECT * FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?)";
+	private final String OFERTA = "CALL crear_oferta(?)";
 
 	private ResourceBundle configFichero;
 	private String driverBD;
@@ -180,6 +182,22 @@ public class ControladorBdImplementacion implements DAO {
 
 		}
 		return tar;
+	}
+
+	public Cesta_Compra crearOferta(String numReferencia) {
+		ResultSet rs = null;
+		Cesta_Compra cesta = null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(OFERTA);
+			stmt.setString(1, numReferencia);
+
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+
+		}
+		return cesta;
 	}
 
 	public void insertarProducto(Producto prod) {
@@ -598,6 +616,33 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	public void eliminarTarjeta(Persona pers) {
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_TARJETA);
+			stmt.setString(1, pers.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
 	public void eliminarRealiza(Persona pers) {
 
 		this.openConnection();
@@ -785,7 +830,7 @@ public class ControladorBdImplementacion implements DAO {
 
 		try {
 			stmt = con.prepareStatement(SELECT_COMPRA);
-			stmt.setString(1, per.getEmail());
+			stmt.setString(1, per.getCodigoPersona());
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -794,7 +839,7 @@ public class ControladorBdImplementacion implements DAO {
 				compra.setFecha_Inicio(rs.getDate("fecha_inicio"));
 				compra.setFecha_fin(rs.getDate("fecha_fin"));
 				compra.setPeso_total(rs.getFloat("peso_total"));
-				compra.setPeso_total(rs.getFloat("precio_total"));
+				compra.setPrecio_total(rs.getFloat("precio_total"));
 				listaCompra.put(compra.getNumReferencia(), compra);
 			}
 
@@ -1154,7 +1199,7 @@ public class ControladorBdImplementacion implements DAO {
 	public int existeNumeroTarjeta(long numeroTarjeta) {
 
 		ResultSet rs = null;
-		String registrar = "SELECT numero_tarjeta FROM TARJETA WHERE numero_tarjeta=?";
+		String registrar = "SELECT count(numero_tarjeta) FROM TARJETA WHERE numero_tarjeta=?";
 		this.openConnection();
 
 		try {
@@ -1186,6 +1231,74 @@ public class ControladorBdImplementacion implements DAO {
 		Matcher mather = pattern.matcher(email);
 
 		return mather.find();
+	}
+
+	public int existeTelefono(int numTelefono) {
+
+		ResultSet rs = null;
+
+		String registrar = "SELECT count(codigo_persona) FROM PERSONA WHERE num_telefono=?";
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(registrar);
+
+			stmt.setInt(1, numTelefono);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+
+				return rs.getInt(1);
+
+			}
+
+			return 1;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
+	}
+
+	public int existeEmail(String email) {
+
+		ResultSet rs = null;
+
+		String registrar = "SELECT COUNT(codigo_persona)FROM PERSONA WHERE EMAIL=?";
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(registrar);
+
+			stmt.setString(1, email);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+
+				return rs.getInt(1);
+
+			}
+
+			return 1;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
 	}
 
 }

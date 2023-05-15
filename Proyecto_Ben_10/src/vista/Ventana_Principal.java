@@ -297,6 +297,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnAgregar.setBounds(1521, 222, 220, 64);
 		btnAgregar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(pers);
 				insertarCesta(pers);
 			}
 		});
@@ -364,14 +365,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 
 		btnBorrar = new JButton("BORRAR");
-		btnBorrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				borrarCuenta(pers);
-			}
-		});
+
 		btnBorrar.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnBorrar.setBackground(new Color(250, 128, 114));
 		btnBorrar.setBounds(845, 861, 200, 50);
+		btnBorrar.addActionListener(this);
 		usuario.add(btnBorrar);
 
 		JLabel lblBorrarCuenta = new JLabel("BORRAR CUENTA");
@@ -447,6 +445,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 					realiza.setCantidad(Integer.parseInt(textCantidad.getText()));
 					db.insertarRealiza(realiza);
 					prod.setNumExistencias(prod.getNumExistencias() - Integer.parseInt(textCantidad.getText()));
+
 					db.insertarRealiza(realiza);
 					db.modificarProducto(prod);
 					textCantidad.setText("");
@@ -461,14 +460,23 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public Persona logeo(Persona per) {
 		DAO db = new ControladorBdImplementacion();
 
-		if (per.getCodigoPersona().charAt(0) == 'U') {
+		if (per == null) {
+			tabbedPane.setEnabledAt(1, false);
+			borrado.setEnabled(false);
+			btnAgregar.setEnabled(false);
+			btnGestionarProductos.setVisible(false);
+			btnCesta.setEnabled(false);
+			btnGestionarProductos.setVisible(false);
+			btnCesta.setEnabled(true);
+
+		} else if (per.getCodigoPersona().charAt(0) == 'U') {
 			tabbedPane.setEnabledAt(1, true);
 			btnAgregar.setEnabled(true);
 			borrado.setEnabled(true);
 			btnCesta.setEnabled(true);
 			registro.setEnabled(false);
 			iniciar.setEnabled(false);
-			cargarDatosCuenta(per);
+			cargarDatosCuenta();
 		} else if (per.getCodigoPersona().charAt(0) == 'A') {
 			borrado.setEnabled(false);
 			btnGestionarProductos.setVisible(true);
@@ -476,18 +484,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			borrado.setEnabled(true);
 			registro.setEnabled(false);
 			iniciar.setEnabled(false);
-
-		} else {
-			tabbedPane.setEnabledAt(1, false);
-			borrado.setEnabled(false);
-			btnAgregar.setEnabled(false);
-			btnGestionarProductos.setVisible(false);
-			btnCesta.setEnabled(false);
-			btnGestionarProductos.setVisible(true);
-			btnCesta.setEnabled(true);
-
 		}
-
 		return per;
 	}
 
@@ -505,11 +502,8 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			}
 
 		} else if (e.getSource().equals(registro)) {
-			Registro reg = new Registro(this);
+			Registro reg = new Registro(this, true);
 			reg.setVisible(true);
-			if (reg.registrarse(pers)) {
-				reg.registrarse(pers);
-			}
 
 		} else if (e.getSource().equals(borrado)) {
 			tabbedPane.setSelectedIndex(1);
@@ -517,14 +511,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 		} else if (e.getSource().equals(btnGestionarProductos)) {
 
-			Gestionar_Articulo gest = new Gestionar_Articulo(null, true);
+			Gestionar_Articulo gest = new Gestionar_Articulo(this, true);
 			gest.setVisible(true);
 
+		} else if (e.getSource().equals(btnBorrar)) {
+			borrarCuenta();
 		}
 
 	}
 
-	private void borrarCuenta(Persona pers) {
+	private void borrarCuenta() {
 		DAO db = new ControladorBdImplementacion();
 		int pregunt;
 
@@ -537,10 +533,12 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 				// null para YES, NO y CANCEL
 				"SI");
 		if (pregunt == 0) {
+			db.eliminarTarjeta(pers);
 			db.eliminarCuenta(pers);
 			JOptionPane.showMessageDialog(this, "CUENTA ELIMINADA CORRECTAMENTE!");
 			tabbedPane.setSelectedIndex(0);
-			pers = logeo(pers);
+
+			pers = logeo(null);
 
 		} else {
 			JOptionPane.showMessageDialog(this, "SE HA CANCELADO EL BORRADO!");
@@ -772,7 +770,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	public Persona cargarDatosCuenta(Persona pers) {
+	public Persona cargarDatosCuenta() {
 		DAO bd = new ControladorBdImplementacion();
 		if (pers != null) {
 			pers = db.recogerDatosPersonaEmail(pers.getEmail());

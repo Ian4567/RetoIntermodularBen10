@@ -51,8 +51,13 @@ public class Registro extends JDialog implements ActionListener {
 	private JMenuItem iniciar, registro, borrado, btnCesta;
 	private JButton btnCasa;
 	private boolean entra = true;
+	private Ventana_Principal principal;
 
-	public Registro(Ventana_Principal principal) {
+	public Registro(Ventana_Principal principal, boolean modal) {
+		super(principal);
+		this.principal = principal;
+		this.setModal(modal);
+
 		setBounds(100, 100, 1920, 1080);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -316,7 +321,7 @@ public class Registro extends JDialog implements ActionListener {
 			inicio.setVisible(true);
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro(null);
+			Registro reg = new Registro(null, true);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();
@@ -367,85 +372,108 @@ public class Registro extends JDialog implements ActionListener {
 		return codigo;
 	}
 
-	public boolean registrarse(Persona pers) {
+	public void registrarse(Persona pers) {
 		Tarjeta tar = null;
 		boolean registro = false;
 		DAO bd = new ControladorBdImplementacion();
 		boolean numeroTel = bd.validarInt(textFTelefono.getText()), cvv = bd.validarInt(textFcvv.getText()),
 				numeroTar = bd.validarLong(textFNumeroTar.getText());
+// MIRAMOS SI HAY CAMPOS SIN RELLENAR
+//if (segundaVez()) {
+		if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
+				|| !textFapellido.getText().equals("") || !textFEmail.getText().equals("")
+				|| !textFContrasena.getText().equals("") || !textFTelefono.getText().equals("")
+				|| !textFDireccion.getText().equals("") || !textFNumeroTar.getText().equals("")
+				|| !textFcvv.getText().equals("") || fechaSelector.getDate() != null) {
+			// MIRAMOS SI EXISTE EL USUARIO
+			if (bd.existePersona(textNombreUsuario.getText()) == 0) {
+				// MIRAMOS LA LARGURA DEL TELEFONO Y SI ES DE TIPO INT
+				if (textFTelefono.getText().length() == 9 && numeroTel) {
+					// COMPROBAMOS SI EXISTE LA TARJETA
+					if (bd.existeTelefono(Integer.parseInt(textFTelefono.getText())) == 0) {
+						// MIRAMOS QUE NO DEJE LA FECHA SIN ELEGIR Y QUE LA FECHA ES ANTERIOR AL DIA
+						// ACTUAL
+						if (fechaSelector.getDate() != null
+								&& fechaSelector.getDate().before(Date.valueOf(LocalDate.now()))) {
+							// VERIFICAMOS NO SEA UN EMAIL
+							if (bd.esEmail(textFEmail.getText())) {
+								// MIRAMOS SI EL GMAIL EXISTE
+								if (bd.existeEmail(textFEmail.getText()) == 0) {
+									// MIRAMOS LA LARGURA DEL NUMERO DE TARJETA Y MIRAMOS SI ES LONG
+									if (textFNumeroTar.getText().length() == 16 && numeroTar) {
+										// COMPROBAMOS SI EXISTE LA TARJETA
+										if (bd.existeNumeroTarjeta(Long.parseLong(textFNumeroTar.getText())) == 0) {
+											// COMPROBAMOS LA LARGURA DEL CVV Y SI ES DE TIPO ENTERO
+											if (textFcvv.getText().length() == 3 && cvv) {
 
-		if (segundaVez()) {
-			if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
-					|| !textFapellido.getText().equals("") || !textFEmail.getText().equals("")
-					|| !textFContrasena.getText().equals("") || !textFTelefono.getText().equals("")
-					|| !textFDireccion.getText().equals("") || !textFNumeroTar.getText().equals("")
-					|| !textFcvv.getText().equals("") || fechaSelector.getDate() != null) {
+												tar = new Tarjeta();
+												tar.setNumeroTarjeta(textFNumeroTar.getText());
+												tar.setCVV(Integer.parseInt(textFcvv.getText()));
 
-				if (bd.existePersona(textNombreUsuario.getText()) == 0) {
-					// VERIFICAMOS QUE EL EMAIL NO EXISTE
-					if (bd.esEmail(textFEmail.getText())) {
-						// MIRAMOS LA LARGURA DEL TELEFONO Y SI ES DE TIPO INT
-						if (textFTelefono.getText().length() == 9 && numeroTel) {
-							// MIRAMOS LA LARGURA DEL NUMERO DE TARJETA Y MIRAMOS SI ES LONG
-							if (textFNumeroTar.getText().length() == 16 && numeroTar) {
-								// COMPROBAMOS SI EXISTE LA TARJETA
-								if (bd.existeNumeroTarjeta(textFNumeroTar.getText().length()) == 0) {
-									// COMPROBAMOS LA LARGURA DEL CVV Y SI ES DE TIPO ENTERO
-									if (textFcvv.getText().length() == 3 && cvv) {
-										// MIRAMOS QUE NO DEJE LA FECHA SIN ELEGIR Y QUE LA FECHA ES ANTERIOR AL DIA
-										// ACTUAL
-										if (fechaSelector.getDate() != null
-												&& fechaSelector.getDate().before(Date.valueOf(LocalDate.now()))) {
-											tar = new Tarjeta();
-											tar.setNumeroTarjeta(textFNumeroTar.getText());
-											tar.setCVV(Integer.parseInt(textFcvv.getText()));
+												bd.insertarTarjeta(tar);
+												pers = new Usuario();
+												pers.setCodigoPersona(generarCodigo(pers));
+												pers.setNombre(textNombreUsuario.getText());
 
-											bd.insertarTarjeta(tar);
-											pers = new Usuario();
-											pers.setCodigoPersona(generarCodigo(pers));
-											pers.setNombre(textNombreUsuario.getText());
+												pers.setEmail(textFEmail.getText());
+												pers.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
+												pers.setContrasena(textFContrasena.getText());
+												((Usuario) pers)
+														.setNumeroTarjeta(Long.parseLong(textFNumeroTar.getText()));
+												((Usuario) pers).setNombrePersonal(textFNombre.getText());
+												((Usuario) pers).setApellido(textFapellido.getText());
+												((Usuario) pers)
+														.setFecha_nacimiento(fechaSelector.getDate().toString());
+												((Usuario) pers).setDireccion(textFDireccion.getText());
+												bd.insertarPersona(pers);
 
-											pers.setEmail(textFEmail.getText());
-											pers.setNumTelefono(Integer.parseInt(textFTelefono.getText()));
-											pers.setContrasena(textFContrasena.getText());
-											((Usuario) pers).setNumeroTarjeta(Long.parseLong(textFNumeroTar.getText()));
-											((Usuario) pers).setNombrePersonal(textFNombre.getText());
-											((Usuario) pers).setApellido(textFapellido.getText());
-											((Usuario) pers).setFecha_nacimiento(fechaSelector.getDate().toString());
-											((Usuario) pers).setDireccion(textFDireccion.getText());
-											bd.insertarPersona(pers);
+												JOptionPane.showMessageDialog(btnLimpiar,
+														"Te has registrado correctamente!");
 
-											JOptionPane.showMessageDialog(btnLimpiar,
-													"Te has registrado correctamente!");
-											registro = true;
+												registro = true;
+												this.dispose();
+												Inicio_Sesion is = new Inicio_Sesion(principal, true);
+												is.setVisible(true);
+												pers = is.iniciar();
+												if (pers != null) {
+													principal.logeo(pers);
+												}
+												// return registro;
+
+											} else {
+												JOptionPane.showMessageDialog(this,
+														"EL CVV NO TIENE 3 NUMEROS O NO ES UN NUMERO");
+											}
 										} else {
-											JOptionPane.showMessageDialog(this,
-													"DEBES ELEGIR UNA FECHA DE NACIMIENTO!");
+											JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE ");
 										}
 									} else {
-										JOptionPane.showMessageDialog(this, "EL CVV NO TIENE 3 NUMEROS");
+										JOptionPane.showMessageDialog(this,
+												"LA TARJETA NO TIENE 16 NUMEROS O HAS INTRODUCIDO LETRAS");
 									}
 								} else {
-									JOptionPane.showMessageDialog(this, "EL NUMERO DE TARJETA YA EXISTE");
+									JOptionPane.showMessageDialog(this, "YA HAY UNA PERSONA CON ESE EMAIL");
 								}
 							} else {
-
-								JOptionPane.showMessageDialog(this, "LA TARJETA NO TIENE 16 NUMEROS!!!");
+								JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
 							}
 						} else {
-							JOptionPane.showMessageDialog(this, "EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS");
-
+							JOptionPane.showMessageDialog(this,
+									"NO HAS ELEGIDO UNA FECHA DE NACIMIENTO O LA FECHA INTRODUCIDA ES POSTERIOR A LA ACTUAL");
 						}
 					} else {
-						JOptionPane.showMessageDialog(this, "ESTO NO ES UN EMAIL!");
+						JOptionPane.showMessageDialog(this, "YA HAY UN USUARIO CON ESE NUMERO DE TELEFONO");
 					}
 				} else {
-					JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
+					JOptionPane.showMessageDialog(this,
+							"EL NUMERO DE TELEFONO NO TIENE 9 DIGITOS O HAS INTRODUCIDO LETRAS");
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
+				JOptionPane.showMessageDialog(this, "EL USUARIO YA EXISTE!");
 			}
+		} else {
+			JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
 		}
-		return registro;
 	}
+
 }

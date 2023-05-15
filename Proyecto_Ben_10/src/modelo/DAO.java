@@ -16,9 +16,9 @@ public interface DAO {
 	public boolean validarFloat(String cadena);
 
 	public int numeroProducto(Producto prod);
-	
+
 	public Persona recogerDatosPersonaEmail(String email);
-	
+
 	public ArrayList<Producto> recogerProductos();
 
 	public void eliminarProducto(Producto prod);
@@ -60,24 +60,32 @@ public interface DAO {
 	public void insertarCompra_Cesta(Cesta_Compra cesta);
 
 	public void insertarRealiza(Realiza realiza);
-	
+
 	public Tarjeta recogerDatosTarjeta(String email);
 
 	public void eliminarCuenta(Persona per);
-	
+
 	public void modificarCesta(Cesta_Compra cesta, Persona pers);
-	
+
 	public void eliminarRealiza(Persona pers);
-	
+
 	public void eliminarCesta(Persona pers);
-	
+
+	public void eliminarTarjeta(Persona pers);
+
 	public void añadirStockProducto(Producto prod, Persona pers);
-	
+
 	public ArrayList<Producto> recogerProductosId(Persona pers);
-	
+
 	public ArrayList<Realiza> recogerCantidad(Persona pers);
-	
+
 	public boolean validarInt(String cadena);
-	
+
 	public boolean validarLong(String cadena);
+
+	public Cesta_Compra crearOferta(String numReferencia);
+
+	public int existeEmail(String persona);
+
+	public int existeTelefono(int numTelefono);
 }

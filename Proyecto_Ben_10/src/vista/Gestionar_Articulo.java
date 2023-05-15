@@ -651,7 +651,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro(null);
+			Registro reg = new Registro(null, true);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrado)) {
 			this.dispose();

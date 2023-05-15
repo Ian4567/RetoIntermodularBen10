@@ -284,6 +284,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 					// null para YES, NO y CANCEL
 					"SI");
 			if (pregunt == 0) {
+				db.crearOferta(cesta.getNumReferencia());
 				db.modificarCesta(cesta, pers);
 				JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
 
@@ -322,7 +323,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 				registros[0] = compra.getNumReferencia();
 				registros[1] = compra.getFecha_Inicio().toString();
 				registros[2] = Float.toString(compra.getPeso_total());
-				registros[3] = Float.toString(compra.getPeso_total());
+				registros[3] = Float.toString(compra.getPrecio_total());
 
 				modelo.addRow(registros);
 			}
@@ -344,7 +345,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro(null);
+			Registro reg = new Registro(null, true);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrarCuenta)) {
 			this.dispose();
