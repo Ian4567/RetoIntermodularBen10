@@ -77,7 +77,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public Map<String, Cesta_Compra> compras;
 	private JTextField textCantidad;
 	private JLabel lblNewLabel_2, lblNewLabel_3, lblNewLabel_4;
-	private Persona pers;
+	public Persona pers;
 
 	public Ventana_Principal(Producto producto, Persona per) {
 
@@ -161,11 +161,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnCesta = new JMenuItem("Cesta");
 		mnNewMenu_1.add(btnCesta);
 		btnCesta.setEnabled(false);
-		btnCesta.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				verCesta(pers);
-			}
-		});
+		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		usuario = new JPanel();
@@ -297,7 +293,6 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnAgregar.setBounds(1521, 222, 220, 64);
 		btnAgregar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(pers);
 				insertarCesta(pers);
 			}
 		});
@@ -360,9 +355,8 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		lblNewLabel_5.setIcon(new ImageIcon("././imagenes/4.png"));
 		lblNewLabel_5.setBounds(50, 374, 412, 669);
 		main.add(lblNewLabel_5);
-		if (per != null) {
-			this.presentarTablaCompra(null, db, usuario, per);
-		}
+
+		this.presentarTablaCompra(null, db, usuario, pers);
 
 		btnBorrar = new JButton("BORRAR");
 
@@ -395,6 +389,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 				presentarTablaPeli(producto, db, main);
 				cargarComboCodigo();
 				presentarTablaCompra(null, db, usuario, per);
+
 			}
 
 			public void windowLostFocus(WindowEvent e) {
@@ -460,30 +455,33 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public Persona logeo(Persona per) {
 		DAO db = new ControladorBdImplementacion();
 
-		if (per == null) {
+		if (per != null) {
+			if (per.getCodigoPersona().charAt(0) == 'U') {
+				tabbedPane.setEnabledAt(1, true);
+				btnAgregar.setEnabled(true);
+				borrado.setEnabled(true);
+				btnCesta.setEnabled(true);
+				registro.setEnabled(false);
+				iniciar.setEnabled(false);
+				cargarDatosCuenta(per);
+
+			} else if (per.getCodigoPersona().charAt(0) == 'A') {
+				borrado.setEnabled(false);
+				btnGestionarProductos.setVisible(true);
+				btnAgregar.setEnabled(false);
+				borrado.setEnabled(false);
+				registro.setEnabled(false);
+				iniciar.setEnabled(false);
+
+			}
+		} else {
 			tabbedPane.setEnabledAt(1, false);
 			borrado.setEnabled(false);
 			btnAgregar.setEnabled(false);
 			btnGestionarProductos.setVisible(false);
 			btnCesta.setEnabled(false);
-			btnGestionarProductos.setVisible(false);
-			btnCesta.setEnabled(true);
-
-		} else if (per.getCodigoPersona().charAt(0) == 'U') {
-			tabbedPane.setEnabledAt(1, true);
-			btnAgregar.setEnabled(true);
-			borrado.setEnabled(true);
-			btnCesta.setEnabled(true);
-			registro.setEnabled(false);
-			iniciar.setEnabled(false);
-			cargarDatosCuenta();
-		} else if (per.getCodigoPersona().charAt(0) == 'A') {
-			borrado.setEnabled(false);
-			btnGestionarProductos.setVisible(true);
-			btnAgregar.setEnabled(false);
-			borrado.setEnabled(true);
-			registro.setEnabled(false);
-			iniciar.setEnabled(false);
+			registro.setEnabled(true);
+			iniciar.setEnabled(true);
 		}
 		return per;
 	}
@@ -492,7 +490,6 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		DAO db = new ControladorBdImplementacion();
-
 		if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
 			inicio.setVisible(true);
@@ -504,6 +501,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		} else if (e.getSource().equals(registro)) {
 			Registro reg = new Registro(this, true);
 			reg.setVisible(true);
+			pers = reg.obtenerPersona();
 
 		} else if (e.getSource().equals(borrado)) {
 			tabbedPane.setSelectedIndex(1);
@@ -515,12 +513,15 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			gest.setVisible(true);
 
 		} else if (e.getSource().equals(btnBorrar)) {
-			borrarCuenta();
+			borrarCuenta(pers);
+		} else if (e.getSource().equals(btnCesta)) {
+
+			verCesta(pers);
 		}
 
 	}
 
-	private void borrarCuenta() {
+	private void borrarCuenta(Persona pers) {
 		DAO db = new ControladorBdImplementacion();
 		int pregunt;
 
@@ -546,13 +547,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	private void verCesta(Persona pers) {
+	private void verCesta(Persona per) {
 		DAO db = new ControladorBdImplementacion();
-		pers = logeo(pers);
+
 		Tarjeta tar;
-		tar = db.recogerDatosTarjeta(pers.getEmail());
-		Finalizar_Compra fin = new Finalizar_Compra(pers, null, true);
-		fin.cargarDatosCompra(pers, tar);
+		tar = db.recogerDatosTarjeta(per.getEmail());
+		Finalizar_Compra fin = new Finalizar_Compra(per, null, true);
+		fin.cargarDatosCompra(per, tar);
 		fin.setVisible(true);
 
 	}
@@ -614,7 +615,6 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	}
 
 	private void presentarTablaRopa(Producto producto, DAO db, JPanel main) {
-
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(428, 192, 1037, 149);
 		main.add(linea);
@@ -738,6 +738,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(400, 514, 1179, 242);
 		usuario.add(linea);
+		
 		tablaProducto = this.cargarTablaCompra(compra, db, per);
 		tablaProducto.setBackground(new Color(128, 255, 128));
 		tablaProducto.setEnabled(false);
@@ -750,12 +751,14 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		String[] registros = new String[5];
 
 		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+
 		if (per != null) {
 			modelo.setRowCount(0);
 
 			compras = db.listarCompra(per);
 
 			for (Cesta_Compra com : compras.values()) {
+
 				if (com.getFecha_fin() != null) {
 					registros[0] = com.getNumReferencia();
 					registros[1] = com.getFecha_Inicio().toString();
@@ -770,8 +773,9 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
-	public Persona cargarDatosCuenta() {
+	public Persona cargarDatosCuenta(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
+
 		if (pers != null) {
 			pers = db.recogerDatosPersonaEmail(pers.getEmail());
 			textNombre.setText(((Usuario) pers).getNombrePersonal());

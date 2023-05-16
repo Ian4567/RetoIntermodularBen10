@@ -45,7 +45,7 @@ public class Registro extends JDialog implements ActionListener {
 	private JButton btnRegistrarse, btnLimpiar;
 	private JLabel lblNewLabel, lblNombre, lblEmail, lblTelefono, lblContrasea, lblNumeroTarjeta, lblCvv,
 			lblNombredeUsuario, lblApellido, lblFechaNac, lblDireccion;
-	private Persona pers;
+	public Persona pers;
 	private JDateChooser fechaSelector;
 	private JPasswordField textFContrasena;
 	private JMenuItem iniciar, registro, borrado, btnCesta;
@@ -87,18 +87,21 @@ public class Registro extends JDialog implements ActionListener {
 		iniciar.setBackground(new Color(128, 255, 128));
 		iniciar.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		iniciar.addActionListener(this);
+		iniciar.setEnabled(false);
 		mnNewMenu.add(iniciar);
 
 		registro = new JMenuItem("Registrarse");
 		registro.setBackground(new Color(128, 255, 128));
 		registro.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		registro.addActionListener(this);
+		registro.setEnabled(false);
 		mnNewMenu.add(registro);
 
 		borrado = new JMenuItem("Borrar Cuenta");
 		borrado.setBackground(new Color(128, 255, 128));
 		borrado.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		borrado.addActionListener(this);
+		borrado.setEnabled(false);
 		mnNewMenu.add(borrado);
 
 		JMenu mnNewMenu_1 = new JMenu("");
@@ -116,6 +119,7 @@ public class Registro extends JDialog implements ActionListener {
 		btnCesta = new JMenuItem("COMPRAR");
 		mnNewMenu_1.add(btnCesta);
 		btnCesta.addActionListener(this);
+		btnCesta.setEnabled(false);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		lblNewLabel = new JLabel("REGISTRO");
@@ -172,6 +176,7 @@ public class Registro extends JDialog implements ActionListener {
 		btnRegistrarse.setBackground(new Color(102, 255, 153));
 		btnRegistrarse.setBounds(291, 838, 202, 44);
 		btnRegistrarse.addActionListener(this);
+		
 		contentPanel.add(btnRegistrarse);
 		{
 			btnLimpiar = new JButton("LIMPIAR");
@@ -311,30 +316,17 @@ public class Registro extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnRegistrarse)) {
-			registrarse(pers);
+			registrarse();
 		} else if (e.getSource().equals(btnLimpiar)) {
 			limpiar();
 		} else if (e.getSource().equals(btnCasa)) {
 			this.dispose();
-		} else if (e.getSource().equals(iniciar)) {
-			Inicio_Sesion inicio = new Inicio_Sesion(null, true);
-			inicio.setVisible(true);
-		} else if (e.getSource().equals(registro)) {
-			this.dispose();
-			Registro reg = new Registro(null, true);
-			reg.setVisible(true);
-		} else if (e.getSource().equals(borrado)) {
-			this.dispose();
-			Ventana_Principal prin = new Ventana_Principal(null, pers);
-			prin.tabbedPane.setSelectedIndex(1);
-			prin.tabbedPane.setVisible(true);
+		} 
 
-		} else if (e.getSource().equals(btnCesta)) {
-			this.dispose();
-			Finalizar_Compra venCesta = new Finalizar_Compra(null, null, true);
-			venCesta.setVisible(true);
-		}
-
+	}
+	public Persona obtenerPersona() {
+		
+		return pers;
 	}
 
 	private void limpiar() {
@@ -372,12 +364,13 @@ public class Registro extends JDialog implements ActionListener {
 		return codigo;
 	}
 
-	public void registrarse(Persona pers) {
+	public Persona registrarse() {
 		Tarjeta tar = null;
 		boolean registro = false;
 		DAO bd = new ControladorBdImplementacion();
 		boolean numeroTel = bd.validarInt(textFTelefono.getText()), cvv = bd.validarInt(textFcvv.getText()),
 				numeroTar = bd.validarLong(textFNumeroTar.getText());
+	
 // MIRAMOS SI HAY CAMPOS SIN RELLENAR
 //if (segundaVez()) {
 		if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
@@ -432,13 +425,13 @@ public class Registro extends JDialog implements ActionListener {
 
 												registro = true;
 												this.dispose();
-												Inicio_Sesion is = new Inicio_Sesion(principal, true);
-												is.setVisible(true);
-												pers = is.iniciar();
+
 												if (pers != null) {
-													principal.logeo(pers);
+													
+													pers = principal.logeo(pers);
+													Finalizar_Compra fin = new Finalizar_Compra(pers, principal, numeroTar);
 												}
-												// return registro;
+												
 
 											} else {
 												JOptionPane.showMessageDialog(this,
@@ -474,6 +467,7 @@ public class Registro extends JDialog implements ActionListener {
 		} else {
 			JOptionPane.showMessageDialog(null, "FALTAN CAMPOS POR RELLENAR!");
 		}
+		return pers;
 	}
 
 }

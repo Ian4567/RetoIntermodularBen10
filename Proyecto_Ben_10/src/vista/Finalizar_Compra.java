@@ -123,6 +123,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		borrarCuenta.setBackground(new Color(128, 255, 128));
 		borrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		borrarCuenta.addActionListener(this);
+		borrarCuenta.setEnabled(false);
 		mnNewMenu.add(borrarCuenta);
 
 		JMenu mnNewMenu_1 = new JMenu("");
@@ -287,7 +288,8 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 				db.crearOferta(cesta.getNumReferencia());
 				db.modificarCesta(cesta, pers);
 				JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
-
+				
+			
 			} else {
 				JOptionPane.showMessageDialog(this, "SE HA CANCELADO LA COMPRA!");
 			}
