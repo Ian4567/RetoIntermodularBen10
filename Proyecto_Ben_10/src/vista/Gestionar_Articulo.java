@@ -537,6 +537,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		});
 	}
 
+	
 	protected void tipoElegido() {
 		if (comboTipo.getSelectedIndex() > -1) {
 			lineaRopa();
@@ -545,7 +546,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		}
 
 	}
-
+	/**
+	 * en este metodo si se ha elegido la opcion se habilitaran los campos sino no
+	 */
 	public void lineaRopa() {
 		if (comboTipo.getSelectedItem().equals("LINEA DE ROPA")) {
 			comboTalla.setEnabled(true);
@@ -563,7 +566,9 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			limpiarCampos();
 		}
 	}
-
+	/**
+	 * en este metodo si se ha elegido la opcion se habilitaran los campos sino no
+	 */
 	public void juguete() {
 		if (comboTipo.getSelectedItem().equals("JUGUETE")) {
 			textMaterial.setEnabled(true);
@@ -580,7 +585,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			limpiarCampos();
 		}
 	}
-
+	
+	/**
+	 * en este metodo si se ha elegido la opcion se habilitaran los campos sino no
+	 */
 	public void serie_Pelicula() {
 		if (comboTipo.getSelectedItem().equals("PELICULA/SERIE")) {
 			textIdioma.setEnabled(true);
@@ -600,7 +608,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			limpiarCampos();
 		}
 	}
-
+	
+	/**
+	 * en este metodo se limpian todos los campos de los hijos
+	 */
 	public void limpiarCampos() {
 		textColor.setText("");
 		textFabricante.setText("");
@@ -617,7 +628,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		comboTipo.setEnabled(true);
 
 	}
-
+	
+	/**
+	 * en este metodo se limpian todos los campos hijos mas el padre
+	 */
 	public void limpiarTodosLosCampos() {
 		limpiarCampos();
 		textNumEstancias.setText("");
@@ -627,7 +641,8 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		comboTipo.setSelectedIndex(-1);
 		textPrecio.setText("");
 	}
-
+	
+	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(btnAnadir)) {
 			anadirProducto();
@@ -664,7 +679,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			fin.setVisible(true);
 		}
 	}
-
+	
+	/**
+	 * En este metodo se modificara el producto eligiendo el codigo del producto
+	 * identificando asi el tipo del producto
+	 * 
+	 */
 	private void modificarProducto() {
 		Producto prod = null;
 		DAO bd = new ControladorBdImplementacion();
@@ -807,6 +827,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		}
 
 	}
+	
+	/**
+	 * Recoge la información de un producto seleccionado en el comboBox y lo muestra
+	 * en los campos correspondientes.
+	 *
+	 * @return Producto seleccionado en el comboBox. Si no hay ningún producto
+	 *         seleccionado, devuelve null.
+	 */
 
 	private Producto recogerProducto() {
 		DAO bd = new ControladorBdImplementacion();
@@ -843,7 +871,7 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 				prod = bd.recogerPeliculaId(comboCodigos.getSelectedItem().toString());
 				textGenero.setText(((Pelicula_Serie) prod).getGenero());
 				textIdioma.setSelectedItem(((Pelicula_Serie) prod).getIdioma());
-				
+
 				comboSubtitulado.setSelectedItem(((Pelicula_Serie) prod).getSubtitulado());
 				textDuracion.setText(((Pelicula_Serie) prod).getDuracion());
 
@@ -853,6 +881,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		return prod;
 
 	}
+	
+	/**
+	 * En este metodo se borrara el producto eligiendo el codigo del producto
+	 * identificando asi el tipo del producto
+	 * 
+	 */
 
 	private void borrarProducto() {
 		DAO bd = new ControladorBdImplementacion();
@@ -883,7 +917,12 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 			JOptionPane.showMessageDialog(this, "NO HAS ELEGIDO NINGUN CODIGO TODAVIA!");
 		}
 	}
-
+	
+	/**
+	 * En este metodo se insertara el producto elijiendo el tipo de producto que es
+	 * para su posterior activacion
+	 * 
+	 */
 	private void anadirProducto() {
 		Producto prod;
 		DAO bd = new ControladorBdImplementacion();
@@ -996,7 +1035,14 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 		}
 
 	}
-
+	
+	/**
+	 * Genera un codigo para el producto
+	 * 
+	 * @param prod el producto al que se le generara el codigo
+	 * 
+	 * @return el codigo generado del producto
+	 */
 	public String generarCodigo(Producto prod) {
 		DAO bd = new ControladorBdImplementacion();
 
@@ -1013,7 +1059,10 @@ public class Gestionar_Articulo extends JDialog implements ActionListener {
 
 		return codigo;
 	}
-
+	
+	/**
+	 * En este metodo se carga el combo con los codigos generados 
+	 */
 	public void cargarComboCodigo() {
 
 		DAO db = new ControladorBdImplementacion();

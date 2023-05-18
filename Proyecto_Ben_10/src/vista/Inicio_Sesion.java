@@ -97,7 +97,12 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 
 	}
 
-	
+	/**
+	 * En este metodo se comprueba si el campo email y contraseña son
+	 * correcto/existen para poder entrar a la aplicacion
+	 * 
+	 * @return la persona que ha iniciado sesion
+	 */
 
 	public Persona iniciar() {
 		pers = null;

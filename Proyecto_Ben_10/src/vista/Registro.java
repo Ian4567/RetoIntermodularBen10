@@ -324,11 +324,20 @@ public class Registro extends JDialog implements ActionListener {
 		} 
 
 	}
+	
+	/**
+	 * En este metodo se devuelve la persona
+	 * 
+	 * @return la persona que se ha registrado
+	 */
 	public Persona obtenerPersona() {
 		
 		return pers;
 	}
 
+	/**
+	 * En este metodo se limpian todos los campos
+	 */
 	private void limpiar() {
 		textNombreUsuario.setText("");
 		textFNombre.setText("");
@@ -342,14 +351,13 @@ public class Registro extends JDialog implements ActionListener {
 
 	}
 
-	public boolean segundaVez() {
-		if (entra) {
-			entra = false;
-			return false;
-		} else {
-			return true;
-		}
-	}
+	/**
+	 * Este metodo genera un codigo autonumerico de cada person
+	 * 
+	 * @param pers es la persona a la que se le generara un codigo
+	 * 
+	 * @return el codigo de la persona que ha sido generado
+	 */
 
 	public String generarCodigo(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
@@ -364,6 +372,12 @@ public class Registro extends JDialog implements ActionListener {
 		return codigo;
 	}
 
+	/**
+	 * En este metodo se registra la persona con todos los datos con sus respectivas restricciones
+	 * 
+	 * @return la persona con todos los datos del registro
+	 */
+	
 	public Persona registrarse() {
 		Tarjeta tar = null;
 		boolean registro = false;
@@ -372,7 +386,6 @@ public class Registro extends JDialog implements ActionListener {
 				numeroTar = bd.validarLong(textFNumeroTar.getText());
 	
 // MIRAMOS SI HAY CAMPOS SIN RELLENAR
-//if (segundaVez()) {
 		if (!textNombreUsuario.getText().equals("") || !textFNombre.getText().equals("")
 				|| !textFapellido.getText().equals("") || !textFEmail.getText().equals("")
 				|| !textFContrasena.getText().equals("") || !textFTelefono.getText().equals("")
