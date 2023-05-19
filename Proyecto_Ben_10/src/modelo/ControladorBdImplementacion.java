@@ -1080,7 +1080,7 @@ public class ControladorBdImplementacion implements DAO {
 		this.openConnection();
 
 		try {
-			stmt = con.prepareStatement(INSERT_REALIZA2); // Cargamos el insert de persona con el stmt
+			stmt = con.prepareStatement(INSERT_REALIZA); // Cargamos el insert de persona con el stmt
 			// Posicionamos cada valor para insertarlo en la base de datos
 			stmt.setString(1, realiza.getNumReferencia());
 			stmt.setString(2, realiza.getCodigoProducto());
@@ -1094,7 +1094,6 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
-	
 	
 
 	/**
