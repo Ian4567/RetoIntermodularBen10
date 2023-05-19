@@ -31,6 +31,8 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 	private JPasswordField passContrasena;
 	private JButton btnIniciarSesion;
 	private boolean entra = true;
+	private Persona pers;
+	private JButton btnCerrar;
 
 	public Inicio_Sesion(Ventana_Principal principal, boolean modal) {
 		super(principal);
@@ -82,8 +84,9 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 		btnIniciarSesion.setBounds(120, 452, 202, 44);
 		btnIniciarSesion.addActionListener(this);
 		contentPane.add(btnIniciarSesion);
-
 		
+		
+
 	}
 
 	@Override
@@ -94,17 +97,16 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 
 	}
 
-	public boolean segundaVez() {
-		if (entra) {
-			entra = false;
-			return false;
-		} else {
-			return true;
-		}
-	}
+	/**
+	 * En este metodo se comprueba si el campo email y contraseña son
+	 * correcto/existen para poder entrar a la aplicacion
+	 * 
+	 * @return la persona que ha iniciado sesion
+	 */
 
 	public Persona iniciar() {
-		Persona pers, existe = null;
+		pers = null;
+
 		// RECOGER EMAIL Y CONTRASEÑA
 		pers = new Persona();
 		pers.setEmail(textEmail.getText());
@@ -120,7 +122,6 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 			if (textEmail.getText().equals(pers.getEmail()) && passContrasena.getText().equals(pers.getContrasena())) {
 				// SI LA PERSONA ES DIFERENTE DE NULL
 				if (pers.getCodigoPersona() != null) {
-					existe = pers;
 					this.dispose();
 				} else {
 					JOptionPane.showMessageDialog(this, "ERROR! EMAIL O CONTRASEÑA INCORRECTOS");
@@ -132,7 +133,6 @@ public class Inicio_Sesion extends JDialog implements ActionListener {
 			JOptionPane.showMessageDialog(this, "FALTA CAMPOS POR RELLENAR!");
 		}
 
-		return existe;
+		return pers;
 	}
-
 }

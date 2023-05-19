@@ -66,7 +66,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-
+	
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabbedPane.setForeground(new Color(0, 0, 0));
@@ -123,6 +123,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		borrarCuenta.setBackground(new Color(128, 255, 128));
 		borrarCuenta.setFont(new Font("Jokerman", Font.PLAIN, 15));
 		borrarCuenta.addActionListener(this);
+		borrarCuenta.setEnabled(false);
 		mnNewMenu.add(borrarCuenta);
 
 		JMenu mnNewMenu_1 = new JMenu("");
@@ -247,8 +248,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		main.add(btnCancelarCompra);
 
 		lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(
-				"C:\\Users\\1dam\\Desktop\\Reto_Final_GIT\\RetoIntermodularBen10\\Proyecto_Ben_10\\imagenes\\Materia_Gris_SO_29.png"));
+		lblNewLabel.setIcon(new ImageIcon("././imagenes/Materia_Gris_SO_29.png"));
 		lblNewLabel.setBounds(92, 342, 255, 581);
 		main.add(lblNewLabel);
 		addWindowFocusListener(new WindowFocusListener() {
@@ -262,6 +262,14 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		});
 
 	}
+	
+	/**
+	 * 
+	 * Finaliza la compra y crea una oferta si se completa la compra.
+	 * 
+	 * 
+	 * @param pers objeto Persona que representa al usuario que realiza la compra
+	 */
 
 	private void finalizarCompra(Persona pers) {
 		pers = db.login(pers);
@@ -284,6 +292,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 					// null para YES, NO y CANCEL
 					"SI");
 			if (pregunt == 0) {
+				db.crearOferta(cesta.getNumReferencia());
 				db.modificarCesta(cesta, pers);
 				JOptionPane.showMessageDialog(this, "COMPRA REALIZADA CORRECTAMENTE!");
 
@@ -294,6 +303,15 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 			JOptionPane.showMessageDialog(this, "TODAVIA NO HAY PRODUCTOS EN LA CESTA!");
 		}
 	}
+	
+	/**
+	 * Muestra una tabla con los productos de la cesta de compra de una persona.
+	 *
+	 * @param compra la cesta de compra de la persona
+	 * @param db     el objeto DAO para interactuar con la base de datos
+	 * @param main   el panel principal donde se mostrará la tabla
+	 * @param pers   la persona cuya cesta de compra se está mostrando
+	 */
 
 	private void presentarTabla(Cesta_Compra compra, DAO db, JPanel main, Persona pers) {
 
@@ -307,7 +325,27 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		scroll.setViewportView(tablaProducto);
 
 	}
-
+	
+	/**
+	 * 
+	 * 
+	 * Este método se utiliza para cargar un JTable con la información sobre la
+	 * cesta_compra de una persona específica.
+	 * 
+	 * 
+	 * @param comprar es un objeto cesta_compra representando el carrito de la
+	 *                compra de la persona
+	 * 
+	 * @param db      Un objeto DAO que representa el acceso a datos para recuperar
+	 *                la información
+	 * 
+	 * @param pers    el identificativo para saber a que persona pertenece ese
+	 *                cesta_compra
+	 * 
+	 * 
+	 * @return un JTable en el que se cargan los datos del usuario que ha realizado
+	 *         una compra
+	 */
 	private JTable cargarTabla(Cesta_Compra comprar, DAO db, Persona pers) {
 		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "PESO_TOTAL", "PRECIO_TOTAL" };
 		String[] registros = new String[4];
@@ -316,13 +354,13 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		modelo.setRowCount(0);
 
 		listaCompra = db.listarCompra(pers);
-
+		
 		for (Cesta_Compra compra : listaCompra.values()) {
 			if (compra.getFecha_fin() == null) {
 				registros[0] = compra.getNumReferencia();
 				registros[1] = compra.getFecha_Inicio().toString();
 				registros[2] = Float.toString(compra.getPeso_total());
-				registros[3] = Float.toString(compra.getPeso_total());
+				registros[3] = Float.toString(compra.getPrecio_total());
 
 				modelo.addRow(registros);
 			}
@@ -344,7 +382,7 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 
 		} else if (e.getSource().equals(registro)) {
 			this.dispose();
-			Registro reg = new Registro(null);
+			Registro reg = new Registro(null, true);
 			reg.setVisible(true);
 		} else if (e.getSource().equals(borrarCuenta)) {
 			this.dispose();
@@ -355,7 +393,11 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		}
 
 	}
-
+	/**
+	 * En este metodo se cancela la compra de una persona especifica
+	 * 
+	 * @param pers es la persona a la que le pertenece la compra que quiere cancelar.
+	 */
 	private void cancelarCompra(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
 
@@ -382,7 +424,6 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 					}
 					db.modificarProducto(prod);
 					db.eliminarCesta(pers);
-
 					db.eliminarRealiza(pers);
 
 				}
@@ -395,6 +436,17 @@ public class Finalizar_Compra extends JDialog implements ActionListener {
 		}
 
 	}
+	
+	/**
+	 * Este metodo se encarga de cargar los datos de las compras realizadas por el
+	 * usuario con su tarjeta
+	 * 
+	 * @param pers es la persona que ha realizado la compra
+	 * 
+	 * @param tar  es la trajeta con la que se ha realizado la compra
+	 * 
+	 * @return la persona que ha realizado la compra
+	 */
 
 	public Persona cargarDatosCompra(Persona pers, Tarjeta tar) {
 

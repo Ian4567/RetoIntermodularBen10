@@ -43,13 +43,14 @@ public class ControladorBdImplementacion implements DAO {
 	private final String SELECT_PRODUCTOS = "SELECT * FROM PRODUCTO";
 	private final String DELETE_PRODUCTO = "DELETE FROM PRODUCTO WHERE CODIGO_PRODUCTO = ?";
 	private final String DELETE_CESTA = "DELETE FROM CESTA_COMPRA WHERE NUMREFERENCIA IN(SELECT NUMREFERENCIA FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?))";
+	private final String DELETE_TARJETA = "DELETE FROM TARJETA WHERE NUMERO_TARJETA IN(SELECT NUMERO_TARJETA FROM USUARIO WHERE CODIGO_PERSONA_USUARIO IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?))";
 	private final String DELETE_REALIZA = "DELETE FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL= ?)";
 	private final String DELETE_CUENTA = "DELETE FROM PERSONA WHERE EMAIL=?";
 	private final String SELECT_PRODUCTO_COD = "SELECT * FROM PRODUCTO WHERE codigo_producto=?";
 	private final String SELECT_LINEA_ROPA = "SELECT * FROM LINEA_DE_ROPA WHERE codigo_producto=?";
 	private final String SELECT_JUGUETE = "SELECT * FROM JUGUETE WHERE codigo_producto=?";
 	private final String SELECT_PELICULA = "SELECT * FROM PELICULA_SERIE WHERE codigo_producto=?";
-	private final String SELECT_COMPRA = "SELECT * FROM REALIZA R JOIN CESTA_COMPRA CC ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA = P.CODIGO_PERSONA WHERE EMAIL=?";
+	private final String SELECT_COMPRA = "select * from realiza r join cesta_compra cc ON R.NUMREFERENCIA=CC.NUMREFERENCIA JOIN PERSONA P ON R.CODIGO_PERSONA=P.CODIGO_PERSONA WHERE P.CODIGO_PERSONA=?";
 	private final String SELECT_PROD_LINEA = "SELECT * FROM PRODUCTO P JOIN LINEA_DE_ROPA L ON P.codigo_producto=L.codigo_producto";
 	private final String SELECT_PROD_JUGUETE = "SELECT * FROM PRODUCTO P JOIN JUGUETE J ON P.codigo_producto=J.codigo_producto";
 	private final String SELECT_PROD_PELI = "SELECT * FROM PRODUCTO P JOIN PELICULA_SERIE PS ON P.codigo_producto=PS.codigo_producto";
@@ -67,6 +68,8 @@ public class ControladorBdImplementacion implements DAO {
 	private final String ACTUALIZAR_DATOS_PRODUCTO = "UPDATE PRODUCTO SET NUM_EXISTENCIAS=? WHERE CODIGO_PRODUCTO=?";
 	private final String SELECT_PROD_ID = "SELECT * FROM PRODUCTO P WHERE CODIGO_PRODUCTO IN (SELECT CODIGO_PRODUCTO FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?))";
 	private final String SELECT_CANTIDAD = "SELECT * FROM REALIZA WHERE CODIGO_PERSONA IN (SELECT CODIGO_PERSONA FROM PERSONA WHERE EMAIL=?)";
+	private final String OFERTA = "CALL crear_oferta(?)";
+	private final String INSERT_REALIZA2= "CALL insertar_pedido(?,?,?,?)";
 
 	private ResourceBundle configFichero;
 	private String driverBD;
@@ -103,6 +106,14 @@ public class ControladorBdImplementacion implements DAO {
 		if (con != null)
 			con.close();
 	}
+	
+	/**
+	 * Este método se encarga de realizar el login de una persona en el sistema.
+	 * 
+	 * @param pers La persona que desea hacer login en el sistema.
+	 * 
+	 * @return La persona que ha iniciado sesión en el sistema.
+	 */
 
 	public Persona login(Persona pers) {
 
@@ -130,7 +141,14 @@ public class ControladorBdImplementacion implements DAO {
 		}
 		return pers;
 	}
-
+	
+	/**
+	 * Este método se encarga de mostrar los datos de una persona en el sistema.
+	 * 
+	 * @param email es el email para recoger todos sus datos.
+	 * 
+	 * @return los datos de la persona del email.
+	 */
 	public Persona recogerDatosPersonaEmail(String email) {
 		ResultSet rs = null;
 		Persona pers = null;
@@ -159,6 +177,13 @@ public class ControladorBdImplementacion implements DAO {
 		return pers;
 	}
 
+	/**
+	 * Este método se encarga de mostrar los datos de una tarjeta en el sistema.
+	 * 
+	 * @param email es el email para recoger los datos de la tarjeta.
+	 * 
+	 * @return La la tarjeta de la persona que ha introducido un email.
+	 */
 	public Tarjeta recogerDatosTarjeta(String email) {
 		ResultSet rs = null;
 		Tarjeta tar = null;
@@ -181,7 +206,36 @@ public class ControladorBdImplementacion implements DAO {
 		}
 		return tar;
 	}
+	
+	/**
+	 * Este metodo genera una oferta dependiendo de la cantidad de articulos
+	 * 
+	 * @param numReferencia es el numero identificativo para saber que pedido es
+	 * 
+	 * @return un objeto cesta con el precio actualizado con la nueva oferta
+	 * 
+	 */
+	public Cesta_Compra crearOferta(String numReferencia) {
+		ResultSet rs = null;
+		Cesta_Compra cesta = null;
+		this.openConnection();
+		try {
+			stmt = con.prepareStatement(OFERTA);
+			stmt.setString(1, numReferencia);
 
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+
+		}
+		return cesta;
+	}
+	
+	/**
+	 * Este método se encarga de insertar los datos de un producto en el sistema.
+	 * 
+	 * @param prod es el producto para poder insertar los datos si no son repetidos.
+	 */
 	public void insertarProducto(Producto prod) {
 
 		this.openConnection();
@@ -235,7 +289,12 @@ public class ControladorBdImplementacion implements DAO {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Este método se encarga de insertar los datos de un producto en el sistema.
+	 * 
+	 * @param prod es el producto para poder insertar los datos si no son repetidos.
+	 */
 	public boolean validarFloat(String cadena) {
 		Float num;
 		try {
@@ -248,7 +307,14 @@ public class ControladorBdImplementacion implements DAO {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Método que valida si una cadena es un número int o no.
+	 * 
+	 * @param cadena Cadena que se desea validar.
+	 * 
+	 * @return true si la cadena es un número int, false si no lo es.
+	 */
 	public boolean validarInt(String cadena) {
 		int num;
 		try {
@@ -262,6 +328,13 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	/**
+	 * Método que valida si una cadena es un número long o no.
+	 * 
+	 * @param cadena Cadena que se desea validar.
+	 * 
+	 * @return true si la cadena es un número long, false si no lo es.
+	 */
 	public boolean validarLong(String cadena) {
 		Long num;
 		try {
@@ -275,6 +348,14 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	/**
+	 * Este método devuelve el número de productos existentes en la base de datos.
+	 * 
+	 * @param prod un objeto de la clase Producto.
+	 * 
+	 * @return un entero que indica el número de productos existentes en la base de
+	 *         datos.
+	 */
 	public int numeroProducto(Producto prod) {
 		ResultSet rs = null;
 		String numJuguetes = "SELECT COUNT(codigo_producto)FROM producto";
@@ -296,7 +377,13 @@ public class ControladorBdImplementacion implements DAO {
 		return n;
 
 	}
-
+	/**
+	 * Este metodo devuelve el numero de productos contando el numero de referencia
+	 * de la cesta .
+	 * 
+	 * @param cesta es el objeto de cesta_compra.
+	 * @return un entero que indica el numero de productos que hay en la cesta.
+	 */
 	public int numeroReferencia(Cesta_Compra cesta) {
 		ResultSet rs = null;
 		String numJuguetes = "SELECT COUNT(numreferencia)FROM cesta_compra";
@@ -318,7 +405,11 @@ public class ControladorBdImplementacion implements DAO {
 		return n;
 
 	}
-
+	/**
+	 * Este metodo recoge el producto con toda su informacion de la base de datos
+	 * 
+	 * @return un producto en formato ArrayList
+	 */
 	public ArrayList<Producto> recogerProductos() {
 		this.openConnection();
 		Producto prod;
@@ -351,7 +442,15 @@ public class ControladorBdImplementacion implements DAO {
 		return codProd;
 
 	}
-
+	
+	/**
+	 * Este metodo recoge el producto con toda su informacion de la base de datos de
+	 * una persona en especifico
+	 * 
+	 * @param pers es para especificar quien ha añadido ese producto
+	 * 
+	 * @return un producto en formato ArrayList con toda la informacion
+	 */
 	public ArrayList<Producto> recogerProductosId(Persona pers) {
 		this.openConnection();
 		Producto prod;
@@ -385,7 +484,13 @@ public class ControladorBdImplementacion implements DAO {
 		return codProd;
 
 	}
-
+	/**
+	 * Este metodo recoge la cantidad de realiza de una persona en especifico
+	 * 
+	 * @param pers es para especificar cuanta cantidad tiene esa persona
+	 * 
+	 * @return devuelve realiza en formato ArrayList con toda la informacion
+	 */
 	public ArrayList<Realiza> recogerCantidad(Persona pers) {
 		this.openConnection();
 		Realiza realiza;
@@ -418,6 +523,15 @@ public class ControladorBdImplementacion implements DAO {
 		return realizas;
 	}
 
+	
+	/**
+	 * Este metodo recoge el producto con toda su informacion de la base de datos de
+	 * un producto en especifico
+	 * 
+	 * @param codigo_producto es el codigo para especificar un producto especifico
+	 * 
+	 * @return un objeto producto especifico
+	 */
 	public Producto recogerProductoId(String codigo_producto) {
 		this.openConnection();
 		Producto prod = null;
@@ -451,6 +565,15 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo recoge el producto(Linead_De_Ropa) con toda su informacion de la
+	 * base de datos de un producto(Linead_De_Ropa) en especifico
+	 * 
+	 * @param codigo_producto es el codigo(Linead_De_Ropa) para especificar un
+	 *                        producto especifico
+	 * 
+	 * @return un objeto producto(Linead_De_Ropa) especifico
+	 */
 	public Producto recogerLineaRopaId(String codigo_producto) {
 		this.openConnection();
 		Producto prod = null;
@@ -481,7 +604,16 @@ public class ControladorBdImplementacion implements DAO {
 		return prod;
 
 	}
-
+	
+	/**
+	 * Este metodo recoge el producto(juguete) con toda su informacion de la base de
+	 * datos de un producto(juguete) en especifico
+	 * 
+	 * @param codigo_producto es el codigo(juguete) para especificar un producto
+	 *                        especifico
+	 * 
+	 * @return un objeto producto(juguete) especifico
+	 */
 	public Producto recogerJugueteId(String codigo_producto) {
 		this.openConnection();
 		Producto prod = null;
@@ -512,6 +644,15 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo recoge el producto(Pelis_Series) con toda su informacion de la
+	 * base de datos de un producto(Pelis_Series) en especifico
+	 * 
+	 * @param codigo_producto es el codigo(Pelis_Series) para especificar un
+	 *                        producto especifico
+	 * 
+	 * @return un objeto producto(Pelis_Series) especifico
+	 */
 	public Producto recogerPeliculaId(String codigo_producto) {
 		this.openConnection();
 		Producto prod = null;
@@ -544,6 +685,12 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo elimina el producto en especifico
+	 * 
+	 * @param prod es el producto que sera eliminado
+	 * 
+	 */
 	public void eliminarProducto(Producto prod) {
 
 		this.openConnection();
@@ -570,7 +717,12 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
-
+	/**
+	 * Este metodo elimina la cesta de una persona en especifico
+	 * 
+	 * @param pers es la persona de la que sera eliminado su cesta
+	 * 
+	 */
 	public void eliminarCesta(Persona pers) {
 
 		this.openConnection();
@@ -597,7 +749,46 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
+	
+	/**
+	 * Este metodo elimina la tarjeta de una persona en especifico
+	 * 
+	 * @param pers es la persona de la que sera eliminado su cesta
+	 * 
+	 */
+	public void eliminarTarjeta(Persona pers) {
 
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(DELETE_TARJETA);
+			stmt.setString(1, pers.getEmail());
+			stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			// Cerramos ResultSet
+
+			try {
+				this.closeConnection();
+			} catch (SQLException e) {
+				System.out.println("Error en el cierre de la BD");
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	/**
+	 * Este metodo elimina realiza de una persona en especifico
+	 * 
+	 * @param pers es la persona de la que sera eliminado realiza
+	 * 
+	 */
 	public void eliminarRealiza(Persona pers) {
 
 		this.openConnection();
@@ -625,6 +816,12 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo elimina la cuenta de una persona especifica
+	 * 
+	 * @param pers es la persona de la que sera eliminada su cuenta
+	 * 
+	 */
 	public void eliminarCuenta(Persona per) {
 
 		this.openConnection();
@@ -651,7 +848,13 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
+	
 
+	/**
+	 * Este método se encarga de modificar los datos de un producto en el sistema.
+	 * 
+	 * @param prod es el producto para poder modificar los datos.
+	 */
 	public void modificarProducto(Producto prod) {
 
 		ResultSet rs = null;
@@ -718,6 +921,14 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	/**
+	 * Modifica la cesta de compra de una persona en la base de datos con los nuevos
+	 * datos proporcionados.
+	 * 
+	 * @param cesta La cesta de compra a modificar.
+	 * 
+	 * @param pers  La persona dueña de la cesta de compra.
+	 */
 	public void modificarCesta(Cesta_Compra cesta, Persona pers) {
 		ResultSet rs = null;
 
@@ -747,6 +958,15 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	/**
+	 * Actualiza la cantidad de existencias de un producto en la base de datos y
+	 * registra quién ha añadido stock.
+	 * 
+	 * @param prod el producto que se va a actualizar
+	 * 
+	 * @param pers la persona que está añadiendo stock
+	 * 
+	 */
 	public void añadirStockProducto(Producto prod, Persona pers) {
 		ResultSet rs = null;
 
@@ -776,6 +996,11 @@ public class ControladorBdImplementacion implements DAO {
 		}
 	}
 
+	/**
+	 * En este metodo se lista la compra realizada por una persona
+	 * 
+	 * @param per es la persona que ha realizado la compra
+	 */
 	public Map<String, Cesta_Compra> listarCompra(Persona per) {
 		ResultSet rs = null;
 		Cesta_Compra compra;
@@ -785,7 +1010,7 @@ public class ControladorBdImplementacion implements DAO {
 
 		try {
 			stmt = con.prepareStatement(SELECT_COMPRA);
-			stmt.setString(1, per.getEmail());
+			stmt.setString(1, per.getCodigoPersona());
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -794,7 +1019,7 @@ public class ControladorBdImplementacion implements DAO {
 				compra.setFecha_Inicio(rs.getDate("fecha_inicio"));
 				compra.setFecha_fin(rs.getDate("fecha_fin"));
 				compra.setPeso_total(rs.getFloat("peso_total"));
-				compra.setPeso_total(rs.getFloat("precio_total"));
+				compra.setPrecio_total(rs.getFloat("precio_total"));
 				listaCompra.put(compra.getNumReferencia(), compra);
 			}
 
@@ -820,6 +1045,12 @@ public class ControladorBdImplementacion implements DAO {
 		return listaCompra;
 	}
 
+	/**
+	 * En este metodo se inserta los valores a la cesta
+	 * 
+	 * @param cesta es el identificativo para saber a que cesta hay que introducirle
+	 *              los datos
+	 */
 	public void insertarCompra_Cesta(Cesta_Compra cesta) {
 		this.openConnection();
 
@@ -838,7 +1069,13 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
-
+	
+	/**
+	 * En este metodo se inserta los valores a realiza
+	 * 
+	 * @param realiza es el identificativo para saber a que cesta hay que
+	 *                introducirle los datos
+	 */
 	public void insertarRealiza(Realiza realiza) {
 		this.openConnection();
 
@@ -857,7 +1094,15 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
+	
 
+	/**
+	 * En este metodo se recoge la cesta de una persona en especifico
+	 * 
+	 * @param codig_persona es la persona a la que le pertenece la cesta
+	 * 
+	 * @param numreferencia hace referencia a la cesta de una persona
+	 */
 	public Producto recogerCesta(String codigo_persona, String numreferencia) {
 		this.openConnection();
 		Persona per = null;
@@ -889,6 +1134,12 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Método que lista los productos de la línea de ropa.
+	 * 
+	 * @return Map<String, Producto> es una colección de productos de la línea de
+	 *         ropa con sus códigos como clave.
+	 */
 	public Map<String, Producto> listarProdRopa() {
 		ResultSet rs = null;
 		Producto prod;
@@ -939,6 +1190,12 @@ public class ControladorBdImplementacion implements DAO {
 		return listaProd;
 	}
 
+	/**
+	 * Método que lista los productos que son juguete.
+	 * 
+	 * @return Map<String, Producto> es una colección de productos de la línea de
+	 *         ropa con sus códigos como clave.
+	 */
 	public Map<String, Producto> listarProdJuguete() {
 		ResultSet rs = null;
 		Producto prod;
@@ -990,6 +1247,12 @@ public class ControladorBdImplementacion implements DAO {
 		return listaProd;
 	}
 
+	/**
+	 * Método que lista los productos de Pelis_Series.
+	 * 
+	 * @return Map<String, Producto> es una colección de productos de Pelis_Series
+	 *         con sus códigos como clave.
+	 */
 	public Map<String, Producto> listarProdPeli() {
 		ResultSet rs = null;
 		Producto prod;
@@ -1041,6 +1304,12 @@ public class ControladorBdImplementacion implements DAO {
 		return listaProd;
 	}
 
+
+	/**
+	 * Este metodo es para insertar personas nuevas si son usuarios
+	 * 
+	 * @param pers es la persona para comprobar si existe o no
+	 */
 	public void insertarPersona(Persona pers) {
 		this.openConnection();
 
@@ -1080,6 +1349,11 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo es para insertar tarjeta nuevas por cada persona
+	 * 
+	 * @param tar es la tarjeta para comprobar si existe o no
+	 */
 	public void insertarTarjeta(Tarjeta tar) {
 		this.openConnection();
 
@@ -1104,6 +1378,14 @@ public class ControladorBdImplementacion implements DAO {
 
 	}
 
+	/**
+	 * Este metodo es para generar un codigo autoincremental
+	 * 
+	 * @param pers es la persona para comprobar si existe o no con el que esta en la
+	 *             base de datos registrado
+	 *             
+	 * @return el numero de la siguiente persona
+	 */
 	public int numeroPersona(Persona pers) {
 		ResultSet rs = null;
 		String numPersona = "SELECT COUNT(codigo_persona)FROM persona";
@@ -1125,6 +1407,14 @@ public class ControladorBdImplementacion implements DAO {
 		return n;
 
 	}
+	
+	/**
+	 * Este metodo es para comprobar si la persona existe o no
+	 * 
+	 * @param persona es la persona para comprobar si existe o no
+	 * 
+	 * @return un numero que dice si la persona existe o no
+	 */
 
 	public int existePersona(String persona) {
 
@@ -1150,11 +1440,19 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
+	
+	/**
+	 * Este metodo es para comprobar si la tarjeta existe o no
+	 * 
+	 * @param numeroTarjeta es el numero de la tarjeta para comprobar si existe o no
+	 * 
+	 * @return un numero que dice si la tarjeta existe o no
+	 */
 
 	public int existeNumeroTarjeta(long numeroTarjeta) {
 
 		ResultSet rs = null;
-		String registrar = "SELECT numero_tarjeta FROM TARJETA WHERE numero_tarjeta=?";
+		String registrar = "SELECT count(numero_tarjeta) FROM TARJETA WHERE numero_tarjeta=?";
 		this.openConnection();
 
 		try {
@@ -1175,6 +1473,16 @@ public class ControladorBdImplementacion implements DAO {
 		}
 
 	}
+	
+	/**
+	 * Este metodo es para comprobar si es un email o no con unos patron en
+	 * especifico
+	 * 
+	 * @param email es para comprobar si es un email o no con el que esta en la base
+	 *              de datos registrado
+	 *              
+	 * @return si el email es valido o no con el patron estipulado
+	 */
 
 	public boolean esEmail(String email) {
 		// Patr�n para validar el email
@@ -1186,6 +1494,90 @@ public class ControladorBdImplementacion implements DAO {
 		Matcher mather = pattern.matcher(email);
 
 		return mather.find();
+	}
+
+	/**
+	 * Este metodo es para comprobar si el numero existe o no
+	 * 
+	 * @param numTelefono es el numero de telefono para comprobar si existe o no con
+	 *                    el que esta en la base de datos registrado
+	 *                    
+	 * @return un numero de si existe o no el telefono
+	 */
+	public int existeTelefono(int numTelefono) {
+
+		ResultSet rs = null;
+
+		String registrar = "SELECT count(codigo_persona) FROM PERSONA WHERE num_telefono=?";
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(registrar);
+
+			stmt.setInt(1, numTelefono);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+
+				return rs.getInt(1);
+
+			}
+
+			return 1;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
+	}
+
+	/**
+	 * Este metodo es para comprobar si el email existe o no
+	 * 
+	 * @param email sirve comprobar si existe o no con el que esta en la base de
+	 *              datos registrado
+	 *              
+	 * @return un numero de si existe o no
+	 */
+	public int existeEmail(String email) {
+
+		ResultSet rs = null;
+
+		String registrar = "SELECT COUNT(codigo_persona)FROM PERSONA WHERE EMAIL=?";
+
+		this.openConnection();
+
+		try {
+
+			stmt = con.prepareStatement(registrar);
+
+			stmt.setString(1, email);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+
+				return rs.getInt(1);
+
+			}
+
+			return 1;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+
+			return 1;
+
+		}
+
 	}
 
 }

@@ -56,6 +56,9 @@ import javax.swing.JComboBox;
 import java.awt.Toolkit;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowStateListener;
 
 public class Ventana_Principal extends JFrame implements ActionListener {
 
@@ -77,7 +80,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public Map<String, Cesta_Compra> compras;
 	private JTextField textCantidad;
 	private JLabel lblNewLabel_2, lblNewLabel_3, lblNewLabel_4;
-	private Persona pers;
+	public Persona pers;
+	private Cesta_Compra compra;
+	private JButton btnVisualizar;
+	private JLabel candado1;
+	private JLabel candado2;
 
 	public Ventana_Principal(Producto producto, Persona per) {
 
@@ -97,7 +104,6 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		tabbedPane.setBounds(0, 0, 1999, 1008);
 
 		contentPanel.add(tabbedPane);
-
 		main = new JPanel();
 		main.setForeground(new Color(128, 255, 128));
 		main.setBackground(Color.DARK_GRAY);
@@ -161,11 +167,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		btnCesta = new JMenuItem("Cesta");
 		mnNewMenu_1.add(btnCesta);
 		btnCesta.setEnabled(false);
-		btnCesta.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				verCesta(pers);
-			}
-		});
+		btnCesta.addActionListener(this);
 		texto.setHorizontalAlignment(SwingConstants.CENTER);
 
 		usuario = new JPanel();
@@ -173,6 +175,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		usuario.setBackground(Color.DARK_GRAY);
 		tabbedPane.addTab("Cuenta", null, usuario, null);
 		tabbedPane.setEnabledAt(1, false);
+		
 		usuario.setLayout(null);
 
 		JLabel User = new JLabel("Usuario:");
@@ -284,7 +287,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		JLabel lblComprasRealizadas = new JLabel("Compras Realizadas:");
 		lblComprasRealizadas.setForeground(Color.WHITE);
 		lblComprasRealizadas.setFont(new Font("Jokerman", Font.PLAIN, 25));
-		lblComprasRealizadas.setBounds(822, 428, 311, 86);
+		lblComprasRealizadas.setBounds(721, 428, 311, 86);
 		usuario.add(lblComprasRealizadas);
 		tabbedPane.setBackgroundAt(1, Color.DARK_GRAY);
 		tabbedPane.setForegroundAt(1, new Color(128, 255, 128));
@@ -359,19 +362,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		lblNewLabel_5.setIcon(new ImageIcon("././imagenes/4.png"));
 		lblNewLabel_5.setBounds(50, 374, 412, 669);
 		main.add(lblNewLabel_5);
-		if (per != null) {
-			this.presentarTablaCompra(null, db, usuario, per);
-		}
 
 		btnBorrar = new JButton("BORRAR");
-		btnBorrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				borrarCuenta(pers);
-			}
-		});
+
 		btnBorrar.setFont(new Font("Jokerman", Font.BOLD, 20));
 		btnBorrar.setBackground(new Color(250, 128, 114));
 		btnBorrar.setBounds(845, 861, 200, 50);
+		btnBorrar.addActionListener(this);
 		usuario.add(btnBorrar);
 
 		JLabel lblBorrarCuenta = new JLabel("BORRAR CUENTA");
@@ -382,28 +379,57 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 		lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon("././imagenes/BEN.png"));
-		lblNewLabel_2.setBounds(1558, 441, 426, 581);
+		lblNewLabel_2.setBounds(1502, 416, 426, 581);
 		usuario.add(lblNewLabel_2);
 
 		lblNewLabel_3 = new JLabel("");
 		lblNewLabel_3.setIcon(new ImageIcon("././imagenes/linterna.png"));
-		lblNewLabel_3.setBounds(63, 11, 444, 1011);
+		lblNewLabel_3.setBounds(10, 11, 444, 1011);
 		usuario.add(lblNewLabel_3);
 
+		btnVisualizar = new JButton("Visualizar");
+
+		btnVisualizar.setFont(new Font("Jokerman", Font.BOLD, 20));
+		btnVisualizar.setBackground(new Color(102, 255, 102));
+		btnVisualizar.setBounds(1139, 453, 163, 41);
+		btnVisualizar.addActionListener(this);
+		usuario.add(btnVisualizar);
+
+		candado1 = new JLabel("");
+		candado1.setIcon(new ImageIcon("././imagenes/candado1 (1).png"));
+		candado1.setBounds(1025, 440, 70, 70);
+		candado1.setVisible(false);
+		usuario.add(candado1);
+
+		candado2 = new JLabel("");
+		candado2.setIcon(new ImageIcon("././imagenes/candado2 (1).png"));
+		candado2.setBounds(1025, 440, 70, 70);
+		candado2.setVisible(true);
+		usuario.add(candado2);
+		
 		addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent e) {
 				presentarTablaRopa(producto, db, main);
 				presentarTablaJuguete(producto, db, main);
 				presentarTablaPeli(producto, db, main);
 				cargarComboCodigo();
-				presentarTablaCompra(null, db, usuario, per);
+				presentarTablaCompra(compra, db, usuario, pers);
+
 			}
 
 			public void windowLostFocus(WindowEvent e) {
+
 			}
 		});
 
 	}
+	
+	/**
+	 * En este metodo genera un codigo autonumerico
+	 * 
+	 * @param cesta es la cesta a la que se le genera el codigo
+	 * @return el codigo generado
+	 */
 
 	public String generarCodigoRef(Cesta_Compra cesta) {
 		DAO bd = new ControladorBdImplementacion();
@@ -417,6 +443,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return codigo;
 	}
 
+	/**
+	 * En este metodo se insertan los productos a la cesta de una persona especifica
+	 * 
+	 * @param per es la persona a la que le pertenece la cesta
+	 */
 	private void insertarCesta(Persona per) {
 		DAO db = new ControladorBdImplementacion();
 		Cesta_Compra cesta;
@@ -446,9 +477,7 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 					realiza.setCodigoPersona(per.getCodigoPersona());
 					realiza.setCantidad(Integer.parseInt(textCantidad.getText()));
 					db.insertarRealiza(realiza);
-					prod.setNumExistencias(prod.getNumExistencias() - Integer.parseInt(textCantidad.getText()));
-					db.insertarRealiza(realiza);
-					db.modificarProducto(prod);
+				
 					textCantidad.setText("");
 					JOptionPane.showMessageDialog(this, "PRODUCTO AÑADIDO CORRECTAMENTE A LA CESTA!");
 				}
@@ -457,37 +486,46 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			}
 		}
 	}
-
+	
+	/**
+	 * En este metodo la persona tiene 3 tipos de permisos dependiendo de como este
+	 * logeada
+	 * 
+	 * @param per es la persona que entra como uno de los 3 tipos
+	 * 
+	 * @return el tipo de logeo que ha realizado la persona
+	 */
 	public Persona logeo(Persona per) {
 		DAO db = new ControladorBdImplementacion();
 
-		if (per.getCodigoPersona().charAt(0) == 'U') {
-			tabbedPane.setEnabledAt(1, true);
-			btnAgregar.setEnabled(true);
-			borrado.setEnabled(true);
-			btnCesta.setEnabled(true);
-			registro.setEnabled(false);
-			iniciar.setEnabled(false);
-			cargarDatosCuenta(per);
-		} else if (per.getCodigoPersona().charAt(0) == 'A') {
-			borrado.setEnabled(false);
-			btnGestionarProductos.setVisible(true);
-			btnAgregar.setEnabled(false);
-			borrado.setEnabled(true);
-			registro.setEnabled(false);
-			iniciar.setEnabled(false);
+		if (per != null) {
+			if (per.getCodigoPersona().charAt(0) == 'U') {
+				tabbedPane.setEnabledAt(1, true);
+				btnAgregar.setEnabled(true);
+				borrado.setEnabled(true);
+				btnCesta.setEnabled(true);
+				registro.setEnabled(false);
+				iniciar.setEnabled(false);
+				cargarDatosCuenta(per);
 
+			} else if (per.getCodigoPersona().charAt(0) == 'A') {
+				borrado.setEnabled(false);
+				btnGestionarProductos.setVisible(true);
+				btnAgregar.setEnabled(false);
+				borrado.setEnabled(false);
+				registro.setEnabled(false);
+				iniciar.setEnabled(false);
+
+			}
 		} else {
 			tabbedPane.setEnabledAt(1, false);
 			borrado.setEnabled(false);
 			btnAgregar.setEnabled(false);
 			btnGestionarProductos.setVisible(false);
 			btnCesta.setEnabled(false);
-			btnGestionarProductos.setVisible(true);
-			btnCesta.setEnabled(true);
-
+			registro.setEnabled(true);
+			iniciar.setEnabled(true);
 		}
-
 		return per;
 	}
 
@@ -495,7 +533,6 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		DAO db = new ControladorBdImplementacion();
-
 		if (e.getSource().equals(iniciar)) {
 			Inicio_Sesion inicio = new Inicio_Sesion(this, true);
 			inicio.setVisible(true);
@@ -505,24 +542,56 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 			}
 
 		} else if (e.getSource().equals(registro)) {
-			Registro reg = new Registro(this);
+			Registro reg = new Registro(this, true);
 			reg.setVisible(true);
-			if (reg.registrarse(pers)) {
-				reg.registrarse(pers);
-			}
+			pers = reg.obtenerPersona();
 
 		} else if (e.getSource().equals(borrado)) {
 			tabbedPane.setSelectedIndex(1);
 			tabbedPane.setVisible(true);
-
 		} else if (e.getSource().equals(btnGestionarProductos)) {
-
-			Gestionar_Articulo gest = new Gestionar_Articulo(null, true);
+			Gestionar_Articulo gest = new Gestionar_Articulo(this, true);
 			gest.setVisible(true);
+		} else if (e.getSource().equals(btnBorrar)) {
+			borrarCuenta(pers);
+		} else if (e.getSource().equals(btnCesta)) {
+			verCesta(pers);
+		} else if (e.getSource().equals(btnVisualizar)) {
+			cambiocandado();
+			confirmacion();
 
 		}
 
 	}
+	
+	private void cambiocandado() {
+		// TODO Auto-generated method stub
+		
+		candado1.setVisible(true);
+		candado2.setVisible(false);
+	}
+	/**
+	 * En este metodo muestra un mensaje de actualizacion de tabla 
+	 * 
+	 *
+	 */
+
+	private void confirmacion() {
+		int pregunt = JOptionPane.showOptionDialog(null, "ACTUALIZANDO TABLA...  ", // ventana
+				"Pregunta", // titulo de la ventana
+				JOptionPane.YES_NO_OPTION, // para 3 botones si/no/cancel
+				JOptionPane.QUESTION_MESSAGE, // tipo de ícono
+				null, // null para icono por defecto.
+				new Object[] { "ACEPTAR" }, // objeto para las opciones
+				// null para YES, NO y CANCEL
+				"SI");
+
+	}
+	/**
+	 * En este metodo se ve la cesta de una persona especifica
+	 * 
+	 * @param per es la persona propietaria de la cesta
+	 */
 
 	private void borrarCuenta(Persona pers) {
 		DAO db = new ControladorBdImplementacion();
@@ -537,28 +606,40 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 				// null para YES, NO y CANCEL
 				"SI");
 		if (pregunt == 0) {
+			db.eliminarTarjeta(pers);
 			db.eliminarCuenta(pers);
 			JOptionPane.showMessageDialog(this, "CUENTA ELIMINADA CORRECTAMENTE!");
 			tabbedPane.setSelectedIndex(0);
-			pers = logeo(pers);
+
+			pers = logeo(null);
 
 		} else {
 			JOptionPane.showMessageDialog(this, "SE HA CANCELADO EL BORRADO!");
 		}
 
 	}
+	
+	/**
+	 * En este metodo se ve la cesta de una persona especifica
+	 * 
+	 * @param per es la persona propietaria de la cesta
+	 */
 
-	private void verCesta(Persona pers) {
+	private void verCesta(Persona per) {
 		DAO db = new ControladorBdImplementacion();
-		pers = logeo(pers);
+
 		Tarjeta tar;
-		tar = db.recogerDatosTarjeta(pers.getEmail());
-		Finalizar_Compra fin = new Finalizar_Compra(pers, null, true);
-		fin.cargarDatosCompra(pers, tar);
+		tar = db.recogerDatosTarjeta(per.getEmail());
+		Finalizar_Compra fin = new Finalizar_Compra(per, null, true);
+		fin.cargarDatosCompra(per, tar);
 		fin.setVisible(true);
 
 	}
-
+	/**
+	 * En este metodo suma lo precios de los productos añadidos a la cesta 
+	 * 
+	 * @return la suma de los precios
+	 */
 	private float sumarPrecio() {
 		DAO db = new ControladorBdImplementacion();
 		Producto prod;
@@ -570,7 +651,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return suma;
 
 	}
-
+	/**
+	 * En este metodo sumar lo pesos de los productos añadidos a la cesta 
+	 * 
+	 * @return la suma de los pesos
+	 */
 	private float sumarPeso() {
 		DAO db = new ControladorBdImplementacion();
 		Producto prod;
@@ -582,7 +667,11 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		return suma;
 
 	}
-
+	
+	/**
+	 * En este metodo se carga un combo con los codigos  
+	 * 
+	 */
 	public void cargarComboCodigo() {
 
 		DAO db = new ControladorBdImplementacion();
@@ -615,8 +704,17 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		});
 	}
 
+	/**
+	 * En este metodo se presentan la tabla Linea_De_Ropa
+	 *  
+	 * @param producto es el objeto producto al que hace referencia 
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 * 
+	 * @param main hace referencia a donde se va a crear 
+	 */
 	private void presentarTablaRopa(Producto producto, DAO db, JPanel main) {
-
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(428, 192, 1037, 149);
 		main.add(linea);
@@ -626,6 +724,13 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 
 	}
 
+	/**
+	 * En este metodo se carga la tabla de la ropa
+	 * @param producto es para identificar el producto
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 * @return los datos de la tabla cargados
+	 **/
 	private JTable cargarTablaRopa(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Talla", "Tejido",
@@ -654,7 +759,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 		return new JTable(modelo);
 	}
-
+	/**
+	 * En este metodo se presentan la tabla juguete
+	 *  
+	 * @param producto es el objeto producto al que hace referencia 
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 * 
+	 * @param main hace referencia a donde se va a crear 
+	 */
 	private void presentarTablaJuguete(Producto producto, DAO db, JPanel main) {
 
 		JScrollPane linea = new JScrollPane();
@@ -665,7 +779,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setViewportView(tablaProducto);
 
 	}
-
+	/**
+	 * En este metodo se carga la tabla de juguete
+	 * 
+	 * @param producto es para identificar el producto
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 *  
+	 * @return los datos de la tabla cargados
+	 **/
 	private JTable cargarTablaJuguete(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Material",
@@ -694,7 +817,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 		return new JTable(modelo);
 	}
-
+	/**
+	 * En este metodo se presentan la tabla Pelis_Series
+	 *  
+	 * @param producto es el objeto producto al que hace referencia 
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 * 
+	 * @param main hace referencia a donde se va a crear 
+	 */
 	private void presentarTablaPeli(Producto producto, DAO db, JPanel main) {
 
 		JScrollPane linea = new JScrollPane();
@@ -705,7 +837,16 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		linea.setViewportView(tablaProducto);
 
 	}
-
+	/**
+	 * En este metodo se carga la tabla de las pelis_series
+	 * 
+	 * @param producto es para identificar el producto
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 *  
+	 * @return los datos de la tabla cargados
+	 **/
 	private JTable cargarTablaPeli(Producto producto, DAO db) {
 
 		String[] columnas = { "Codigo_Producto", "Nombre", "Precio", "Peso", "Stock", "Dimensiones", "Genero",
@@ -735,45 +876,78 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 		return new JTable(modelo);
 	}
-
+	/**
+	 * En este metodo se presenta la tabla de un usuario en especifico
+	 * 
+	 * @param compra es la compra de un usuario especifica
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 *  
+	 * @param usuario es el usuario que ha realizado la compra
+	 * 
+	 * @param per es la persona que ha realizado la compra
+	 */
 	private void presentarTablaCompra(Cesta_Compra compra, DAO db, JPanel usuario, Persona per) {
+		
 		JScrollPane linea = new JScrollPane();
 		linea.setBounds(400, 514, 1179, 242);
 		usuario.add(linea);
+
 		tablaProducto = this.cargarTablaCompra(compra, db, per);
 		tablaProducto.setBackground(new Color(128, 255, 128));
 		tablaProducto.setEnabled(false);
 		linea.setViewportView(tablaProducto);
 
 	}
+	/**
+	 * En este metodo se carga la tabla de un usuario en especifico
+	 * 
+	 * @param compra es la compra de un usuario especifica
+	 * 
+	 * @param db Un objeto DAO que representa el acceso a datos para recuperar
+	 *  la información
+	 *  
+	 * @param usuario es el usuario que ha realizado la compra
+	 * 
+	 * @param per es la persona que ha realizado la compra 
+	 * 
+	 * @return la tabla con los datos cargados 
+	 */
+	private JTable cargarTablaCompra(Cesta_Compra comprar, DAO db, Persona per) {
+		String[] nombreColumnas = { "NUMREFERENCIA", "FECHA_INICIO", "PESO_TOTAL", "PRECIO_TOTAL" };
+		String[] registros = new String[4];
 
-	private JTable cargarTablaCompra(Cesta_Compra compra, DAO db, Persona per) {
-		String[] columnas = { "Numero_Referencia", "Fecha_Ini", "Fecha_Fin", "Peso_Total", "Precio_Total" };
-		String[] registros = new String[5];
-
-		DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+		DefaultTableModel modelo = new DefaultTableModel(null, nombreColumnas);
+		modelo.setRowCount(0);
 		if (per != null) {
-			modelo.setRowCount(0);
-
 			compras = db.listarCompra(per);
 
-			for (Cesta_Compra com : compras.values()) {
-				if (com.getFecha_fin() != null) {
-					registros[0] = com.getNumReferencia();
-					registros[1] = com.getFecha_Inicio().toString();
-					registros[2] = com.getFecha_fin().toString();
-					registros[3] = Float.toString(com.getPeso_total());
-					registros[4] = Float.toString(com.getPrecio_total());
+			for (Cesta_Compra compra : compras.values()) {
+				if (compra.getFecha_fin() != null) {
+					registros[0] = compra.getNumReferencia();
+					registros[1] = compra.getFecha_Inicio().toString();
+					registros[2] = Float.toString(compra.getPeso_total());
+					registros[3] = Float.toString(compra.getPrecio_total());
+
 					modelo.addRow(registros);
 				}
 			}
 		}
+
 		return new JTable(modelo);
 
 	}
-
+	/**
+	 * En este metodo se cargan los datos de la cuenta de una persona 
+	 * 
+	 * @param pers es la persona a la que le pertenece la cuenta
+	 * 
+	 * @return los datos de la persona 
+	 */
 	public Persona cargarDatosCuenta(Persona pers) {
 		DAO bd = new ControladorBdImplementacion();
+
 		if (pers != null) {
 			pers = db.recogerDatosPersonaEmail(pers.getEmail());
 			textNombre.setText(((Usuario) pers).getNombrePersonal());
@@ -785,5 +959,4 @@ public class Ventana_Principal extends JFrame implements ActionListener {
 		}
 		return pers;
 	}
-
 }
